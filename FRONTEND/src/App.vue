@@ -1,23 +1,21 @@
 <template>
-  <div id="app-root">
-    <router-view />
+  <div>
+    <td-navbar />
+    <b-container fluid id="app">
+      <b-overlay style="max-height: 100vh;" :show="isLoading" spinner-variant="primary">
+        <router-view />
+      </b-overlay>
+    </b-container>
   </div>
 </template>
 
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css?family=Ubuntu:400,700");
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
 
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-#app-root {
-  height: 100%;
-  width: 100%;
+#app {
+  font-size: 20px;
+  line-height: 1.42857143;
+  margin-top: ($header-height + 15px);
 }
 </style>
 
