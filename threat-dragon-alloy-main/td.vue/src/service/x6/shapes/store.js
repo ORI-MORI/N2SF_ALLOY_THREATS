@@ -12,7 +12,7 @@ export const StoreShape = Shape.Rect.define({
     width: 150,
     height: 75,
     zIndex: 0,
-    label: tc('threatmodel.shapes.store'),
+    label: 'Server',
     markup: [
         ...Shape.Rect.getMarkup(),
         {

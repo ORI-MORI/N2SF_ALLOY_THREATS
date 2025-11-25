@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import { gitRoutes } from './git.js';
-import HomePage from '../views/HomePage.vue';
+import WelcomePage from '../views/Welcome.vue';
 import { localRoutes } from './local.js';
 import { desktopRoutes } from './desktop.js';
 import { googleRoutes } from './google.js';
@@ -10,8 +10,8 @@ import { googleRoutes } from './google.js';
 const routes = [
     {
         path: '/',
-        name: 'HomePage',
-        component: HomePage
+        name: 'WelcomePage',
+        component: WelcomePage
     },
     {
         path: '/dashboard',

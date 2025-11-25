@@ -12,7 +12,7 @@ export const ProcessShape = Shape.Circle.define({
     width: 100,
     height: 100,
     zIndex: 0,
-    label: tc('threatmodel.shapes.process'),
+    label: 'PC',
     markup: [
         ...Shape.Circle.getMarkup(),
         // Prevent the remove button from disappearing when the cursor

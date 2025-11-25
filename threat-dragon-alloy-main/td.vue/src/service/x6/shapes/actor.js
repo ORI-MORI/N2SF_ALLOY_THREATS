@@ -12,7 +12,7 @@ export const ActorShape = Shape.Rect.define({
     width: 150,
     height: 80,
     zIndex: 0,
-    label: tc('threatmodel.shapes.actor'),
+    label: 'Internet',
     attrs: {
         body: {
             fill: 'transparent',
