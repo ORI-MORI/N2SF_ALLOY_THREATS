@@ -43,6 +43,12 @@
             :title="$t('threatmodel.buttons.toggleGrid')"
             text="" />
 
+        <td-form-button
+            :onBtnClick="analyze"
+            icon="microchip"
+            title="Analyze with Alloy"
+            text="Analyze" />
+
         <b-dropdown right :text="$t('forms.export')" id="export-graph-btn">
             <b-dropdown-item @click="exportPNG" id="export-graph-png">
                 PNG
@@ -144,6 +150,9 @@ export default {
         },
         exportSVG() {
             this.graph.exportSVG(`${this.diagram.title}.svg`);
+        },
+        analyze() {
+            this.$emit('analyze');
         }
     }
 };

@@ -10,7 +10,7 @@
                         <h3 class="td-graph-title">{{ diagram.title }}</h3>
                     </b-col>
                     <b-col align="right">
-                        <td-graph-buttons :graph="graph" @saved="saved" @closed="closed" />
+                        <td-graph-buttons :graph="graph" @saved="saved" @closed="closed" @analyze="analyze" />
                     </b-col>
                 </b-row>
                 <b-row>
@@ -98,6 +98,63 @@ export default {
             updated.cells = this.graph.toJSON().cells;
             this.$store.dispatch(tmActions.diagramSaved, updated);
             this.$store.dispatch(tmActions.saveModel);
+        },
+        async analyze() {
+            console.debug('Analyze diagram');
+            const payload = {
+                detail: {
+                    diagrams: [
+                        {
+                            diagramJson: {
+                                cells: this.graph.toJSON().cells
+                            }
+                        }
+                    ]
+                }
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    const violations = result.violations;
+                    if (violations.length > 0) {
+                        this.$bvToast.toast(`Found ${violations.length} violations! Check console for details.`, {
+                            title: 'Analysis Result',
+                            variant: 'danger',
+                            solid: true
+                        });
+                        console.table(violations);
+                    } else {
+                        this.$bvToast.toast('No violations found. System is secure.', {
+                            title: 'Analysis Result',
+                            variant: 'success',
+                            solid: true
+                        });
+                    }
+                } else {
+                    this.$bvToast.toast('Analysis failed: ' + result.error, {
+                        title: 'Error',
+                        variant: 'warning',
+                        solid: true
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                this.$bvToast.toast('Network error connecting to backend.', {
+                    title: 'Error',
+                    variant: 'danger',
+                    solid: true
+                });
+            }
         },
         async closed() {
             if (!this.$store.getters.modelChanged || await this.getConfirmModal()) {
