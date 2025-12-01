@@ -5,14 +5,9 @@ function executeAlloy(filePath) {
     return new Promise((resolve, reject) => {
         const alloyJarPath = path.join(__dirname, '../alloy/alloy4.2_2015-02-22.jar');
         const runnerPath = path.join(__dirname, 'AlloyRunner.java');
-        const classpath = `.;${alloyJarPath}`; // Windows classpath separator
-
-        // Compile first (optional if pre-compiled, but good for dev)
-        // Note: In production, we should compile once. For now, compile on fly or assume compiled.
-        // Let's assume we compile it once or run with java directly if single file (Java 11+)
-        // But for safety with dependencies, let's compile.
-
         const srcDir = __dirname;
+
+        // Compile
         const compileCmd = `javac -cp "${alloyJarPath}" "${runnerPath}"`;
 
         exec(compileCmd, (error, stdout, stderr) => {
@@ -23,15 +18,42 @@ function executeAlloy(filePath) {
 
             // Run
             const runCmd = `java -cp "${srcDir};${alloyJarPath}" AlloyRunner "${filePath}"`;
-            exec(runCmd, (error, stdout, stderr) => {
+            exec(runCmd, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`Execution error: ${error}`);
                     return reject(error);
                 }
-                resolve(stdout);
+
+                const violations = parseOutput(stdout);
+                resolve(violations);
             });
         });
     });
+}
+
+function parseOutput(output) {
+    const violations = [];
+    const lines = output.split('\n');
+    let currentViolation = null;
+    let capturing = false;
+
+    lines.forEach(line => {
+        if (line.includes('### VIOLATION FOUND ###')) {
+            currentViolation = { rule: '', details: '' };
+        } else if (line.includes('Command: ')) {
+            if (currentViolation) currentViolation.rule = line.split('Command: ')[1].trim();
+        } else if (line.includes('--- Counterexample ---')) {
+            capturing = true;
+        } else if (line.includes('### END VIOLATION ###')) {
+            capturing = false;
+            if (currentViolation) violations.push(currentViolation);
+            currentViolation = null;
+        } else if (capturing && currentViolation) {
+            currentViolation.details += line + '\n';
+        }
+    });
+
+    return violations;
 }
 
 module.exports = { executeAlloy };

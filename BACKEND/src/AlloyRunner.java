@@ -14,7 +14,7 @@ public class AlloyRunner {
         }
 
         String filename = args[0];
-        System.out.println("Running Alloy on: " + filename);
+        // System.out.println("Running Alloy on: " + filename);
 
         try {
             A4Reporter rep = new A4Reporter();
@@ -24,14 +24,17 @@ public class AlloyRunner {
 
             for (Command command : world.getAllCommands()) {
                 System.out.println("Executing command: " + command);
-                A4Solution ans = TranslateAlloyToKodkod.execute_command(rep, world.getAllReachableSigs(), command, options);
-                
+                A4Solution ans = TranslateAlloyToKodkod.execute_command(rep, world.getAllReachableSigs(), command,
+                        options);
+
                 if (ans.satisfiable()) {
-                    System.out.println("RESULT: Counterexample found");
-                    // In a real scenario, we might want to serialize the instance to XML or JSON
-                    // ans.writeXML("output.xml");
+                    System.out.println("### VIOLATION FOUND ###");
+                    System.out.println("Command: " + command.label);
+                    System.out.println("--- Counterexample ---");
+                    System.out.println(ans.toString());
+                    System.out.println("### END VIOLATION ###");
                 } else {
-                    System.out.println("RESULT: No counterexample found");
+                    System.out.println("RESULT: No counterexample found for " + command.label);
                 }
             }
         } catch (Exception e) {
