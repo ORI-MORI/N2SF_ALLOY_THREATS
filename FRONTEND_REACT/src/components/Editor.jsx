@@ -72,11 +72,21 @@ const EditorContent = () => {
                 y: event.clientY - reactFlowBounds.top,
             });
 
+            let defaultType = label;
+            if (type === 'zone') {
+                defaultType = 'Internet'; // Default Zone Type
+            } else if (type === 'system') {
+                if (label === 'PC') defaultType = 'Terminal';
+                else if (label === 'Gateway') defaultType = 'NetworkDevice';
+                else if (label === 'Server') defaultType = 'Server';
+                else defaultType = 'Terminal';
+            }
+
             const newNode = {
                 id: getId(),
                 type,
                 position,
-                data: { label, grade: 'Open', type: label },
+                data: { label, grade: 'Open', type: defaultType },
             };
 
             setNodes((nds) => nds.concat(newNode));

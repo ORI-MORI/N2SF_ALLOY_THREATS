@@ -7,13 +7,16 @@ open n2sf_rules
 
 `;
 
-    // 1. Locations
+    // 1. Locations (Zones)
     if (jsonData.locations && jsonData.locations.length > 0) {
         alloyContent += `one sig ${jsonData.locations.map(l => 'Location' + l.id).join(', ')} extends Location {}\n`;
 
         // Location Facts
         jsonData.locations.forEach(loc => {
-            alloyContent += `fact { Location${loc.id}.id = ${loc.id} and Location${loc.id}.type = ${loc.type} and Location${loc.id}.grade = ${loc.grade} }\n`;
+            // Map grade and type to Enums
+            const grade = loc.grade || 'Open';
+            const type = loc.type || 'Internet';
+            alloyContent += `fact { Location${loc.id}.id = ${loc.id} and Location${loc.id}.grade = ${grade} and Location${loc.id}.type = ${type} }\n`;
         });
         // Close the set
         alloyContent += `fact { Location = ${jsonData.locations.map(l => 'Location' + l.id).join(' + ')} }\n`;
@@ -28,7 +31,9 @@ open n2sf_rules
 
         // Data Facts
         jsonData.data.forEach(d => {
-            alloyContent += `fact { Data${d.id}.id = ${d.id} and Data${d.id}.grade = ${d.grade} and Data${d.id}.fileType = ${d.fileType} }\n`;
+            const grade = d.grade || 'Open';
+            const fileType = d.fileType || 'Document';
+            alloyContent += `fact { Data${d.id}.id = ${d.id} and Data${d.id}.grade = ${grade} and Data${d.id}.fileType = ${fileType} }\n`;
         });
         // Close the set
         alloyContent += `fact { Data = ${jsonData.data.map(d => 'Data' + d.id).join(' + ')} }\n`;
@@ -37,21 +42,25 @@ open n2sf_rules
     }
     alloyContent += '\n';
 
-    // 3. Systems
+    // 3. Systems (Nodes)
     if (jsonData.systems && jsonData.systems.length > 0) {
         alloyContent += `one sig ${jsonData.systems.map(s => 'System' + s.id).join(', ')} extends System {}\n`;
 
         // System Facts
         jsonData.systems.forEach(sys => {
             const stores = sys.stores && sys.stores.length > 0 ? sys.stores.map(id => `Data${id}`).join(' + ') : 'none';
+            const grade = sys.grade || 'Open';
+            const type = sys.type || 'Terminal';
+            const authType = sys.authType || 'Single';
+
             alloyContent += `fact { 
     System${sys.id}.id = ${sys.id} 
     System${sys.id}.location = Location${sys.location} 
-    System${sys.id}.grade = ${sys.grade} 
-    System${sys.id}.type = ${sys.type} 
+    System${sys.id}.grade = ${grade} 
+    System${sys.id}.type = ${type} 
     System${sys.id}.isCDS = ${sys.isCDS ? 'True' : 'False'} 
     System${sys.id}.isDeidentifier = ${sys.isDeidentifier ? 'True' : 'False'} 
-    System${sys.id}.authCapability = ${sys.authCapability} 
+    System${sys.id}.authType = ${authType} 
     System${sys.id}.isRegistered = ${sys.isRegistered ? 'True' : 'False'} 
     System${sys.id}.stores = ${stores} 
 }\n`;
@@ -63,7 +72,7 @@ open n2sf_rules
     }
     alloyContent += '\n';
 
-    // 4. Connections
+    // 4. Connections (Edges)
     if (jsonData.connections && jsonData.connections.length > 0) {
         alloyContent += `one sig ${jsonData.connections.map((c, i) => 'Connection' + (c.id || i)).join(', ')} extends Connection {}\n`;
 
@@ -71,11 +80,13 @@ open n2sf_rules
         jsonData.connections.forEach((conn, index) => {
             const connId = conn.id || index;
             const carries = conn.carries && conn.carries.length > 0 ? conn.carries.map(id => `Data${id}`).join(' + ') : 'none';
+            const protocol = conn.protocol || 'ClearText';
+
             alloyContent += `fact { 
     Connection${connId}.from = System${conn.from} 
     Connection${connId}.to = System${conn.to} 
     Connection${connId}.carries = ${carries} 
-    Connection${connId}.protocol = ${conn.protocol} 
+    Connection${connId}.protocol = ${protocol} 
     Connection${connId}.hasCDR = ${conn.hasCDR ? 'True' : 'False'} 
     Connection${connId}.hasAntiVirus = ${conn.hasAntiVirus ? 'True' : 'False'} 
 }\n`;
@@ -86,36 +97,25 @@ open n2sf_rules
         alloyContent += `fact { no Connection }\n`;
     }
 
-    // Add AnalysisResult sig to capture violations
+    // Add AnalysisResult sig to capture violations (Already defined in n2sf_rules.als, but we need to run it)
+    // We don't need to redefine AnalysisResult here as it is in n2sf_rules.als
+    // We just need the run command.
+
     alloyContent += `
-one sig AnalysisResult {
-    FindStorageViolations: set System -> Data,
-    FindFlowViolations: set Connection -> Data,
-    FindLocationViolations: set System,
-    FindBypassViolations: set Connection,
-    FindUnencryptedChannels: set Connection,
-    FindAuthIntegrityGaps: set System,
-    FindContentControlFailures: set Connection -> Data,
-    FindUnauthorizedDevices: set System
-}
-
-fact {
-    AnalysisResult.FindStorageViolations = FindStorageViolations
-    AnalysisResult.FindFlowViolations = FindFlowViolations
-    AnalysisResult.FindLocationViolations = FindLocationViolations
-    AnalysisResult.FindBypassViolations = FindBypassViolations
-    AnalysisResult.FindUnencryptedChannels = FindUnencryptedChannels
-    AnalysisResult.FindAuthIntegrityGaps = FindAuthIntegrityGaps
-    AnalysisResult.FindContentControlFailures = FindContentControlFailures
-    AnalysisResult.FindUnauthorizedDevices = FindUnauthorizedDevices
-}
-
-run CheckViolations { some AnalysisResult }
+// Run the check defined in n2sf_rules
+run CheckViolations
 `;
 
-    const outputPath = path.join(__dirname, '../../alloy/user_instance.als');
+    const alloyDir = path.join(process.cwd(), 'alloy');
+    if (!fs.existsSync(alloyDir)) {
+        fs.mkdirSync(alloyDir, { recursive: true });
+    }
+
+    const outputPath = path.join(alloyDir, 'user_instance.als');
+    console.log(`Generating Alloy file at: ${outputPath} (CWD: ${process.cwd()})`);
+
     fs.writeFileSync(outputPath, alloyContent);
-    console.log(`Alloy file generated at: ${outputPath}`);
+    console.log(`Alloy file generated successfully.`);
     return outputPath;
 }
 

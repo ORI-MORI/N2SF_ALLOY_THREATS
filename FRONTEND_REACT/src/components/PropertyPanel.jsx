@@ -185,11 +185,11 @@ export default function PropertyPanel({ analysisResult }) {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Auth Capability</label>
+                            <label className="block text-sm font-medium text-gray-700">Auth Type</label>
                             <select
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1"
-                                value={formData.authCapability || 'Single'}
-                                onChange={(e) => handleChange('authCapability', e.target.value)}
+                                value={formData.authType || 'Single'}
+                                onChange={(e) => handleChange('authType', e.target.value)}
                             >
                                 <option value="Single">Single Factor</option>
                                 <option value="MFA">MFA</option>
@@ -247,14 +247,13 @@ export default function PropertyPanel({ analysisResult }) {
                             <label className="block text-sm font-medium text-gray-700">Protocol</label>
                             <select
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1"
-                                value={formData.protocol || 'HTTP'}
+                                value={formData.protocol || 'ClearText'}
                                 onChange={(e) => handleChange('protocol', e.target.value)}
                             >
                                 <option value="HTTPS">HTTPS</option>
                                 <option value="SSH">SSH</option>
-                                <option value="VPN_Tunnel">VPN Tunnel</option>
+                                <option value="VPN">VPN</option>
                                 <option value="ClearText">ClearText</option>
-                                <option value="SQL">SQL</option>
                             </select>
                         </div>
 

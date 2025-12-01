@@ -1,28 +1,44 @@
 module n2sf_rules
-open N2SF_Core
 
 /* ==========================================================================
-   [N2SF Rules Module]
-   - Defines the concrete signatures used by the generator (System, Connection)
-   - Implements advanced flow logic: Transitive Reachability & De-identification
+   [N2SF Rules Module - Full Spec Implementation]
+   - Defines Enums: Grade, ZoneType, NodeType, AuthType, Protocol, FileType
+   - Defines Signatures: Location, System, Connection, Data
+   - Implements 7 Detection Engines
    ========================================================================== */
 
-// 1. Concrete Signatures (Mapped from JSON)
+// 1. Enums & Hierarchy
+
+enum Grade { Classified, Sensitive, Open } // C > S > O
+enum ZoneType { Internet, Intranet, DMZ, Wireless }
+enum NodeType { Terminal, Server, SecurityDevice, NetworkDevice }
+enum AuthType { Single, MFA }
+enum Protocol { HTTPS, SSH, VPN, ClearText }
+enum FileType { Document, Executable, Media }
+enum Bool { True, False }
+
+// 2. Signatures
 
 sig Location {
     id: one Int,
-    type: one Int,
-    grade: one Int
+    grade: one Grade,
+    type: one ZoneType
 }
 
-sig System extends Asset {
+sig Data {
+    id: one Int,
+    grade: one Grade,
+    fileType: one FileType
+}
+
+sig System {
     id: one Int,
     location: one Location,
-    // grade is mapped to 'level' in Asset via fact or implicit
-    type: one Int,
-    isCDS: one Bool,           // Cross Domain Solution (stops reachability)
-    isDeidentifier: one Bool,  // De-identification Device (exempts violations)
-    authCapability: one Int,
+    grade: one Grade, // Inherited or explicit
+    type: one NodeType,
+    isCDS: one Bool,
+    isDeidentifier: one Bool, // Kept for future extensibility, though not in main spec
+    authType: one AuthType,
     isRegistered: one Bool,
     stores: set Data
 }
@@ -31,119 +47,139 @@ sig Connection {
     from: one System,
     to: one System,
     carries: set Data,
-    protocol: one Int,
+    protocol: one Protocol,
     hasCDR: one Bool,
-    hasAntiVirus: one Bool
+    hasAntiVirus: one Bool // Kept for completeness
 }
 
-// 2. Helper Functions & Predicates
+// 3. Helper Functions
+
+// [Grade Comparison]
+// Returns true if g1 is strictly greater than g2 (Higher Security)
+// [Grade Comparison]
+// Returns true if g1 is strictly greater than g2 (Higher Security)
+pred gradeGt[g1, g2: Grade] {
+    (g1 = Classified and (g2 = Sensitive or g2 = Open)) or
+    (g1 = Sensitive and g2 = Open)
+}
 
 // [Transitive Reachability with CDS Stop]
-// Returns the set of Systems reachable from 'start' via Connections,
-// but stopping traversal when a CDS (isCDS=True) is encountered.
+// Returns the set of Systems reachable from 'start', stopping at CDS.
 fun reachable[start: System]: set System {
     start.^({ s1, s2: System | 
         some c: Connection | 
             c.from = s1 and c.to = s2 and 
-            (s1.isCDS = False) // Stop if source is CDS (it breaks the flow for analysis)
-            // Note: If s2 is CDS, it is included in the set, but we don't go *from* it.
+            (s1.isCDS = False) 
     })
 }
 
-// [De-identification Check]
-// Returns true if there is a path from 'start' to 'end' that passes through a De-identifier.
-pred hasDeidentifierPath[start: System, end: System] {
-    some mid: System | 
-        mid in reachable[start] and 
-        end in reachable[mid] and 
-        mid.isDeidentifier = True
+// 4. Detection Engines (7 Core Rules)
+
+// [Engine 1] FindStorageViolations (Information Storage Principle)
+// System Grade < Data Grade
+fun FindStorageViolations: set System -> Data {
+    { s: System, d: Data |
+        d in s.stores and
+        gradeGt[d.grade, s.grade]
+    }
 }
 
-// 3. Violation Detection Logic
-
-// [Flow Violation]
-// Detects if sensitive data flows to a lower-level system.
-// - Uses transitive reachability.
-// - Exempts flow if a De-identifier is in the path.
+// [Engine 2] FindFlowViolations (Information Movement Principle)
+// Target System Grade < Data Grade (Transitive, CDS Exception)
 fun FindFlowViolations: set Connection -> Data {
     { c: Connection, d: Data |
-        // 1. The connection carries the data
         d in c.carries and
-        
-        // 2. Check reachability from the connection's source
         some target: reachable[c.from] | {
-            // The target is the direct destination of this connection OR further downstream
             (target = c.to or target in reachable[c.to]) and
-            
-            // 3. Violation Condition: Data Level > Target System Level
-            gt[d.classification, target.level] and
-            
-            // 4. Exception: No De-identifier in the path
-            not hasDeidentifierPath[c.from, target]
+            gradeGt[d.grade, target.grade] and
+            // CDS Exception is handled by 'reachable' stopping at CDS.
+            // If path goes through CDS, 'target' beyond CDS won't be in reachable set from c.from
+            // UNLESS we need to check the specific link *into* the CDS?
+            // Spec says: "passing through CDS is considered controlled".
+            // So if A -> CDS -> B, and A > B.
+            // A->CDS link: CDS is target. If CDS grade >= Data grade, OK.
+            // CDS->B link: CDS is source. CDS stops reachability from A.
+            // So we just need to check if *any reachable target* has lower grade.
+            true
         }
     }
 }
 
-// [Storage Violation]
-// Data stored in a system with lower security level
-fun FindStorageViolations: set System -> Data {
-    { s: System, d: Data |
-        d in s.stores and
-        gt[d.classification, s.level]
-    }
-}
-
-// [Location Violation]
-// System in a location with lower security grade
+// [Engine 3] FindLocationViolations (Location Principle)
+// Zone Grade < System Grade
+// (System cannot exist in a location with lower security grade)
 fun FindLocationViolations: set System {
     { s: System |
-        gt[s.level, s.location.grade] // Assuming Location has a 'grade' compatible with Level
+        gradeGt[s.grade, s.location.grade]
     }
 }
 
-// [Bypass Violation]
-// Connection between different zones without a CDS
+// [Engine 4] FindBypassViolations (Bypass Connection)
+// Internet Zone -> Intranet Zone without CDS
 fun FindBypassViolations: set Connection {
     { c: Connection |
-        c.from.zone != c.to.zone and
-        c.from.isCDS = False and
-        c.to.isCDS = False
-        // This is a simplified check. Real logic might need to check if *any* path exists without CDS.
+        c.from.location.type = Internet and
+        c.to.location.type = Intranet and
+        c.from.isCDS = False and // Source is not CDS
+        c.to.isCDS = False       // Destination is not CDS (if dest is CDS, it's a valid gateway)
+        // Note: Strict interpretation might require checking the *path*, but spec says "connection"
+        // If it's a direct connection, this covers it.
+        // If it's multi-hop, the transitive closure in Flow might cover data, 
+        // but this specific rule targets the *existence* of a path.
+        // For now, we check direct connections as per "Edge" definition in spec.
     }
 }
 
-// [Unencrypted Channel Violation]
-// External connection without encryption (simplified mapping)
+// [Engine 5] FindUnencryptedChannels (Encryption)
+// Internet or Wireless Zone + ClearText Protocol
 fun FindUnencryptedChannels: set Connection {
     { c: Connection |
-        (c.from.zone = External or c.to.zone = External) and
-        // Assuming protocol 0 is unencrypted (e.g., HTTP/Telnet)
-        c.protocol = 0 
+        (c.from.location.type = Internet or c.from.location.type = Wireless or
+         c.to.location.type = Internet or c.to.location.type = Wireless) and
+        c.protocol = ClearText
     }
 }
 
-// [Auth/Integrity Gaps]
-// System without proper auth or registration
+// [Engine 6] FindAuthIntegrityGaps (Auth/Integrity)
+// Sensitive+ System AND (Single Auth OR Unregistered)
 fun FindAuthIntegrityGaps: set System {
     { s: System |
-        s.isRegistered = False or
-        s.authCapability = 0 // Assuming 0 is weak/none
+        (s.grade = Sensitive or s.grade = Classified) and
+        (s.authType = Single or s.isRegistered = False)
     }
 }
 
-// [Content Control Failure]
-// Malicious content entering internal zone without CDR/AV
+// [Engine 7] FindContentControlFailures (Content Control)
+// Document Data AND Zone Change AND No CDR
 fun FindContentControlFailures: set Connection -> Data {
     { c: Connection, d: Data |
-        c.to.zone = Internal and
-        d.content = Malicious and
-        c.hasCDR = False and
-        c.hasAntiVirus = False
+        d in c.carries and
+        d.fileType = Document and
+        c.from.location != c.to.location and
+        c.hasCDR = False
     }
 }
 
-// [Unauthorized Device]
-// Unregistered system
-fun FindUnauthorizedDevices: set System {
-    { s: System | s.isRegistered = False }
+// 5. Analysis Result
+
+one sig AnalysisResult {
+    FindStorageViolations: set System -> Data,
+    FindFlowViolations: set Connection -> Data,
+    FindLocationViolations: set System,
+    FindBypassViolations: set Connection,
+    FindUnencryptedChannels: set Connection,
+    FindAuthIntegrityGaps: set System,
+    FindContentControlFailures: set Connection -> Data
 }
+
+fact DefineAnalysisResult {
+    AnalysisResult.FindStorageViolations = FindStorageViolations
+    AnalysisResult.FindFlowViolations = FindFlowViolations
+    AnalysisResult.FindLocationViolations = FindLocationViolations
+    AnalysisResult.FindBypassViolations = FindBypassViolations
+    AnalysisResult.FindUnencryptedChannels = FindUnencryptedChannels
+    AnalysisResult.FindAuthIntegrityGaps = FindAuthIntegrityGaps
+    AnalysisResult.FindContentControlFailures = FindContentControlFailures
+}
+
+run CheckViolations { some AnalysisResult }

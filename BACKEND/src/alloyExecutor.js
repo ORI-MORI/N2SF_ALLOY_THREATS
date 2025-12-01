@@ -5,11 +5,14 @@ const path = require('path');
 function executeAlloy(filePath) {
     return new Promise((resolve, reject) => {
         // Paths
-        // Correct JAR path: BACKEND/alloy/alloy4.2_2015-02-22.jar
-        const jarPath = path.join(__dirname, '../alloy/alloy4.2_2015-02-22.jar');
+        // Use process.cwd() which is /app in Docker
+        const cwd = process.cwd();
+        const jarPath = path.join(cwd, 'alloy/alloy4.2_2015-02-22.jar');
+        // Use semicolon for Windows classpath separator
         const classpath = `.;${jarPath}`;
-        const runnerPath = path.join(__dirname, 'AlloyRunner.java');
-        const cwd = path.resolve(__dirname, '../');
+        const runnerPath = path.join(cwd, 'src/AlloyRunner.java');
+
+        console.log(`Execution Context: CWD=${cwd}, JAR=${jarPath}, Runner=${runnerPath}`);
 
         // 1. Compile
         const compileCmd = `javac -cp "${classpath}" "${runnerPath}"`;
@@ -23,6 +26,7 @@ function executeAlloy(filePath) {
 
             // 2. Execute
             // Added 'src' to classpath for java execution because AlloyRunner.class is in src/ folder
+            // Use semicolon for Windows
             const runCmd = `java -cp "src;${classpath}" AlloyRunner "${filePath}"`;
 
             console.log(`Executing: ${runCmd}`);

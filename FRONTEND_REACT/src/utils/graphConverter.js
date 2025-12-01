@@ -18,12 +18,22 @@ export function convertGraphToJSON(nodes, edges) {
     };
 
     // 1. Map Locations (Zones)
-    const locations = zones.map((z, index) => ({
+    let locations = zones.map((z, index) => ({
         id: index + 1,
         realId: z.id,
         type: z.data.type || 'Internet',
         grade: z.data.grade || 'Open',
     }));
+
+    // If no zones exist, create a default Internet zone
+    if (locations.length === 0) {
+        locations.push({
+            id: 1,
+            realId: 'default-internet',
+            type: 'Internet',
+            grade: 'Open'
+        });
+    }
 
     // 2. Map Systems
     const mappedSystems = systems.map((s, index) => {
