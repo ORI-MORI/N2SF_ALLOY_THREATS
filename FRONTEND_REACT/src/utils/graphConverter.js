@@ -86,7 +86,7 @@ export function convertGraphToJSON(nodes, edges) {
     });
 
     // 3. Map Connections (Edges)
-    const connections = edges.map((e) => {
+    const connections = edges.map((e, index) => {
         const fromSys = mappedSystems.find((s) => s.realId === e.source);
         const toSys = mappedSystems.find((s) => s.realId === e.target);
         const data = e.data || {};
@@ -104,7 +104,7 @@ export function convertGraphToJSON(nodes, edges) {
         }
 
         return {
-            id: parseInt(e.id.replace(/\D/g, '')) || (Math.floor(Math.random() * 1000)),
+            id: parseInt(e.id.replace(/\D/g, '')) || (1000 + index),
             from: fromSys.id,
             to: toSys.id,
             carries: carries,

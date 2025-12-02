@@ -38,8 +38,35 @@ const generateAlloyFile = (jsonData) => {
         }
     }
 
-    let als = fs.readFileSync(templatePath, 'utf8');
-    console.log("Template read successfully.");
+    let als = null;
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+        try {
+            if (fs.existsSync(templatePath)) {
+                als = fs.readFileSync(templatePath, 'utf8');
+                console.log("Template read successfully.");
+                break;
+            } else {
+                console.warn(`Attempt ${attempts + 1}: Template file not found at ${templatePath}`);
+            }
+        } catch (err) {
+            console.warn(`Attempt ${attempts + 1}: Error reading template file: ${err.message}`);
+        }
+        attempts++;
+        if (attempts < maxAttempts) {
+            const delay = 100 * attempts; // Exponential backoff-ish
+            console.log(`Waiting ${delay}ms before retry...`);
+            const start = Date.now();
+            while (Date.now() - start < delay) { } // Busy wait to avoid async complexity in this sync function
+        }
+    }
+
+    if (!als) {
+        console.error(`Failed to read template file after ${maxAttempts} attempts.`);
+        throw new Error(`Template file not found or unreadable: ${templatePath}`);
+    }
 
     // 0. Update Module Name
     als = als.replace(/module\s+user_instance/, 'module user_instance_real');

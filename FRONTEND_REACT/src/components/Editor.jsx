@@ -124,6 +124,7 @@ const EditorContent = () => {
 
                 Object.values(threats).flat().forEach(violation => {
                     Object.values(violation).forEach(val => {
+                        if (!val) return;
                         const match = val.match(/(System|Connection)[^0-9]*(\d+)/);
                         if (match) {
                             const type = match[1] === 'System' ? 'systems' : 'connections';
@@ -174,6 +175,7 @@ const EditorContent = () => {
         const newFocusedPath = new Set();
 
         Object.values(violation).forEach(val => {
+            if (!val) return;
             const match = val.match(/(System|Connection)[^0-9]*(\d+)/);
             if (match) {
                 const type = match[1] === 'System' ? 'systems' : 'connections';
@@ -201,6 +203,7 @@ const EditorContent = () => {
         const threats = analysisResult.threats;
         Object.values(threats).flat().forEach(v => {
             Object.values(v).forEach(val => {
+                if (!val) return;
                 const match = val.match(/(System|Connection)[^0-9]*(\d+)/);
                 if (match) {
                     const type = match[1] === 'System' ? 'systems' : 'connections';

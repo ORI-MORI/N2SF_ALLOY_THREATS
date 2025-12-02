@@ -30,7 +30,7 @@ function executeAlloy(filePath) {
         const compileCmd = `javac -cp "${classpath}" "${runnerPath}"`;
 
         console.log(`Compiling: ${compileCmd}`);
-        exec(compileCmd, { cwd: cwd }, (compileError, compileStdout, compileStderr) => {
+        exec(compileCmd, { cwd: cwd, maxBuffer: 1024 * 1024 * 10 }, (compileError, compileStdout, compileStderr) => {
             if (compileError) {
                 console.error(`Compilation error: ${compileError}`);
                 return resolve({ success: false, error: compileStderr || compileError.message });
@@ -40,7 +40,7 @@ function executeAlloy(filePath) {
             const runCmd = `java -cp "src;${classpath}" AlloyRunner "${normalizedFilePath}"`;
 
             console.log(`Executing: ${runCmd}`);
-            exec(runCmd, { cwd: cwd }, (runError, runStdout, runStderr) => {
+            exec(runCmd, { cwd: cwd, maxBuffer: 1024 * 1024 * 10 }, (runError, runStdout, runStderr) => {
                 if (runError) {
                     console.error(`Execution error: ${runError}`);
                     return resolve({ success: false, error: runStderr || runError.message });
@@ -68,7 +68,10 @@ function parseAlloyXML(xml) {
     // Helper to clean label
     const cleanLabel = (l) => {
         if (!l) return '';
-        return l.split('/').pop().split('$')[0];
+        // Handle cases like "n2sf_base/Connection$1" or "Connection123$0"
+        const parts = l.split('/');
+        const lastPart = parts[parts.length - 1];
+        return lastPart.split('$')[0];
     };
 
     // Initialize Threats
@@ -143,7 +146,7 @@ function parseAlloyXML(xml) {
 
                 // atoms[0] is usually AnalysisResult$0
                 // Data starts from atoms[1]
-                if (atoms.length < 2) continue;
+                if (!atoms || atoms.length < 2) continue;
 
                 if (config.type === 'System') {
                     threats[fieldName].push({

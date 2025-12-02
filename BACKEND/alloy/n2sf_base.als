@@ -20,19 +20,22 @@ enum FileType { Document, Executable, Media }
 enum Boolean { True, False }
 
 // 3. 위치 (Location/망 영역)
-sig Location {
+// 3. 위치 (Location/망 영역)
+abstract sig Location {
     grade: Grade,
     type: ZoneType
 }
 
 // 4. 업무 정보 (Data)
-sig Data {
+// 4. 업무 정보 (Data)
+abstract sig Data {
     grade: Grade,
     fileType: FileType
 }
 
 // 5. 정보시스템 (System - 주체/객체)
-sig System {
+// 5. 정보시스템 (System - 주체/객체)
+abstract sig System {
     grade: Grade,
     loc: Location,
     type: NodeType,
@@ -52,7 +55,8 @@ sig System {
 }
 
 // 6. 연결 (Connection - 데이터 흐름)
-sig Connection {
+// 6. 연결 (Connection - 데이터 흐름)
+abstract sig Connection {
     from: System,
     to: System,
     carries: set Data,          // 운반 데이터
