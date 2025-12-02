@@ -103,7 +103,7 @@ const EditorContent = () => {
         setIsAnalyzing(true);
         // Reset styles
         setNodes((nds) => nds.map((n) => ({ ...n, style: {} })));
-        setEdges((eds) => eds.map((e) => ({ ...e, style: {} })));
+        setEdges((eds) => eds.map((e) => ({ ...e, style: {}, markerEnd: { type: MarkerType.ArrowClosed, color: '#b1b1b7' } })));
         setAnalysisResult(null);
         setFocusedPath(new Set());
 
@@ -140,7 +140,7 @@ const EditorContent = () => {
                 // Highlight nodes
                 setNodes((nds) => nds.map((n) => {
                     if (violatingIds.has(n.id)) {
-                        return { ...n, style: { ...n.style, border: '2px solid red', boxShadow: '0 0 10px red' } };
+                        return { ...n, style: { ...n.style, border: '2px solid red', boxShadow: '0 0 10px red', borderRadius: '6px' } };
                     }
                     return n;
                 }));
@@ -231,6 +231,11 @@ const EditorContent = () => {
             } else {
                 newStyle.border = undefined;
                 newStyle.boxShadow = undefined;
+                newStyle.borderRadius = undefined;
+            }
+            // Apply rounded corners for highlighting
+            if (isFocused || isViolation) {
+                newStyle.borderRadius = '6px';
             }
             return { ...n, style: newStyle };
         }));

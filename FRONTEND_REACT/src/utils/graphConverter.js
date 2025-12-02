@@ -62,6 +62,9 @@ export function convertGraphToJSON(nodes, edges) {
         const storesIds = storedData.map(d => d.id);
 
         return {
+            // Spread raw data first
+            ...data,
+
             id: index + 100, // Start from 100
             realId: s.id,
             loc: locationId,
@@ -79,9 +82,6 @@ export function convertGraphToJSON(nodes, edges) {
 
             stores: storesIds,
             _storedDataObjects: storedData, // Keep for data collection
-
-            // Spread all other data properties to ensure nothing is lost
-            ...data
         };
     });
 
@@ -104,6 +104,9 @@ export function convertGraphToJSON(nodes, edges) {
         }
 
         return {
+            // Spread raw data first so we can overwrite/transform specific fields
+            ...data,
+
             id: parseInt(e.id.replace(/\D/g, '')) || (1000 + index),
             from: fromSys.id,
             to: toSys.id,
@@ -114,9 +117,6 @@ export function convertGraphToJSON(nodes, edges) {
             hasDLP: data.hasDLP === true,
             hasAntiVirus: data.hasAntiVirus === true,
             realId: e.id,
-
-            // Spread all other data properties
-            ...data
         };
     }).filter(c => c !== null);
 

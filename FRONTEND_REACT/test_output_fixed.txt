@@ -1,0 +1,41 @@
+﻿Testing convertGraphToJSON with carries='1, 2, 99'...
+Result connections: [
+  {
+    "carries": [
+      1,
+      2,
+      99
+    ],
+    "id": 1,
+    "from": 100,
+    "to": 101,
+    "protocol": "HTTPS",
+    "isEncrypted": false,
+    "hasCDR": false,
+    "hasDLP": false,
+    "hasAntiVirus": false
+  }
+]
+Result data: [
+  {
+    "id": 1,
+    "grade": "Sensitive",
+    "fileType": "Document"
+  },
+  {
+    "id": 2,
+    "grade": "Sensitive",
+    "fileType": "Document"
+  },
+  {
+    "id": 99,
+    "grade": "Sensitive",
+    "fileType": "Document"
+  }
+]
+
+Testing with empty carries...
+Result empty: []
+
+Testing with invalid carries...
+Result invalid: [ 1, 3 ]
