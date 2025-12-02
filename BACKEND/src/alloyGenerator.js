@@ -4,6 +4,11 @@ const path = require('path');
 /**
  * Deterministic Template Engine for N2SF Alloy Generation
  * Maps JSON data strictly to the defined Alloy templates.
+ * 
+ * [Implementation Principles]
+ * 1. Enum Mapping: JSON strings must map to Alloy Enum Atoms (e.g., "HTTPS" -> HTTPS).
+ * 2. Set Operations: Arrays must be joined with '+' or become 'none' if empty.
+ * 3. Boolean Conversion: JSON true/false -> Alloy True/False (Atoms).
  */
 const generateAlloyFile = (jsonData) => {
     console.log("Starting generateAlloyFile...");
@@ -41,6 +46,11 @@ const generateAlloyFile = (jsonData) => {
         return list.map(item => prefix ? `${prefix}${item}` : item).join(' + ');
     };
 
+    // Enum Validation/Mapping Helper (Optional but good for safety)
+    const validateEnum = (val, allowed, defaultVal) => {
+        return allowed.includes(val) ? val : defaultVal;
+    };
+
     let generatedContent = "\n// ============================================================\n";
     generatedContent += "// [GENERATED CONTENT START]\n";
     generatedContent += "// ============================================================\n\n";
@@ -67,21 +77,31 @@ const generateAlloyFile = (jsonData) => {
     console.log("Processing Systems...");
     if (jsonData.systems && jsonData.systems.length > 0) {
         jsonData.systems.forEach(sys => {
+            // List Handling: stores -> Data1 + Data2
             const stores = formatList(sys.stores, 'Data');
+
+            // Enum Handling
             const isolation = sys.isolation || 'None';
+            const authType = sys.authType || 'Single';
+            const grade = sys.grade || 'Open';
+            const type = sys.type || 'Server';
 
             generatedContent += `one sig System${sys.id} extends System {}\n`;
             generatedContent += `fact {\n`;
-            generatedContent += `    System${sys.id}.grade = ${sys.grade}\n`;
-            generatedContent += `    System${sys.id}.loc = Location${sys.loc}\n`;
-            generatedContent += `    System${sys.id}.type = ${sys.type}\n`;
-            generatedContent += `    System${sys.id}.authType = ${sys.authType}\n`;
+            generatedContent += `    System${sys.id}.grade = ${grade}\n`;
+            generatedContent += `    System${sys.id}.loc = Location${sys.loc || sys.location}\n`;
+            generatedContent += `    System${sys.id}.type = ${type}\n`;
+            generatedContent += `    System${sys.id}.authType = ${authType}\n`;
+
+            // Boolean Properties
             generatedContent += `    System${sys.id}.isCDS = ${formatBoolean(sys.isCDS)}\n`;
             generatedContent += `    System${sys.id}.isRegistered = ${formatBoolean(sys.isRegistered)}\n`;
             generatedContent += `    System${sys.id}.isStorageEncrypted = ${formatBoolean(sys.isStorageEncrypted)}\n`;
             generatedContent += `    System${sys.id}.isManagement = ${formatBoolean(sys.isManagement)}\n`;
             generatedContent += `    System${sys.id}.isolation = ${isolation}\n`;
             generatedContent += `    System${sys.id}.hasMDM = ${formatBoolean(sys.hasMDM)}\n`;
+
+            // Set Relation
             generatedContent += `    System${sys.id}.stores = ${stores}\n`;
             generatedContent += `}\n\n`;
         });
@@ -92,14 +112,23 @@ const generateAlloyFile = (jsonData) => {
     if (jsonData.connections && jsonData.connections.length > 0) {
         jsonData.connections.forEach((conn, index) => {
             const connId = conn.id || index;
+
+            // List Handling: carries -> Data1 + Data2
             const carries = formatList(conn.carries, 'Data');
+
+            // Enum Handling
+            // If protocol is 'HTTP' (from user input guide), map to 'ClearText', otherwise use value
+            let protocol = conn.protocol || 'HTTPS';
+            if (protocol === 'HTTP') protocol = 'ClearText';
 
             generatedContent += `one sig Connection${connId} extends Connection {}\n`;
             generatedContent += `fact {\n`;
             generatedContent += `    Connection${connId}.from = System${conn.from}\n`;
             generatedContent += `    Connection${connId}.to = System${conn.to}\n`;
             generatedContent += `    Connection${connId}.carries = ${carries}\n`;
-            generatedContent += `    Connection${connId}.protocol = ${conn.protocol}\n`;
+            generatedContent += `    Connection${connId}.protocol = ${protocol}\n`;
+
+            // Boolean Properties
             generatedContent += `    Connection${connId}.isEncrypted = ${formatBoolean(conn.isEncrypted)}\n`;
             generatedContent += `    Connection${connId}.hasCDR = ${formatBoolean(conn.hasCDR)}\n`;
             generatedContent += `    Connection${connId}.hasDLP = ${formatBoolean(conn.hasDLP)}\n`;

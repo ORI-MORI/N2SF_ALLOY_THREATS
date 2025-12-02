@@ -1,0 +1,54 @@
+{
+  "success": true,
+  "result": {
+    "threats": {
+      "FindStorageViolations": [],
+      "FindFlowViolations": [
+        {
+          "connection": "Connection",
+          "data": "Data",
+          "remediation": "해당 경로에 CDS를 배치하거나, 출발지에 VDI/RBI 등 망분리 기술을 적용하십시오."
+        },
+        {
+          "connection": "Connection",
+          "data": "DataSensitive_Data",
+          "remediation": "해당 경로에 CDS를 배치하거나, 출발지에 VDI/RBI 등 망분리 기술을 적용하십시오."
+        },
+        {
+          "connection": "Connection",
+          "data": "Data",
+          "remediation": "해당 경로에 CDS를 배치하거나, 출발지에 VDI/RBI 등 망분리 기술을 적용하십시오."
+        }
+      ],
+      "FindLocationViolations": [],
+      "FindBypassViolations": [
+        {
+          "connection": "ConnectionAttack_Conn",
+          "remediation": "인터넷망에서 내부망으로의 직접 연결을 제거하고, 반드시 CDS를 경유하도록 구성하십시오."
+        }
+      ],
+      "FindUnencryptedChannels": [],
+      "FindAuthIntegrityGaps": [
+        {
+          "system": "SystemHacker_Mobile",
+          "remediation": "해당 시스템에 다중 인증(MFA)을 적용하고 자산 대장에 등록하십시오."
+        }
+      ],
+      "FindContentControlFailures": [
+        {
+          "connection": "ConnectionAttack_Conn",
+          "data": "DataSensitive_Data",
+          "remediation": "망 간 이동 시 문서 파일은 CDR, 중요 정보는 DLP 솔루션을 적용하십시오."
+        }
+      ],
+      "FindUnencryptedStorage": [],
+      "FindAdminAccessViolation": [
+        {
+          "connection": "ConnectionAttack_Conn",
+          "remediation": "관리자 인터페이스는 오직 관리자 전용 단말(Management Device)에서만 접근해야 합니다."
+        }
+      ]
+    },
+    "total_count": 7
+  }
+}
