@@ -214,15 +214,7 @@ export default function PropertyPanel({ analysisResult }) {
                             <label htmlFor="isCDS" className="text-sm font-medium text-gray-700">Is CDS (Cross Domain)?</label>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                id="isDeidentifier"
-                                checked={formData.isDeidentifier || false}
-                                onChange={(e) => handleChange('isDeidentifier', e.target.checked)}
-                            />
-                            <label htmlFor="isDeidentifier" className="text-sm font-medium text-gray-700">Is De-identifier?</label>
-                        </div>
+
 
                         <div className="flex items-center gap-2">
                             <input
@@ -324,17 +316,7 @@ export default function PropertyPanel({ analysisResult }) {
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Carries Data (comma separated IDs)</label>
-                            <input
-                                type="text"
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1"
-                                value={formData.carries || ''}
-                                onChange={(e) => handleChange('carries', e.target.value)}
-                                placeholder="e.g. 1, 2"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">Enter IDs of data defined in Systems.</p>
-                        </div>
+
                     </>
                 )}
 
