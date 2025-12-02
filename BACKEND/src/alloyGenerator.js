@@ -46,21 +46,17 @@ const generateAlloyFile = (jsonData) => {
         return list.map(item => prefix ? `${prefix}${item}` : item).join(' + ');
     };
 
-    // Enum Validation/Mapping Helper (Optional but good for safety)
-    const validateEnum = (val, allowed, defaultVal) => {
-        return allowed.includes(val) ? val : defaultVal;
-    };
-
-    let generatedContent = "\n// ============================================================\n";
-    generatedContent += "// [GENERATED CONTENT START]\n";
-    generatedContent += "// ============================================================\n\n";
+    let zonesCode = "";
+    let dataCode = "";
+    let systemsCode = "";
+    let connectionsCode = "";
 
     // [1. Zone 정의]
     console.log("Processing Zones...");
     if (jsonData.locations && jsonData.locations.length > 0) {
         jsonData.locations.forEach(loc => {
-            generatedContent += `one sig Location${loc.id} extends Location {}\n`;
-            generatedContent += `fact { Location${loc.id}.grade = ${loc.grade} and Location${loc.id}.type = ${loc.type} }\n\n`;
+            zonesCode += `one sig Location${loc.id} extends Location {}\n`;
+            zonesCode += `fact { Location${loc.id}.grade = ${loc.grade} and Location${loc.id}.type = ${loc.type} }\n\n`;
         });
     }
 
@@ -68,8 +64,8 @@ const generateAlloyFile = (jsonData) => {
     console.log("Processing Data...");
     if (jsonData.data && jsonData.data.length > 0) {
         jsonData.data.forEach(d => {
-            generatedContent += `one sig Data${d.id} extends Data {}\n`;
-            generatedContent += `fact { Data${d.id}.grade = ${d.grade} and Data${d.id}.fileType = ${d.fileType} }\n\n`;
+            dataCode += `one sig Data${d.id} extends Data {}\n`;
+            dataCode += `fact { Data${d.id}.grade = ${d.grade} and Data${d.id}.fileType = ${d.fileType} }\n\n`;
         });
     }
 
@@ -86,24 +82,24 @@ const generateAlloyFile = (jsonData) => {
             const grade = sys.grade || 'Open';
             const type = sys.type || 'Server';
 
-            generatedContent += `one sig System${sys.id} extends System {}\n`;
-            generatedContent += `fact {\n`;
-            generatedContent += `    System${sys.id}.grade = ${grade}\n`;
-            generatedContent += `    System${sys.id}.loc = Location${sys.loc || sys.location}\n`;
-            generatedContent += `    System${sys.id}.type = ${type}\n`;
-            generatedContent += `    System${sys.id}.authType = ${authType}\n`;
+            systemsCode += `one sig System${sys.id} extends System {}\n`;
+            systemsCode += `fact {\n`;
+            systemsCode += `    System${sys.id}.grade = ${grade}\n`;
+            systemsCode += `    System${sys.id}.loc = Location${sys.loc || sys.location}\n`;
+            systemsCode += `    System${sys.id}.type = ${type}\n`;
+            systemsCode += `    System${sys.id}.authType = ${authType}\n`;
 
             // Boolean Properties
-            generatedContent += `    System${sys.id}.isCDS = ${formatBoolean(sys.isCDS)}\n`;
-            generatedContent += `    System${sys.id}.isRegistered = ${formatBoolean(sys.isRegistered)}\n`;
-            generatedContent += `    System${sys.id}.isStorageEncrypted = ${formatBoolean(sys.isStorageEncrypted)}\n`;
-            generatedContent += `    System${sys.id}.isManagement = ${formatBoolean(sys.isManagement)}\n`;
-            generatedContent += `    System${sys.id}.isolation = ${isolation}\n`;
-            generatedContent += `    System${sys.id}.hasMDM = ${formatBoolean(sys.hasMDM)}\n`;
+            systemsCode += `    System${sys.id}.isCDS = ${formatBoolean(sys.isCDS)}\n`;
+            systemsCode += `    System${sys.id}.isRegistered = ${formatBoolean(sys.isRegistered)}\n`;
+            systemsCode += `    System${sys.id}.isStorageEncrypted = ${formatBoolean(sys.isStorageEncrypted)}\n`;
+            systemsCode += `    System${sys.id}.isManagement = ${formatBoolean(sys.isManagement)}\n`;
+            systemsCode += `    System${sys.id}.isolation = ${isolation}\n`;
+            systemsCode += `    System${sys.id}.hasMDM = ${formatBoolean(sys.hasMDM)}\n`;
 
             // Set Relation
-            generatedContent += `    System${sys.id}.stores = ${stores}\n`;
-            generatedContent += `}\n\n`;
+            systemsCode += `    System${sys.id}.stores = ${stores}\n`;
+            systemsCode += `}\n\n`;
         });
     }
 
@@ -121,59 +117,60 @@ const generateAlloyFile = (jsonData) => {
             let protocol = conn.protocol || 'HTTPS';
             if (protocol === 'HTTP') protocol = 'ClearText';
 
-            generatedContent += `one sig Connection${connId} extends Connection {}\n`;
-            generatedContent += `fact {\n`;
-            generatedContent += `    Connection${connId}.from = System${conn.from}\n`;
-            generatedContent += `    Connection${connId}.to = System${conn.to}\n`;
-            generatedContent += `    Connection${connId}.carries = ${carries}\n`;
-            generatedContent += `    Connection${connId}.protocol = ${protocol}\n`;
+            connectionsCode += `one sig Connection${connId} extends Connection {}\n`;
+            connectionsCode += `fact {\n`;
+            connectionsCode += `    Connection${connId}.from = System${conn.from}\n`;
+            connectionsCode += `    Connection${connId}.to = System${conn.to}\n`;
+            connectionsCode += `    Connection${connId}.carries = ${carries}\n`;
+            connectionsCode += `    Connection${connId}.protocol = ${protocol}\n`;
 
             // Boolean Properties
-            generatedContent += `    Connection${connId}.isEncrypted = ${formatBoolean(conn.isEncrypted)}\n`;
-            generatedContent += `    Connection${connId}.hasCDR = ${formatBoolean(conn.hasCDR)}\n`;
-            generatedContent += `    Connection${connId}.hasDLP = ${formatBoolean(conn.hasDLP)}\n`;
-            generatedContent += `    Connection${connId}.hasAntiVirus = ${formatBoolean(conn.hasAntiVirus)}\n`;
-            generatedContent += `}\n\n`;
+            connectionsCode += `    Connection${connId}.isEncrypted = ${formatBoolean(conn.isEncrypted)}\n`;
+            connectionsCode += `    Connection${connId}.hasCDR = ${formatBoolean(conn.hasCDR)}\n`;
+            connectionsCode += `    Connection${connId}.hasDLP = ${formatBoolean(conn.hasDLP)}\n`;
+            connectionsCode += `    Connection${connId}.hasAntiVirus = ${formatBoolean(conn.hasAntiVirus)}\n`;
+            connectionsCode += `}\n\n`;
         });
     }
 
     // [5. AnalysisResult 정의]
-    generatedContent += `// ============================================================\n`;
-    generatedContent += `// [GENERATED] 결과 집합 (Analysis Result)\n`;
-    generatedContent += `// ============================================================\n\n`;
-    generatedContent += `one sig AnalysisResult {\n`;
-    generatedContent += `    FindStorageViolations: set System -> Data,\n`;
-    generatedContent += `    FindFlowViolations: set Connection -> Data,\n`;
-    generatedContent += `    FindLocationViolations: set System,\n`;
-    generatedContent += `    FindBypassViolations: set Connection,\n`;
-    generatedContent += `    FindUnencryptedChannels: set Connection,\n`;
-    generatedContent += `    FindAuthIntegrityGaps: set System,\n`;
-    generatedContent += `    FindContentControlFailures: set Connection -> Data,\n`;
-    generatedContent += `    FindUnencryptedStorage: set System -> Data,\n`;
-    generatedContent += `    FindAdminAccessViolation: set Connection\n`;
-    generatedContent += `}\n\n`;
+    let analysisResultCode = "";
+    analysisResultCode += `// ============================================================\n`;
+    analysisResultCode += `// [GENERATED] 결과 집합 (Analysis Result)\n`;
+    analysisResultCode += `// ============================================================\n\n`;
+    analysisResultCode += `one sig AnalysisResult {\n`;
+    analysisResultCode += `    FindStorageViolations: set System -> Data,\n`;
+    analysisResultCode += `    FindFlowViolations: set Connection -> Data,\n`;
+    analysisResultCode += `    FindLocationViolations: set System,\n`;
+    analysisResultCode += `    FindBypassViolations: set Connection,\n`;
+    analysisResultCode += `    FindUnencryptedChannels: set Connection,\n`;
+    analysisResultCode += `    FindAuthIntegrityGaps: set System,\n`;
+    analysisResultCode += `    FindContentControlFailures: set Connection -> Data,\n`;
+    analysisResultCode += `    FindUnencryptedStorage: set System -> Data,\n`;
+    analysisResultCode += `    FindAdminAccessViolation: set Connection\n`;
+    analysisResultCode += `}\n\n`;
 
-    generatedContent += `fact DefineAnalysisResult {\n`;
-    generatedContent += `    AnalysisResult.FindStorageViolations = FindStorageViolations\n`;
-    generatedContent += `    AnalysisResult.FindFlowViolations = FindFlowViolations\n`;
-    generatedContent += `    AnalysisResult.FindLocationViolations = FindLocationViolations\n`;
-    generatedContent += `    AnalysisResult.FindBypassViolations = FindBypassViolations\n`;
-    generatedContent += `    AnalysisResult.FindUnencryptedChannels = FindUnencryptedChannels\n`;
-    generatedContent += `    AnalysisResult.FindAuthIntegrityGaps = FindAuthIntegrityGaps\n`;
-    generatedContent += `    AnalysisResult.FindContentControlFailures = FindContentControlFailures\n`;
-    generatedContent += `    AnalysisResult.FindUnencryptedStorage = FindUnencryptedStorage\n`;
-    generatedContent += `    AnalysisResult.FindAdminAccessViolation = FindAdminAccessViolation\n`;
-    generatedContent += `}\n\n`;
+    analysisResultCode += `fact DefineAnalysisResult {\n`;
+    analysisResultCode += `    AnalysisResult.FindStorageViolations = FindStorageViolations\n`;
+    analysisResultCode += `    AnalysisResult.FindFlowViolations = FindFlowViolations\n`;
+    analysisResultCode += `    AnalysisResult.FindLocationViolations = FindLocationViolations\n`;
+    analysisResultCode += `    AnalysisResult.FindBypassViolations = FindBypassViolations\n`;
+    analysisResultCode += `    AnalysisResult.FindUnencryptedChannels = FindUnencryptedChannels\n`;
+    analysisResultCode += `    AnalysisResult.FindAuthIntegrityGaps = FindAuthIntegrityGaps\n`;
+    analysisResultCode += `    AnalysisResult.FindContentControlFailures = FindContentControlFailures\n`;
+    analysisResultCode += `    AnalysisResult.FindUnencryptedStorage = FindUnencryptedStorage\n`;
+    analysisResultCode += `    AnalysisResult.FindAdminAccessViolation = FindAdminAccessViolation\n`;
+    analysisResultCode += `}\n\n`;
 
     // Inject generated content into the template
-    // Replacing the placeholder block
-    const placeholderRegex = /\/\/ \[Generator[\s\S]*?\*\//;
-    if (placeholderRegex.test(als)) {
-        als = als.replace(placeholderRegex, generatedContent);
-    } else {
-        // Fallback: append before run {}
-        als = als.replace('run {}', generatedContent + '\nrun {}');
-    }
+    als = als.replace('// [ZONES_HERE]', zonesCode);
+    als = als.replace('// [DATA_HERE]', dataCode);
+    als = als.replace('// [SYSTEMS_HERE]', systemsCode);
+    als = als.replace('// [CONNECTIONS_HERE]', connectionsCode);
+
+    // Append AnalysisResult before run command if not present (or just append it)
+    // Since we don't have a marker for it, we'll append it before the run command
+    als = als.replace('run {}', analysisResultCode + '\nrun {}');
 
     fs.writeFileSync(outputPath, als);
     console.log(`Alloy file generated successfully at ${outputPath}`);

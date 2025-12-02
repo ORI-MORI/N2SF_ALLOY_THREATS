@@ -4,10 +4,11 @@ export function convertGraphToJSON(nodes, edges) {
 
     // Helper to check intersection
     const isInside = (inner, outer) => {
-        const innerW = inner.width || 100;
-        const innerH = inner.height || 100;
-        const outerW = outer.width || 200;
-        const outerH = outer.height || 200;
+        // Use measured dimensions if available, otherwise fallback to style or defaults
+        const innerW = inner.width || inner.measured?.width || 150;
+        const innerH = inner.height || inner.measured?.height || 150;
+        const outerW = outer.width || outer.measured?.width || 300;
+        const outerH = outer.height || outer.measured?.height || 300;
 
         return (
             inner.position.x >= outer.position.x &&
@@ -38,10 +39,11 @@ export function convertGraphToJSON(nodes, edges) {
     // 2. Map Systems
     const mappedSystems = systems.map((s, index) => {
         let parentZone = null;
+        const data = s.data || {};
 
         // 1. Check for manual override
-        if (s.data.loc) {
-            parentZone = locations.find(l => l.realId === s.data.loc);
+        if (data.loc) {
+            parentZone = locations.find(l => l.realId === data.loc);
         }
 
         // 2. Fallback to spatial detection if no override or override invalid
@@ -56,24 +58,30 @@ export function convertGraphToJSON(nodes, edges) {
         const locationId = parentZone ? parentZone.id : (locations[0]?.id || 1);
 
         // Parse stored data (Array of objects from PropertyPanel)
-        const storedData = s.data.storedData || [];
+        const storedData = data.storedData || [];
         const storesIds = storedData.map(d => d.id);
 
         return {
             id: index + 100, // Start from 100
             realId: s.id,
-            loc: locationId, // Changed from 'location' to 'loc'
-            grade: s.data.grade || (parentZone ? parentZone.grade : 'Open'),
-            type: s.data.type || 'Terminal',
-            isCDS: s.data.isCDS || false,
-            authType: s.data.authType || 'Single', // Changed from authCapability
-            isRegistered: s.data.isRegistered || false,
-            isStorageEncrypted: s.data.isStorageEncrypted || false,
-            isManagement: s.data.isManagement || false,
-            isolation: s.data.isolation || 'None',
-            hasMDM: s.data.hasMDM || false,
+            loc: locationId,
+            grade: data.grade || (parentZone ? parentZone.grade : 'Open'),
+            type: data.type || 'Terminal',
+
+            // Explicitly map security properties with safe defaults
+            isCDS: data.isCDS === true, // Ensure boolean
+            authType: data.authType || 'Single',
+            isRegistered: data.isRegistered === true,
+            isStorageEncrypted: data.isStorageEncrypted === true,
+            isManagement: data.isManagement === true,
+            isolation: data.isolation || 'None',
+            hasMDM: data.hasMDM === true,
+
             stores: storesIds,
-            _storedDataObjects: storedData // Keep for data collection
+            _storedDataObjects: storedData, // Keep for data collection
+
+            // Spread all other data properties to ensure nothing is lost
+            ...data
         };
     });
 
@@ -81,13 +89,14 @@ export function convertGraphToJSON(nodes, edges) {
     const connections = edges.map((e) => {
         const fromSys = mappedSystems.find((s) => s.realId === e.source);
         const toSys = mappedSystems.find((s) => s.realId === e.target);
+        const data = e.data || {};
 
         if (!fromSys || !toSys) return null;
 
         // Parse carries data
-        const carriesStr = e.data?.carries || '';
-        // Handle comma separated string or array
+        const carriesStr = data.carries || '';
         let carries = [];
+
         if (Array.isArray(carriesStr)) {
             carries = carriesStr.map(x => parseInt(x));
         } else if (typeof carriesStr === 'string' && carriesStr.trim() !== '') {
@@ -95,16 +104,19 @@ export function convertGraphToJSON(nodes, edges) {
         }
 
         return {
-            id: e.id.replace(/\D/g, '') || (Math.floor(Math.random() * 1000)), // Ensure numeric ID or unique
+            id: e.id.replace(/\D/g, '') || (Math.floor(Math.random() * 1000)),
             from: fromSys.id,
             to: toSys.id,
             carries: carries,
-            protocol: e.data?.protocol || 'HTTPS',
-            isEncrypted: e.data?.isEncrypted || false,
-            hasCDR: e.data?.hasCDR || false,
-            hasDLP: e.data?.hasDLP || false,
-            hasAntiVirus: e.data?.hasAntiVirus || false,
-            realId: e.id
+            protocol: data.protocol || 'HTTPS',
+            isEncrypted: data.isEncrypted === true,
+            hasCDR: data.hasCDR === true,
+            hasDLP: data.hasDLP === true,
+            hasAntiVirus: data.hasAntiVirus === true,
+            realId: e.id,
+
+            // Spread all other data properties
+            ...data
         };
     }).filter(c => c !== null);
 

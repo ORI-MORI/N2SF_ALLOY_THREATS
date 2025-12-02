@@ -3,7 +3,7 @@ import { useReactFlow } from 'reactflow';
 import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import useStore from '../store';
 
-export default function PropertyPanel({ analysisResult }) {
+export default function PropertyPanel({ analysisResult, onThreatClick }) {
     const { selectedElement, setSelectedElement } = useStore();
     const { setNodes, setEdges, getNodes } = useReactFlow();
     const [formData, setFormData] = useState({});
@@ -435,7 +435,11 @@ export default function PropertyPanel({ analysisResult }) {
                             </div>
                             <div className="divide-y divide-gray-100">
                                 {items.map((item, idx) => (
-                                    <div key={idx} className="p-2 hover:bg-gray-50 transition-colors text-xs text-gray-700">
+                                    <div
+                                        key={idx}
+                                        className="p-2 hover:bg-gray-50 transition-colors text-xs text-gray-700 cursor-pointer"
+                                        onClick={() => onThreatClick && onThreatClick(item)}
+                                    >
                                         <ul className="space-y-1">
                                             {Object.entries(item).map(([k, v]) => (
                                                 <li key={k} className="flex flex-col">
