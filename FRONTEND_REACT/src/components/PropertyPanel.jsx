@@ -120,6 +120,8 @@ export default function PropertyPanel({ analysisResult }) {
                                 <option value="Intranet">Intranet</option>
                                 <option value="DMZ">DMZ</option>
                                 <option value="Wireless">Wireless</option>
+                                <option value="PPP">PPP</option>
+                                <option value="Cloud">Cloud</option>
                             </select>
                         </div>
                     </>
@@ -168,8 +170,39 @@ export default function PropertyPanel({ analysisResult }) {
                                 <option value="Terminal">Terminal</option>
                                 <option value="Server">Server</option>
                                 <option value="SecurityDevice">Security Device</option>
+                                <option value="NetworkDevice">Network Device</option>
+                                <option value="Mobile">Mobile</option>
+                                <option value="WirelessAP">Wireless AP</option>
+                                <option value="SaaS">SaaS</option>
                             </select>
                         </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Auth Type</label>
+                            <select
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1"
+                                value={formData.authType || 'Single'}
+                                onChange={(e) => handleChange('authType', e.target.value)}
+                            >
+                                <option value="Single">Single Factor</option>
+                                <option value="MFA">MFA</option>
+                            </select>
+                        </div>
+
+                        {formData.type === 'Terminal' && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Isolation (VDI/RBI)</label>
+                                <select
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1"
+                                    value={formData.isolation || 'None'}
+                                    onChange={(e) => handleChange('isolation', e.target.value)}
+                                >
+                                    <option value="None">None</option>
+                                    <option value="VDI">VDI</option>
+                                    <option value="RBI">RBI</option>
+                                </select>
+                            </div>
+                        )}
 
                         <div className="flex items-center gap-2">
                             <input
@@ -199,6 +232,96 @@ export default function PropertyPanel({ analysisResult }) {
                                 onChange={(e) => handleChange('isRegistered', e.target.checked)}
                             />
                             <label htmlFor="isRegistered" className="text-sm font-medium text-gray-700">Is Registered Device?</label>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="isStorageEncrypted"
+                                checked={formData.isStorageEncrypted || false}
+                                onChange={(e) => handleChange('isStorageEncrypted', e.target.checked)}
+                            />
+                            <label htmlFor="isStorageEncrypted" className="text-sm font-medium text-gray-700">Is Storage Encrypted?</label>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="isManagement"
+                                checked={formData.isManagement || false}
+                                onChange={(e) => handleChange('isManagement', e.target.checked)}
+                            />
+                            <label htmlFor="isManagement" className="text-sm font-medium text-gray-700">Is Management Device?</label>
+                        </div>
+
+                        {formData.type === 'Mobile' && (
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="hasMDM"
+                                    checked={formData.hasMDM || false}
+                                    onChange={(e) => handleChange('hasMDM', e.target.checked)}
+                                />
+                                <label htmlFor="hasMDM" className="text-sm font-medium text-gray-700">Has MDM?</label>
+                            </div>
+                        )}
+
+                        {/* Data Assets Management */}
+                        <div className="border-t border-gray-200 pt-4 mt-4">
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="block text-sm font-medium text-gray-700">Stored Data Assets</label>
+                                <button
+                                    onClick={addData}
+                                    className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100"
+                                >
+                                    + Add Data
+                                </button>
+                            </div>
+
+                            <div className="space-y-3">
+                                {(formData.storedData || []).map((data) => (
+                                    <div key={data.id} className="bg-gray-50 p-2 rounded border border-gray-200 text-xs">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="font-bold text-gray-500">Data #{data.id}</span>
+                                            <button
+                                                onClick={() => removeData(data.id)}
+                                                className="text-red-500 hover:text-red-700"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label className="block text-[10px] text-gray-500">Grade</label>
+                                                <select
+                                                    className="w-full border-gray-300 rounded text-xs p-1"
+                                                    value={data.grade}
+                                                    onChange={(e) => updateData(data.id, 'grade', e.target.value)}
+                                                >
+                                                    <option value="Open">Open</option>
+                                                    <option value="Sensitive">Sensitive</option>
+                                                    <option value="Classified">Classified</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] text-gray-500">Type</label>
+                                                <select
+                                                    className="w-full border-gray-300 rounded text-xs p-1"
+                                                    value={data.fileType}
+                                                    onChange={(e) => updateData(data.id, 'fileType', e.target.value)}
+                                                >
+                                                    <option value="Document">Document</option>
+                                                    <option value="Executable">Executable</option>
+                                                    <option value="Media">Media</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {(formData.storedData || []).length === 0 && (
+                                    <p className="text-xs text-gray-400 italic text-center py-2">No data stored.</p>
+                                )}
+                            </div>
                         </div>
 
                         <div>
@@ -251,6 +374,16 @@ export default function PropertyPanel({ analysisResult }) {
                                 onChange={(e) => handleChange('hasCDR', e.target.checked)}
                             />
                             <label htmlFor="hasCDR" className="text-sm font-medium text-gray-700">Has CDR?</label>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="hasDLP"
+                                checked={formData.hasDLP || false}
+                                onChange={(e) => handleChange('hasDLP', e.target.checked)}
+                            />
+                            <label htmlFor="hasDLP" className="text-sm font-medium text-gray-700">Has DLP?</label>
                         </div>
 
                         <div className="flex items-center gap-2">

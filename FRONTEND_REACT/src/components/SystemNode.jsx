@@ -1,13 +1,15 @@
 import React, { memo } from 'react';
 import { Handle, Position } from 'reactflow';
-import { Server, Monitor, Shield, Smartphone, Globe } from 'lucide-react';
+import { Server, Monitor, Shield, Smartphone, Globe, Router, Wifi, Cloud } from 'lucide-react';
 
 const icons = {
     Server: Server,
-    PC: Monitor,
-    Gateway: Globe,
+    Terminal: Monitor,
+    NetworkDevice: Router,
     SecurityDevice: Shield,
     Mobile: Smartphone,
+    WirelessAP: Wifi,
+    SaaS: Cloud,
 };
 
 const SystemNode = ({ data, selected }) => {
@@ -23,8 +25,8 @@ const SystemNode = ({ data, selected }) => {
 
             {data.grade && (
                 <div className={`mt-1 text-[10px] px-1 rounded ${data.grade === 'Classified' ? 'bg-red-100 text-red-800' :
-                        data.grade === 'Sensitive' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-green-100 text-green-800'
+                    data.grade === 'Sensitive' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
                     }`}>
                     {data.grade}
                 </div>

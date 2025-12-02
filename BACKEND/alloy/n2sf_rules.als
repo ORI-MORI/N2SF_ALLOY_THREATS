@@ -9,17 +9,21 @@ open n2sf_base
 // 규칙: 시스템 등급보다 높은 등급의 데이터를 저장하면 안 됨
 fun FindStorageViolations: System -> Data {
     { s: System, d: Data | 
-      d in s.stores and lt[s.grade, d.grade] 
+      d in s.stores 
+      and lt[s.grade, d.grade] 
     }
 }
 
 // 2. 정보 이동 위반 (Flow Violation)
-// 규칙: 데이터 등급보다 낮은 시스템으로 전송 불가 (단, 목적지가 CDS면 예외 허용)
+// 규칙: 데이터 등급보다 낮은 시스템으로 전송 불가
+// [예외] 1. 목적지가 CDS(연계장비)인 경우 허용
+// [예외] 2. 출발지가 VDI/RBI(논리적 망분리) 사용 중인 경우 허용
 fun FindFlowViolations: Connection -> Data {
     { c: Connection, d: Data |
       d in c.carries
-      and lt[c.to.grade, d.grade]  // 목적지 등급이 데이터보다 낮고
-      and c.to.isCDS = False       // 목적지가 연계체계(CDS)가 아닌 경우
+      and lt[c.to.grade, d.grade]  // 등급 하락 발생
+      and c.to.isCDS = False       // 목적지가 CDS가 아님
+      and c.from.isolation = None  // 출발지가 논리적 격리 상태 아님
     }
 }
 
@@ -30,12 +34,12 @@ fun FindLocationViolations: System {
 }
 
 // 4. 우회 접속 (Boundary Bypass)
-// 규칙: 인터넷망(Internet)에서 내부망(Intranet)으로 직접 연결 시 CDS를 경유하지 않으면 위협
+// 규칙: 인터넷(외부) -> 내부망 직접 연결 시 CDS 미경유 위협
 fun FindBypassViolations: Connection {
     { c: Connection |
       c.from.loc.type = Internet
       and c.to.loc.type = Intranet
-      and c.to.isCDS = False       // 목적지가 CDS(보안게이트웨이)가 아님
+      and c.to.isCDS = False
     }
 }
 
@@ -53,24 +57,46 @@ fun FindUnencryptedChannels: Connection {
 }
 
 // 6. 인증 및 무결성 미비 (Auth/Integrity Gap)
-// 규칙: 민감(S) 등급 이상 시스템에 '단일 인증'만 쓰거나 '미등록' 상태인 경우
+// 규칙: S등급 이상 시스템은 MFA 필수, 모든 시스템은 자산 등록 필수, 모바일은 MDM 필수
 fun FindAuthIntegrityGaps: System {
     { s: System |
-      s.grade in (Sensitive + Classified) // S등급 이상인데
-      and (s.authType = Single or s.isRegistered = False) // 보안 미비
+      (s.grade in (Sensitive + Classified) and s.authType = Single) or // MFA 미비
+      s.isRegistered = False or                                        // 미등록 자산
+      (s.type = Mobile and s.hasMDM = False)                           // MDM 없는 모바일
     }
 }
 
 // 7. 콘텐츠 통제 부재 (Content Control Failure)
-// 규칙: 망 간 이동(Zone 변경) 시 문서 파일(Document)에 대해 CDR(무해화) 미적용
+// 규칙: 망 간 이동 시 문서 파일은 CDR 필수, 중요 정보는 DLP 필터링 필수
 fun FindContentControlFailures: Connection -> Data {
     { c: Connection, d: Data |
       d in c.carries
-      and d.fileType = Document       // 문서 파일인데
-      and c.from.loc != c.to.loc      // 망 경계를 넘어가는데
-      and c.hasCDR = False            // 무해화 장비가 없음
+      and c.from.loc != c.to.loc  // 망 경계 이동 시
+      and (
+        (d.fileType = Document and c.hasCDR = False) or // 문서인데 CDR 없음
+        (d.grade in (Sensitive + Classified) and c.hasDLP = False) // 중요정보인데 DLP 없음
+      )
     }
 }
 
-// 실행 명령 (결과 XML 생성을 위해 빈 run 실행)
+// 8. [NEW] 저장 데이터 암호화 미비 (Unencrypted Storage)
+// 규칙: S등급 이상 데이터를 저장하는데 저장소 암호화가 안 된 경우
+fun FindUnencryptedStorage: System -> Data {
+    { s: System, d: Data |
+      d in s.stores
+      and d.grade in (Sensitive + Classified)
+      and s.isStorageEncrypted = False
+    }
+}
+
+// 9. [NEW] 관리자 접속 위반 (Admin Access Violation)
+// 규칙: 관리 인터페이스 접근은 관리자 전용 단말에서만 가능
+fun FindAdminAccessViolation: Connection {
+    { c: Connection |
+      c.to.isManagement = True     // 목적지가 관리자 포트/장비인데
+      and c.from.isManagement = False // 출발지가 일반 단말임
+    }
+}
+
+// 실행 및 결과 도출
 run {}

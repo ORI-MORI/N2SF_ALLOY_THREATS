@@ -9,11 +9,22 @@ const generateAlloyFile = (jsonData) => {
     console.log("Starting generateAlloyFile...");
     const alloyDir = path.join(process.cwd(), 'alloy');
     const templatePath = path.join(alloyDir, 'user_instance.als');
+    const outputPath = path.join(alloyDir, 'user_instance_real.als');
     console.log(`Template path: ${templatePath}`);
 
     if (!fs.existsSync(templatePath)) {
         console.error(`Template file not found at: ${templatePath}`);
         throw new Error(`Template file not found: ${templatePath}`);
+    }
+
+    // [Clean up] Delete existing file if it exists
+    if (fs.existsSync(outputPath)) {
+        try {
+            fs.unlinkSync(outputPath);
+            console.log(`Existing file deleted: ${outputPath}`);
+        } catch (err) {
+            console.error(`Failed to delete existing file: ${err.message}`);
+        }
     }
 
     let als = fs.readFileSync(templatePath, 'utf8');
@@ -30,101 +41,113 @@ const generateAlloyFile = (jsonData) => {
         return list.map(item => prefix ? `${prefix}${item}` : item).join(' + ');
     };
 
+    let generatedContent = "\n// ============================================================\n";
+    generatedContent += "// [GENERATED CONTENT START]\n";
+    generatedContent += "// ============================================================\n\n";
+
     // [1. Zone 정의]
     console.log("Processing Zones...");
-    let zoneContent = "";
-    const validLocationIds = new Set();
-
     if (jsonData.locations && jsonData.locations.length > 0) {
         jsonData.locations.forEach(loc => {
-            zoneContent += `one sig Location${loc.id} extends Location {}\n`;
-            zoneContent += `fact { Location${loc.id}.grade = ${loc.grade} and Location${loc.id}.type = ${loc.type} }\n\n`;
-            validLocationIds.add(String(loc.id));
+            generatedContent += `one sig Location${loc.id} extends Location {}\n`;
+            generatedContent += `fact { Location${loc.id}.grade = ${loc.grade} and Location${loc.id}.type = ${loc.type} }\n\n`;
         });
     }
 
     // [2. Data 정의]
     console.log("Processing Data...");
-    let dataContent = "";
     if (jsonData.data && jsonData.data.length > 0) {
         jsonData.data.forEach(d => {
-            dataContent += `one sig Data${d.id} extends Data {}\n`;
-            dataContent += `fact { Data${d.id}.grade = ${d.grade} and Data${d.id}.fileType = ${d.fileType} }\n\n`;
+            generatedContent += `one sig Data${d.id} extends Data {}\n`;
+            generatedContent += `fact { Data${d.id}.grade = ${d.grade} and Data${d.id}.fileType = ${d.fileType} }\n\n`;
         });
     }
-    als = als.replace('// [Loop: data 배열을 순회하며 생성]', dataContent);
 
-    // [3. System 정의] (Moved up logic to determine if Default Location is needed)
+    // [3. System 정의]
     console.log("Processing Systems...");
-    let systemContent = "";
-    let useDefaultLocation = false;
-
     if (jsonData.systems && jsonData.systems.length > 0) {
         jsonData.systems.forEach(sys => {
             const stores = formatList(sys.stores, 'Data');
+            const isolation = sys.isolation || 'None';
 
-            // Handle missing or invalid location
-            let locId = sys.loc;
-            if (!locId || !validLocationIds.has(String(locId))) {
-                locId = 'Default';
-                useDefaultLocation = true;
-            }
-
-            systemContent += `one sig System${sys.id} extends System {}\n`;
-            systemContent += `fact {\n`;
-            systemContent += `    System${sys.id}.grade = ${sys.grade}\n`;
-            systemContent += `    System${sys.id}.loc = Location${locId}\n`;
-            systemContent += `    System${sys.id}.type = ${sys.type}\n`;
-            systemContent += `    System${sys.id}.authType = ${sys.authType}\n`;
-            systemContent += `    System${sys.id}.isCDS = ${formatBoolean(sys.isCDS)}\n`;
-            systemContent += `    System${sys.id}.isRegistered = ${formatBoolean(sys.isRegistered)}\n`;
-            systemContent += `    System${sys.id}.stores = ${stores}\n`;
-            systemContent += `}\n\n`;
+            generatedContent += `one sig System${sys.id} extends System {}\n`;
+            generatedContent += `fact {\n`;
+            generatedContent += `    System${sys.id}.grade = ${sys.grade}\n`;
+            generatedContent += `    System${sys.id}.loc = Location${sys.loc}\n`;
+            generatedContent += `    System${sys.id}.type = ${sys.type}\n`;
+            generatedContent += `    System${sys.id}.authType = ${sys.authType}\n`;
+            generatedContent += `    System${sys.id}.isCDS = ${formatBoolean(sys.isCDS)}\n`;
+            generatedContent += `    System${sys.id}.isRegistered = ${formatBoolean(sys.isRegistered)}\n`;
+            generatedContent += `    System${sys.id}.isStorageEncrypted = ${formatBoolean(sys.isStorageEncrypted)}\n`;
+            generatedContent += `    System${sys.id}.isManagement = ${formatBoolean(sys.isManagement)}\n`;
+            generatedContent += `    System${sys.id}.isolation = ${isolation}\n`;
+            generatedContent += `    System${sys.id}.hasMDM = ${formatBoolean(sys.hasMDM)}\n`;
+            generatedContent += `    System${sys.id}.stores = ${stores}\n`;
+            generatedContent += `}\n\n`;
         });
     }
 
-    // If default location is needed, add it to zoneContent
-    if (useDefaultLocation) {
-        console.log("Adding Default Location (Internet/Open)...");
-        zoneContent += `one sig LocationDefault extends Location {}\n`;
-        zoneContent += `fact { LocationDefault.grade = Open and LocationDefault.type = Internet }\n\n`;
-    }
-
-    als = als.replace('// [Loop: locations 배열을 순회하며 생성]', zoneContent);
-    als = als.replace('// [Loop: systems 배열을 순회하며 생성]', systemContent);
-
     // [4. Connection 정의]
     console.log("Processing Connections...");
-    let connectionContent = "";
     if (jsonData.connections && jsonData.connections.length > 0) {
         jsonData.connections.forEach((conn, index) => {
             const connId = conn.id || index;
             const carries = formatList(conn.carries, 'Data');
 
-            connectionContent += `one sig Connection${connId} extends Connection {}\n`;
-            connectionContent += `fact {\n`;
-            connectionContent += `    Connection${connId}.from = System${conn.from}\n`;
-            connectionContent += `    Connection${connId}.to = System${conn.to}\n`;
-            connectionContent += `    Connection${connId}.carries = ${carries}\n`;
-            connectionContent += `    Connection${connId}.protocol = ${conn.protocol}\n`;
-            connectionContent += `    Connection${connId}.isEncrypted = ${formatBoolean(conn.isEncrypted)}\n`;
-            connectionContent += `    Connection${connId}.hasCDR = ${formatBoolean(conn.hasCDR)}\n`;
-            connectionContent += `    Connection${connId}.hasAntiVirus = ${formatBoolean(conn.hasAntiVirus)}\n`;
-            connectionContent += `}\n\n`;
+            generatedContent += `one sig Connection${connId} extends Connection {}\n`;
+            generatedContent += `fact {\n`;
+            generatedContent += `    Connection${connId}.from = System${conn.from}\n`;
+            generatedContent += `    Connection${connId}.to = System${conn.to}\n`;
+            generatedContent += `    Connection${connId}.carries = ${carries}\n`;
+            generatedContent += `    Connection${connId}.protocol = ${conn.protocol}\n`;
+            generatedContent += `    Connection${connId}.isEncrypted = ${formatBoolean(conn.isEncrypted)}\n`;
+            generatedContent += `    Connection${connId}.hasCDR = ${formatBoolean(conn.hasCDR)}\n`;
+            generatedContent += `    Connection${connId}.hasDLP = ${formatBoolean(conn.hasDLP)}\n`;
+            generatedContent += `    Connection${connId}.hasAntiVirus = ${formatBoolean(conn.hasAntiVirus)}\n`;
+            generatedContent += `}\n\n`;
         });
     }
-    als = als.replace('// [Loop: connections 배열을 순회하며 생성]', connectionContent);
 
-    // Output File Generation
-    if (!fs.existsSync(alloyDir)) {
-        fs.mkdirSync(alloyDir, { recursive: true });
+    // [5. AnalysisResult 정의]
+    generatedContent += `// ============================================================\n`;
+    generatedContent += `// [GENERATED] 결과 집합 (Analysis Result)\n`;
+    generatedContent += `// ============================================================\n\n`;
+    generatedContent += `one sig AnalysisResult {\n`;
+    generatedContent += `    FindStorageViolations: set System -> Data,\n`;
+    generatedContent += `    FindFlowViolations: set Connection -> Data,\n`;
+    generatedContent += `    FindLocationViolations: set System,\n`;
+    generatedContent += `    FindBypassViolations: set Connection,\n`;
+    generatedContent += `    FindUnencryptedChannels: set Connection,\n`;
+    generatedContent += `    FindAuthIntegrityGaps: set System,\n`;
+    generatedContent += `    FindContentControlFailures: set Connection -> Data,\n`;
+    generatedContent += `    FindUnencryptedStorage: set System -> Data,\n`;
+    generatedContent += `    FindAdminAccessViolation: set Connection\n`;
+    generatedContent += `}\n\n`;
+
+    generatedContent += `fact DefineAnalysisResult {\n`;
+    generatedContent += `    AnalysisResult.FindStorageViolations = FindStorageViolations\n`;
+    generatedContent += `    AnalysisResult.FindFlowViolations = FindFlowViolations\n`;
+    generatedContent += `    AnalysisResult.FindLocationViolations = FindLocationViolations\n`;
+    generatedContent += `    AnalysisResult.FindBypassViolations = FindBypassViolations\n`;
+    generatedContent += `    AnalysisResult.FindUnencryptedChannels = FindUnencryptedChannels\n`;
+    generatedContent += `    AnalysisResult.FindAuthIntegrityGaps = FindAuthIntegrityGaps\n`;
+    generatedContent += `    AnalysisResult.FindContentControlFailures = FindContentControlFailures\n`;
+    generatedContent += `    AnalysisResult.FindUnencryptedStorage = FindUnencryptedStorage\n`;
+    generatedContent += `    AnalysisResult.FindAdminAccessViolation = FindAdminAccessViolation\n`;
+    generatedContent += `}\n\n`;
+
+    // Inject generated content into the template
+    // Replacing the placeholder block
+    const placeholderRegex = /\/\/ \[Generator[\s\S]*?\*\//;
+    if (placeholderRegex.test(als)) {
+        als = als.replace(placeholderRegex, generatedContent);
+    } else {
+        // Fallback: append before run {}
+        als = als.replace('run {}', generatedContent + '\nrun {}');
     }
 
-    const outputPath = path.join(alloyDir, 'user_instance_real.als');
-    console.log(`Generating Alloy file at: ${outputPath} (CWD: ${process.cwd()})`);
-
     fs.writeFileSync(outputPath, als);
-    console.log(`Alloy file generated successfully.`);
+    console.log(`Alloy file generated successfully at ${outputPath}`);
     return outputPath;
 }
 

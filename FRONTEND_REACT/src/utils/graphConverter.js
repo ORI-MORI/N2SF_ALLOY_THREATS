@@ -68,6 +68,10 @@ export function convertGraphToJSON(nodes, edges) {
             isCDS: s.data.isCDS || false,
             authType: s.data.authType || 'Single', // Changed from authCapability
             isRegistered: s.data.isRegistered || false,
+            isStorageEncrypted: s.data.isStorageEncrypted || false,
+            isManagement: s.data.isManagement || false,
+            isolation: s.data.isolation || 'None',
+            hasMDM: s.data.hasMDM || false,
             stores: storesIds,
             _storedDataObjects: storedData // Keep for data collection
         };
@@ -98,6 +102,7 @@ export function convertGraphToJSON(nodes, edges) {
             protocol: e.data?.protocol || 'HTTPS',
             isEncrypted: e.data?.isEncrypted || false,
             hasCDR: e.data?.hasCDR || false,
+            hasDLP: e.data?.hasDLP || false,
             hasAntiVirus: e.data?.hasAntiVirus || false,
             realId: e.id
         };
