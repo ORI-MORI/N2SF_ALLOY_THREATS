@@ -17,6 +17,7 @@ import Sidebar from './Sidebar';
 import ZoneNode from './ZoneNode';
 import SystemNode from './SystemNode';
 import PropertyPanel from './PropertyPanel';
+import DataFlowEdge from './DataFlowEdge';
 import useStore from '../store';
 import { convertGraphToJSON } from '../utils/graphConverter';
 import { analyzeGraph } from '../api/analyze';
@@ -24,6 +25,10 @@ import { analyzeGraph } from '../api/analyze';
 const nodeTypes = {
     zone: ZoneNode,
     system: SystemNode,
+};
+
+const edgeTypes = {
+    dataFlow: DataFlowEdge,
 };
 
 let id = 0;
@@ -49,7 +54,7 @@ const EditorContent = () => {
         },
     });
 
-    const onConnect = useCallback((params) => setEdges((eds) => addEdge({ ...params, markerEnd: { type: MarkerType.ArrowClosed } }, eds)), []);
+    const onConnect = useCallback((params) => setEdges((eds) => addEdge({ ...params, type: 'dataFlow', animated: true, markerEnd: { type: MarkerType.ArrowClosed } }, eds)), []);
 
     const onDragOver = useCallback((event) => {
         event.preventDefault();
@@ -98,6 +103,7 @@ const EditorContent = () => {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [idMapping, setIdMapping] = useState(null);
     const [focusedPath, setFocusedPath] = useState(new Set());
+    const [selectedThreatId, setSelectedThreatId] = useState(null); // Format: "type-index"
 
     const handleAnalyze = async () => {
         setIsAnalyzing(true);
@@ -106,6 +112,7 @@ const EditorContent = () => {
         setEdges((eds) => eds.map((e) => ({ ...e, style: {}, markerEnd: { type: MarkerType.ArrowClosed, color: '#b1b1b7' } })));
         setAnalysisResult(null);
         setFocusedPath(new Set());
+        setSelectedThreatId(null);
 
         try {
             const payload = convertGraphToJSON(nodes, edges);
@@ -169,34 +176,52 @@ const EditorContent = () => {
         }
     };
 
-    const handleThreatClick = (violation) => {
+    const handleThreatClick = (violation, typeKey, index) => {
         if (!idMapping || !analysisResult) return;
 
-        const newFocusedPath = new Set();
+        const uniqueId = `${typeKey}-${index}`;
 
-        Object.values(violation).forEach(val => {
-            if (!val) return;
-            const match = val.match(/(System|Connection)[^0-9]*(\d+)/);
-            if (match) {
-                const type = match[1] === 'System' ? 'systems' : 'connections';
-                const id = parseInt(match[2]);
-                const item = idMapping[type].find(i => i.id == id);
+        // Toggle Logic
+        if (selectedThreatId === uniqueId) {
+            // Deselect
+            setFocusedPath(new Set());
+            setSelectedThreatId(null);
 
-                if (item) {
-                    newFocusedPath.add(item.realId);
+            // Restore Red State (Code below handles this by checking focusedPath size)
+        } else {
+            // Select new
+            setSelectedThreatId(uniqueId);
 
-                    // If it's a connection, also highlight the source and target nodes to show the "Path"
-                    if (type === 'connections') {
-                        const fromSys = idMapping.systems.find(s => s.id === item.from);
-                        const toSys = idMapping.systems.find(s => s.id === item.to);
-                        if (fromSys) newFocusedPath.add(fromSys.realId);
-                        if (toSys) newFocusedPath.add(toSys.realId);
+            const newFocusedPath = new Set();
+
+            Object.values(violation).forEach(val => {
+                if (!val) return;
+                const match = val.match(/(System|Connection)[^0-9]*(\d+)/);
+                if (match) {
+                    const type = match[1] === 'System' ? 'systems' : 'connections';
+                    const id = parseInt(match[2]);
+                    const item = idMapping[type].find(i => i.id == id);
+
+                    if (item) {
+                        newFocusedPath.add(item.realId);
+
+                        // If it's a connection, also highlight the source and target nodes to show the "Path"
+                        if (type === 'connections') {
+                            const fromSys = idMapping.systems.find(s => s.id === item.from);
+                            const toSys = idMapping.systems.find(s => s.id === item.to);
+                            if (fromSys) newFocusedPath.add(fromSys.realId);
+                            if (toSys) newFocusedPath.add(toSys.realId);
+                        }
                     }
                 }
-            }
-        });
+            });
+            setFocusedPath(newFocusedPath);
+        }
+    };
 
-        setFocusedPath(newFocusedPath);
+    // Effect to update styles based on focusedPath
+    useEffect(() => {
+        if (!analysisResult) return;
 
         // Re-calculate violating IDs to restore Red state for non-focused violations
         const violatingIds = new Set();
@@ -208,7 +233,7 @@ const EditorContent = () => {
                 if (match) {
                     const type = match[1] === 'System' ? 'systems' : 'connections';
                     const id = parseInt(match[2]);
-                    const item = idMapping[type].find(i => i.id == id);
+                    const item = idMapping && idMapping[type] ? idMapping[type].find(i => i.id == id) : null;
                     if (item) {
                         violatingIds.add(item.realId);
                     }
@@ -217,7 +242,7 @@ const EditorContent = () => {
         });
 
         setNodes((nds) => nds.map((n) => {
-            const isFocused = newFocusedPath.has(n.id);
+            const isFocused = focusedPath.has(n.id);
             const isViolation = violatingIds.has(n.id);
 
             let newStyle = { ...n.style };
@@ -241,7 +266,7 @@ const EditorContent = () => {
         }));
 
         setEdges((eds) => eds.map((e) => {
-            const isFocused = newFocusedPath.has(e.id);
+            const isFocused = focusedPath.has(e.id);
             const isViolation = violatingIds.has(e.id);
 
             let newStyle = { ...e.style };
@@ -266,11 +291,14 @@ const EditorContent = () => {
             }
             return { ...e, style: newStyle, markerEnd: newMarkerEnd, zIndex: newZIndex };
         }));
-    };
+
+    }, [focusedPath, analysisResult, idMapping, setNodes, setEdges]);
+
 
     const handleClosePanel = () => {
         setAnalysisResult(null);
         setFocusedPath(new Set());
+        setSelectedThreatId(null);
     };
 
     const handleClearAll = () => {
@@ -326,6 +354,7 @@ const EditorContent = () => {
                     onDrop={onDrop}
                     onDragOver={onDragOver}
                     nodeTypes={nodeTypes}
+                    edgeTypes={edgeTypes}
                     fitView
                 >
                     <Controls />
@@ -335,6 +364,7 @@ const EditorContent = () => {
             <PropertyPanel
                 analysisResult={analysisResult}
                 onThreatClick={handleThreatClick}
+                selectedThreatId={selectedThreatId}
             />
         </div>
     );

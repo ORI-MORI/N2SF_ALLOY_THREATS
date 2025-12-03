@@ -3,7 +3,7 @@ import { useReactFlow } from 'reactflow';
 import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import useStore from '../store';
 
-export default function PropertyPanel({ analysisResult, onThreatClick }) {
+export default function PropertyPanel({ analysisResult, onThreatClick, selectedThreatId }) {
     const { selectedElement, setSelectedElement } = useStore();
     const { setNodes, setEdges, getNodes } = useReactFlow();
     const [formData, setFormData] = useState({});
@@ -52,7 +52,34 @@ export default function PropertyPanel({ analysisResult, onThreatClick }) {
         const currentData = formData.storedData || [];
         const newId = currentData.length > 0 ? Math.max(...currentData.map(d => d.id)) + 1 : 1;
         const newDataItem = { id: newId, grade: 'Sensitive', fileType: 'Document' };
+
+        // 1. Update the Node's storedData
         handleChange('storedData', [...currentData, newDataItem]);
+
+        // 2. Auto-propagate to outgoing edges
+        // Find all edges where source is this node
+        setEdges((edges) => edges.map((edge) => {
+            if (edge.source === selectedElement.id) {
+                // Parse current carries
+                const currentCarries = (edge.data?.carries || '')
+                    .toString()
+                    .split(',')
+                    .map(x => parseInt(x.trim()))
+                    .filter(x => !isNaN(x));
+
+                // Add new ID if not present (it shouldn't be)
+                const newCarries = [...currentCarries, newId];
+
+                return {
+                    ...edge,
+                    data: {
+                        ...edge.data,
+                        carries: newCarries.join(', ')
+                    }
+                };
+            }
+            return edge;
+        }));
     };
 
     const removeData = (id) => {
@@ -394,14 +421,81 @@ export default function PropertyPanel({ analysisResult, onThreatClick }) {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Carries Data (comma separated IDs)</label>
-                            <input
-                                type="text"
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1"
-                                value={formData.carries || ''}
-                                onChange={(e) => handleChange('carries', e.target.value)}
-                                placeholder="e.g. 1, 2"
-                            />
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Carries Data</label>
+
+                            {(() => {
+                                const sourceNode = getNodes().find(n => n.id === selectedElement.source);
+                                const availableData = sourceNode?.data?.storedData || [];
+
+                                // Parse current carries data
+                                const currentCarries = (formData.carries || '')
+                                    .toString()
+                                    .split(',')
+                                    .map(x => parseInt(x.trim()))
+                                    .filter(x => !isNaN(x));
+
+                                const handleAddData = () => {
+                                    if (availableData.length === 0) return;
+                                    const firstAvailable = availableData[0].id;
+                                    const newCarries = [...currentCarries, firstAvailable];
+                                    handleChange('carries', newCarries.join(', '));
+                                };
+
+                                const handleRemoveData = (indexToRemove) => {
+                                    const newCarries = currentCarries.filter((_, idx) => idx !== indexToRemove);
+                                    handleChange('carries', newCarries.join(', '));
+                                };
+
+                                const handleUpdateData = (indexToUpdate, newValue) => {
+                                    const newCarries = [...currentCarries];
+                                    newCarries[indexToUpdate] = parseInt(newValue);
+                                    handleChange('carries', newCarries.join(', '));
+                                };
+
+                                if (availableData.length === 0) {
+                                    return (
+                                        <div className="text-xs text-gray-500 italic bg-gray-50 p-2 rounded border border-gray-200">
+                                            No data available in source node.
+                                            <br />Add "Stored Data" to the source node first.
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <div className="space-y-2">
+                                        {currentCarries.map((dataId, idx) => (
+                                            <div key={idx} className="flex gap-2 items-center">
+                                                <select
+                                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1"
+                                                    value={dataId}
+                                                    onChange={(e) => handleUpdateData(idx, e.target.value)}
+                                                >
+                                                    {availableData.map(d => (
+                                                        <option key={d.id} value={d.id}>
+                                                            Data #{d.id} ({d.fileType})
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <button
+                                                    onClick={() => handleRemoveData(idx)}
+                                                    className="text-red-500 hover:text-red-700 p-1"
+                                                    title="Remove"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                                </button>
+                                            </div>
+                                        ))}
+
+                                        <button
+                                            onClick={handleAddData}
+                                            className="w-full py-1 text-xs border border-dashed border-blue-300 text-blue-600 rounded hover:bg-blue-50 transition-colors flex items-center justify-center gap-1"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                            Add Data Flow
+                                        </button>
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </>
                 )}
@@ -459,22 +553,38 @@ export default function PropertyPanel({ analysisResult, onThreatClick }) {
                                 </h4>
                             </div>
                             <div className="divide-y divide-gray-100">
-                                {items.map((item, idx) => (
-                                    <div
-                                        key={idx}
-                                        className="p-2 hover:bg-gray-50 transition-colors text-xs text-gray-700 cursor-pointer"
-                                        onClick={() => onThreatClick && onThreatClick(item)}
-                                    >
-                                        <ul className="space-y-1">
-                                            {Object.entries(item).map(([k, v]) => (
-                                                <li key={k} className="flex flex-col">
-                                                    <span className="font-medium text-gray-900">{k}:</span>
-                                                    <span className="text-gray-600 break-all pl-2">{v}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
+                                {items.map((item, idx) => {
+                                    const uniqueId = `${key}-${idx}`;
+                                    const isSelected = selectedThreatId === uniqueId;
+
+                                    return (
+                                        <div
+                                            key={idx}
+                                            className={`p-2 transition-all duration-200 ease-in-out cursor-pointer active:scale-95 hover:shadow-sm border rounded-md m-1 ${isSelected
+                                                ? 'bg-blue-50 border-blue-300 shadow-md'
+                                                : 'hover:bg-red-50 border-transparent hover:border-red-200'
+                                                }`}
+                                            onClick={() => onThreatClick && onThreatClick(item, key, idx)}
+                                        >
+                                            <div className="flex justify-between items-start mb-1">
+                                                <span className="font-semibold text-gray-700 text-xs">Violation #{idx + 1}</span>
+                                                {isSelected && (
+                                                    <span className="text-blue-600 font-bold text-[10px] bg-blue-100 px-1.5 py-0.5 rounded-full">
+                                                        선택됨
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <ul className="space-y-1">
+                                                {Object.entries(item).map(([k, v]) => (
+                                                    <li key={k} className="flex flex-col">
+                                                        <span className="font-medium text-gray-900">{k}:</span>
+                                                        <span className="text-gray-600 break-all pl-2">{v}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     );
