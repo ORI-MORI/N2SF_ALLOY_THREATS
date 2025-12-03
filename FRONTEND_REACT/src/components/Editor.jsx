@@ -18,6 +18,7 @@ import ZoneNode from './ZoneNode';
 import SystemNode from './SystemNode';
 import PropertyPanel from './PropertyPanel';
 import DataFlowEdge from './DataFlowEdge';
+import ScoreDashboard from './ScoreDashboard';
 import useStore from '../store';
 import { convertGraphToJSON } from '../utils/graphConverter';
 import { analyzeGraph } from '../api/analyze';
@@ -316,6 +317,12 @@ const EditorContent = () => {
         <div className="flex flex-row h-screen w-screen">
             <Sidebar />
             <div className="flex-grow h-full relative" ref={reactFlowWrapper}>
+                <ScoreDashboard
+                    nodes={nodes}
+                    edges={edges}
+                    analysisResult={analysisResult}
+                    isAnalyzing={isAnalyzing}
+                />
                 <div className="absolute top-4 right-4 z-10 flex gap-2">
                     <button
                         onClick={handleClearAll}
