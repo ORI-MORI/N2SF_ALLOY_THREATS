@@ -5,85 +5,103 @@
 > 이 프로젝트는 현재 활발히 개발 중이며, 기능이 변경되거나 불안정할 수 있습니다.
 > This project is currently under active development. Features are subject to change and may be unstable.
 
+---
 
-## 개요
-이 프로젝트는 **OWASP Threat Dragon**과 **Alloy Analyzer**를 통합한 전문 보안 감사 도구입니다. **N2SF(국가 망 보안 시설)** 보안 표준에 따라 네트워크 다이어그램을 정형 기법(Formal Methods)으로 검증하도록 설계되었습니다.
+# N2SF Intelligent Audit Tool
 
-사용자는 네트워크 아키텍처를 시각적으로 모델링할 수 있으며, 도구는 암호화되지 않은 채널, 부적절한 망분리, 무단 접근 경로와 같은 보안 위반 사항을 자동으로 탐지합니다.
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=flat&logo=react&logoColor=%2361DAFB)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=flat&logo=node.js&logoColor=white)
+![Alloy](https://img.shields.io/badge/Alloy-Formal_Verification-blue?style=flat)
 
-## 아키텍처
-이 시스템은 클라이언트-서버 아키텍처를 따릅니다:
+> **"The first automated threat modeling tool powered by Formal Verification(Alloy) to validate compliance with Korea's N2SF guidelines."**
+>
+> (한국의 N2SF 가이드라인 준수 여부를 검증하는 최초의 Alloy 정형 기법 기반 자동화 위협 식별 도구)
 
-1.  **프론트엔드 (React + ReactFlow)**
-    -   시스템, 데이터 흐름, 영역(Zone)을 모델링하기 위한 드래그 앤 드롭 인터페이스를 제공합니다.
-    -   시각적 그래프를 구조화된 JSON 페이로드로 변환합니다.
-    -   분석 결과를 시각적 하이라이팅(위반 시 빨간색, 선택 시 파란색)으로 표시합니다.
+## 1. 배경 및 문제 정의 (Why this project?)
 
-2.  **백엔드 (Node.js + Java)**
-    -   **API 서버**: 분석 요청을 처리하는 Express.js 서버입니다.
-    -   **Alloy 생성기 (Generator)**: 템플릿 엔진을 사용하여 JSON 모델을 Alloy 명세(`.als`)로 변환합니다.
-    -   **Alloy 실행기 (Executor)**: Alloy Analyzer(Java 래퍼)를 호출하여 모델을 풀고 반례(위협)를 찾습니다.
-    -   **결과 파서 (Result Parser)**: Alloy의 XML 출력을 파싱하여 정형 위반 사항을 사람이 읽을 수 있는 해결 가이드로 매핑합니다.
+### Problem: 복잡한 보안 규제와 수동 검증의 한계
+기존의 글로벌 위협 모델링 도구(예: OWASP Threat Dragon)는 한국의 **국가 망 보안 시설(N2SF)**이 요구하는 복잡한 **'망 분리'** 및 **'보안 등급(Class C/S/O)'** 규제를 검증하는 데 한계가 있었습니다.
+특히, 수십 개의 시스템이 얽힌 복잡한 망 구성도에서 관리자가 육안으로 보안 위반 사항을 검토하는 것은 **실수 가능성(Human Error)**이 매우 높으며, 막대한 시간과 비용이 소요되는 작업이었습니다.
 
-## 디렉토리 구조
+### Solution: 정형 기법(Formal Methods)을 통한 100% 자동화 검증
+본 프로젝트는 수학적 증명 도구인 **Alloy Analyzer**를 핵심 엔진으로 탑재하여 이 문제를 해결했습니다.
+사용자가 직관적인 UI로 망 구성도를 그리기만 하면, 시스템이 백그라운드에서 논리적 모델로 변환하여 **규정 위반 여부를 전수 검사(Exhaustive Search)**합니다. 이를 통해 보안 전문가가 아니더라도 누구나 즉시 취약점을 식별하고 조치할 수 있는 **자동화된 보안 감사 시스템**을 구축했습니다.
 
-### 루트 (Root)
--   `FRONTEND_REACT/`: 프론트엔드 애플리케이션
--   `BACKEND/`: 백엔드 서버 및 분석 엔진
--   `alloy/`: 공유 Alloy 리소스 (선택 사항/레거시)
+## 2. 주요 기능 (Key Features)
 
-### 프론트엔드 (`FRONTEND_REACT/`)
--   `src/components/`
-    -   `Editor.jsx`: 핵심 다이어그램 에디터. 다이어그램 상태, 하이라이팅 로직, 사용자 상호작용을 처리합니다.
-    -   `PropertyPanel.jsx`: 요소 속성 편집 및 "위협(Threats)" 목록을 보기 위한 사이드바입니다.
-    -   `Sidebar.jsx`: 새로운 노드(시스템, 영역)를 캔버스로 드래그하기 위한 팔레트입니다.
--   `src/utils/`
-    -   `graphConverter.js`: ReactFlow 노드/엣지를 백엔드용 N2SF JSON 스키마로 변환하는 핵심 유틸리티입니다. 결정론적 ID 생성을 보장합니다.
--   `src/api/`
-    -   `analyze.js`: 백엔드 `/analyze` 엔드포인트와 통신하는 API 클라이언트입니다.
+*   **9대 핵심 위협 자동 탐지**: 정보 유출(Leakage), 저장 데이터 암호화 미비, 관리자 접속 경로 위반 등 N2SF의 핵심 보안 위협을 자동으로 식별합니다.
+*   **Smart Modeling System**: Drag & Drop 인터페이스를 통해 노드를 배치하면, 좌표를 기반으로 **망(Zone) 소속을 자동으로 인식**하여 모델링 편의성을 극대화했습니다.
+*   **Formal Verification Engine**: 단순한 규칙 매칭이 아닌, Alloy의 SAT Solver를 활용하여 **다단계 연결(Multi-hop) 경로** 추적 및 논리적 모순을 검증합니다.
+*   **Auto Remediation Guide**: 위협이 탐지되면 단순한 경고에 그치지 않고, "어떤 설정을 변경해야 하는지"에 대한 **구체적인 해결 가이드(Actionable Guide)**를 제공합니다.
+*   **Real-time Security Dashboard**: **보안 건전성(Security Health)**과 **모델링 완성도**를 실시간으로 수치화하여 보여줌으로써, 사용자가 현재 보안 수준을 직관적으로 파악할 수 있습니다.
 
-### 백엔드 (`BACKEND/`)
--   `server.js`: 진입점(Entry point). Express 서버를 시작하고 `/analyze` 라우트를 처리합니다.
--   `src/`
-    -   `alloyGenerator.js`: 다이어그램 JSON에서 `user_instance_real.als`를 생성합니다. 파일 시스템 안정성을 위한 재시도 로직이 포함되어 있습니다.
-    -   `alloyExecutor.js`: `AlloyRunner.java`의 실행을 관리하고, 프로세스 실행을 처리하며, 결과 XML을 파싱합니다.
-    -   `AlloyRunner.java`: Alloy JAR와 직접 인터페이스하여 분석을 실행하는 Java 브리지입니다.
--   `alloy/`
-    -   `n2sf_base.als`: 핵심 N2SF 보안 모델 및 시그니처 정의입니다.
-    -   `n2sf_rules.als`: 보안 규칙 및 어설션(예: `CheckViolations`)입니다.
-    -   `user_instance.als`: 생성기가 사용하는 템플릿 파일입니다.
-    -   `alloy4.2_2015-02-22.jar`: Alloy Analyzer 엔진입니다.
+## 3. 데모 (Demo)
 
-## 주요 기능
--   **N2SF 규정 준수 확인**: 국가 망 보안 표준 준수 여부를 자동으로 확인합니다.
--   **정형 검증 (Formal Verification)**: 단순 패턴 매칭이 아닌, Alloy의 SAT 솔버를 사용하여 논리적 결함을 철저하게 검사합니다.
--   **인터랙티브 하이라이팅**:
-    -   **전체 보기**: 위반 사항이 있는 모든 연결선이 **빨간색**으로 강조됩니다.
-    -   **집중 보기**: 특정 위협을 클릭하면 관련 경로가 **파란색**으로 강조됩니다.
--   **견고한 파이프라인**: 신뢰할 수 있는 분석을 보장하기 위해 결정론적 ID 생성 및 오류 복구 기능을 포함합니다.
+<!-- GIF Placeholder -->
 
-## 실행 방법
+## 4. 기술 아키텍처 (Technical Architecture)
 
-### 사전 요구 사항
--   Node.js (v16 이상)
--   Java Runtime Environment (JRE) (Alloy 실행용)
+본 시스템은 확장성과 유지보수성을 고려하여 **3-Tier Architecture**로 설계되었습니다.
 
-### 1. 백엔드 시작
+### Frontend (React Flow)
+*   **UX 최적화**: 복잡한 망 구성을 쉽게 그릴 수 있도록 React Flow 기반의 직관적인 모델링 도구를 구현했습니다.
+*   **Data Flow Animation**: 데이터의 이동 경로를 시각적으로 표현하여 흐름을 쉽게 파악할 수 있습니다.
+
+### Backend (Node.js)
+*   **Template Injection Engine**: 프론트엔드의 JSON 데이터를 받아 Alloy가 이해할 수 있는 `.als` 명세 코드로 변환하는 **무결점 코드 생성기**를 구축했습니다.
+*   **Deterministic ID Generation**: 분석의 재현성을 보장하기 위해 결정론적 ID 생성 로직을 적용했습니다.
+
+### Engine (Alloy Analyzer)
+*   **SAT Solver 기반 검증**: 생성된 모델을 바탕으로 모든 가능한 반례(Counterexample)를 탐색하여 숨겨진 위협을 찾아냅니다.
+
+```mermaid
+graph LR
+    User[User] -->|Draw Diagram| Frontend[Frontend (React)]
+    Frontend -->|JSON Payload| Backend[Backend (Node.js)]
+    Backend -->|Generate .als| Alloy[Alloy Analyzer (Java)]
+    Alloy -->|SAT Solving| Result[Analysis Result (XML)]
+    Result -->|Parse & Map| Backend
+    Backend -->|Threats & Guide| Frontend
+    Frontend -->|Highlight & Dashboard| User
+```
+
+## 5. 기술적 챌린지 (Technical Challenges & Solutions)
+
+### Q: 왜 일반적인 코딩(JS/Python)이 아닌 Alloy를 사용했는가?
+**A:** 망 분리 환경에서는 A에서 B로 직접 연결되지 않더라도, C와 D를 거쳐 우회적으로 연결되는 **'추이적 관계(Transitive Closure)'**를 검증하는 것이 핵심입니다.
+일반적인 알고리즘(DFS/BFS)으로 모든 우회 경로와 보안 등급 간의 간섭을 검증하려면 코드가 기하급수적으로 복잡해집니다. 본 프로젝트는 **관계 논리(Relational Logic)**에 특화된 Alloy를 도입하여, 복잡한 우회 경로 탐지 문제를 간결하고 정확하게 해결했습니다.
+
+### Q: 비전문가가 난해한 Alloy 코드를 어떻게 다루는가?
+**A:** 사용자는 Alloy를 전혀 알 필요가 없습니다. 사용자는 익숙한 GUI로 그림을 그리기만 하면 됩니다.
+백엔드에 구축된 **Deterministic Template Engine**이 사용자 모델을 Alloy 코드로 **트랜스파일링(Transpiling)**하고, 분석 결과를 다시 알기 쉬운 언어로 변환하여 제공하는 **추상화 레이어**를 완벽하게 구현했습니다.
+
+## 6. 설치 및 실행 (Getting Started)
+
+### 사전 요구 사항 (Prerequisites)
+*   **Node.js** (v16 이상)
+*   **Java Runtime Environment (JRE)** (Alloy Analyzer 실행을 위해 필수)
+
+### 설치 및 실행 (Installation & Run)
+
+**1. 저장소 복제 (Clone Repository)**
+```bash
+git clone https://github.com/your-repo/otd-alloy.git
+cd otd-alloy
+```
+
+**2. 백엔드 실행 (Backend)**
 ```bash
 cd BACKEND
+npm install
 node server.js
-# 서버는 http://localhost:3001 에서 실행됩니다.
+# Server running on http://localhost:3001
 ```
 
-### 2. 프론트엔드 시작
+**3. 프론트엔드 실행 (Frontend)**
 ```bash
 cd FRONTEND_REACT
+npm install
 npm run dev
-# 애플리케이션은 http://localhost:5173 에서 실행됩니다.
+# Application running on http://localhost:5173
 ```
-
-## 사용 흐름 (Workflow)
-1.  **그리기 (Draw)**: 시스템과 영역을 캔버스로 드래그하고 흐름(Flow)으로 연결합니다.
-2.  **설정 (Configure)**: 요소를 클릭하여 속성을 설정합니다 (예: 프로토콜: HTTP, 암호화: False).
-3.  **분석 (Analyze)**: "Analyze" 버튼을 클릭합니다.
-4.  **검토 (Review)**: "Threats" 탭에서 위반 사항을 확인합니다. 위협을 클릭하면 다이어그램에서 정확한 위치를 확인할 수 있습니다.
