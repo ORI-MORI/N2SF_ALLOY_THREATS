@@ -1,4 +1,4 @@
-# OTD-Alloy (N2SF 지능형 감사 도구)
+# AMADEUS (N2SF 지능형 감사 도구)
 
 > [!IMPORTANT]
 > **현재 개발 진행 중 (Work In Progress)**
