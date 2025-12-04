@@ -21,12 +21,12 @@
 ## 1. 배경 및 문제 정의 (Why this project?)
 
 ### Problem: 새로운 보안 패러다임과 검증의 복잡성
-대한민국의 공공 보안 정책이 기존의 획일적인 '망 분리'에서 데이터 중요도에 따라 보안 대책을 차등 적용하는 **'국가 망 보안체계(N2SF, National Network Security Framework)'**로 대전환되었습니다. 새로운 체계는 업무 데이터를 **기밀(Classified), 민감(Sensitive), 공개(Open)**의 3등급으로 분류하고, 위치-주체-객체(Location-Subject-Object) 모델링을 통해 위협을 식별할 것을 요구합니다.
+대한민국의 공공 보안 정책이 기존의 획일적인 '망 분리'에서 데이터 중요도에 따라 보안 대책을 차등 적용하는 **국가 망 보안체계(National Network Security Framework)**로 대전환되었습니다. 새로운 체계는 업무 데이터를 **기밀(Classified)**, **민감(Sensitive)**, **공개(Open)**의 3등급으로 분류하고, 위치-주체-객체(Location-Subject-Object) 모델링을 통해 위협을 식별할 것을 요구합니다.
 
-하지만 기존의 글로벌 모델링 도구(예: OWASP Threat Dragon)는 이러한 한국 고유의 다층 보안 등급 체계와 망 연계(CDS) 규칙을 검증할 수 없습니다. 또한, 복잡하게 얽힌 망 구성도에서 관리자가 수동으로 **'정보 이동 원칙'**이나 '정보 생산·저장 원칙' 위반을 찾아내는 것은 막대한 시간 소요와 인적 오류(Human Error)의 위험을 안고 있습니다.
+하지만 기존의 글로벌 모델링 도구(예: OWASP Threat Dragon)는 이러한 한국 고유의 다층 보안 등급 체계와 망 연계(CDS) 규칙을 검증할 수 없습니다. 또한, 복잡하게 얽힌 망 구성도에서 관리자가 수동으로 '정보 이동 원칙'이나 '정보 생산·저장 원칙' 위반을 찾아내는 것은 막대한 시간 소요와 인적 오류(Human Error)의 위험을 안고 있습니다.
 
 ### Solution: 정형 기법(Formal Methods)을 통한 규제 준수 자동화
-본 프로젝트는 N2SF 가이드라인의 보안 원칙을 수학적 논리로 변환하고, Alloy Analyzer를 통해 이를 증명하는 방식을 도입했습니다. 사용자가 직관적인 UI로 망 구성을 그리면, 시스템은 이를 정형 모델로 변환하여 **N2SF 규정 위반 여부를 전수 검사(Exhaustive Search)**합니다. 이를 통해 보안 비전문가도 설계 단계에서부터 국가 가이드라인을 완벽하게 준수하는지 즉시 확인할 수 있는 지능형 보안 감사 시스템을 구축했습니다.
+본 프로젝트는 N2SF 가이드라인의 보안 원칙을 수학적 논리로 변환하고, Alloy Analyzer를 통해 이를 증명하는 방식을 도입했습니다. 사용자가 직관적인 UI로 망 구성을 그리면, 시스템은 이를 정형 모델로 변환하여 N2SF 규정 위반 여부를 전수 검사합니다. 이를 통해 보안 비전문가도 설계 단계에서부터 국가 가이드라인을 완벽하게 준수하는지 즉시 확인할 수 있는 지능형 보안 감사 시스템을 구축했습니다.
 
 ## 2. 주요 기능 (Key Features)
 
@@ -105,3 +105,16 @@ npm install
 npm run dev
 # Application running on http://localhost:5173
 ```
+
+## 7. License & Acknowledgements
+
+### License
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+### Acknowledgements
+본 프로젝트는 다음 오픈소스 프로젝트들의 기술과 개념을 바탕으로 구축되었습니다.
+(This project was built using the following open-source technologies and concepts.)
+
+* **[Alloy Analyzer](https://alloytools.org/)**: 본 프로젝트의 핵심 검증 엔진으로 탑재되었습니다. (Integrated as the core verification engine of this project.)
+* **[React Flow](https://reactflow.dev/)**: 직관적인 다이어그램 모델링 UI를 구현하기 위한 핵심 라이브러리로 사용되었습니다. (Used as the core library to implement the intuitive diagram modeling UI.)
+* **[OWASP Threat Dragon](https://owasp.org/www-project-threat-dragon/)**: 다이어그램 기반 위협 모델링의 개념과 접근 방식에 깊은 영감을 주었습니다. (Deeply inspired by the concept and approach of diagram-based threat modeling.)
