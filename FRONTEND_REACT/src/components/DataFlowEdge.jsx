@@ -32,12 +32,29 @@ export default function DataFlowEdge({
     const nodes = useNodes();
     const sourceNode = nodes.find(n => n.id === source);
 
+    const isBidirectional = data?.isBidirectional !== false;
+
+    // Shorten the path for unidirectional edges so it doesn't overlap the manual arrow
+    let pathTargetX = targetX;
+    let pathTargetY = targetY;
+
+    if (!isBidirectional) {
+        const offset = 10; // Length of the arrow
+        switch (targetPosition) {
+            case 'top': pathTargetY -= offset; break;
+            case 'bottom': pathTargetY += offset; break;
+            case 'left': pathTargetX -= offset; break;
+            case 'right': pathTargetX += offset; break;
+            default: break;
+        }
+    }
+
     const [edgePath, labelX, labelY] = getBezierPath({
         sourceX,
         sourceY,
         sourcePosition,
-        targetX,
-        targetY,
+        targetX: pathTargetX,
+        targetY: pathTargetY,
         targetPosition,
     });
 
@@ -64,8 +81,7 @@ export default function DataFlowEdge({
     // Debugging
     // console.log('Edge', id, 'Carried:', carriedData);
 
-    // Default to true if undefined, matching PropertyPanel logic
-    const isBidirectional = data?.isBidirectional !== false;
+    // isBidirectional is already defined above
 
     // Ensure style includes animation if animated prop is true
     // Ensure style includes animation if animated prop is true

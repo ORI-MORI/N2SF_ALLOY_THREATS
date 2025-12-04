@@ -20,8 +20,8 @@ const SystemNode = ({ data, selected }) => {
     const isConnecting = !!connectionNodeId;
 
     // Dynamic z-index: Source on top normally, Target on top when connecting
-    const sourceStyle = { zIndex: isConnecting ? 0 : 1, width: 12, height: 12, background: '#9ca3af' }; // Visible gray
-    const targetStyle = { zIndex: isConnecting ? 1 : 0, width: 12, height: 12, background: 'transparent' }; // Invisible
+    const sourceStyle = { zIndex: isConnecting ? 0 : 1, width: 8, height: 8, background: '#9ca3af' }; // Visible gray
+    const targetStyle = { zIndex: isConnecting ? 1 : 0, width: 8, height: 8, background: 'transparent' }; // Invisible
 
     return (
         <div className={`shadow-md rounded-md bg-white border-2 p-2 min-w-[100px] flex flex-col items-center justify-center transition-all ${selected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}>
