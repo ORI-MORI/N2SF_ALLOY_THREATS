@@ -80,8 +80,6 @@
         "hasMDM": false,
         "stores": []
       },
-      "parentNode": "zone_internet",
-      "extent": "parent",
       "zIndex": 1
     },
     {
@@ -107,8 +105,6 @@
           "data_public_info"
         ]
       },
-      "parentNode": "zone_internet",
-      "extent": "parent",
       "zIndex": 1
     },
     {
@@ -132,8 +128,6 @@
         "hasMDM": false,
         "stores": []
       },
-      "parentNode": "zone_intranet",
-      "extent": "parent",
       "zIndex": 1
     }
   ],
@@ -142,7 +136,7 @@
       "id": "edge_web_access",
       "source": "node_internet_pc",
       "target": "node_external_server",
-      "type": "smoothstep",
+      "type": "dataFlow",
       "data": {
         "protocol": "HTTPS",
         "isEncrypted": true,
