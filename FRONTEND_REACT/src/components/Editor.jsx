@@ -248,6 +248,46 @@ const EditorContent = ({ initialData, onExit }) => {
         setSelectedThreatId(threatId);
     };
 
+    // Effect to highlight nodes/edges when a threat is selected
+    useEffect(() => {
+        if (!analysisResult || !selectedThreatId) {
+            // Clear highlights
+            setNodes((nds) => nds.map(n => ({ ...n, data: { ...n.data, isThreat: false } })));
+            setEdges((eds) => eds.map(e => ({ ...e, data: { ...e.data, isThreat: false } })));
+            return;
+        }
+
+        // Parse threatId "FindStorageViolations-0"
+        const [threatType, indexStr] = selectedThreatId.split('-');
+        const index = parseInt(indexStr);
+        const threat = analysisResult.threats[threatType][index];
+
+        if (!threat) return;
+
+        // Identify involved IDs
+        const involvedIds = new Set();
+        if (threat.system) involvedIds.add(threat.system);
+        if (threat.connection) involvedIds.add(threat.connection);
+        // Data is not a node/edge, so we ignore threat.data for highlighting
+
+        // Update Nodes
+        setNodes((nds) => nds.map(n => {
+            // Check if node ID matches (Alloy IDs are sanitized, so we compare loosely or exactly if possible)
+            // The backend returns IDs like "node_internet_pc" (stripped of System prefix)
+            // Our nodes have IDs like "node_internet_pc" (if loaded from preset) or "dndnode_..."
+            // graphConverter sanitizes them. We should assume exact match or sanitized match.
+            const isInvolved = involvedIds.has(n.id) || involvedIds.has(n.id.replace(/[^a-zA-Z0-9]/g, '_'));
+            return { ...n, data: { ...n.data, isThreat: isInvolved } };
+        }));
+
+        // Update Edges
+        setEdges((eds) => eds.map(e => {
+            const isInvolved = involvedIds.has(e.id) || involvedIds.has(e.id.replace(/[^a-zA-Z0-9]/g, '_'));
+            return { ...e, data: { ...e.data, isThreat: isInvolved } };
+        }));
+
+    }, [selectedThreatId, analysisResult, setNodes, setEdges]);
+
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
             <Sidebar />

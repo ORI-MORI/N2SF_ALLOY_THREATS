@@ -70,8 +70,16 @@ function parseAlloyXML(xml) {
         if (!l) return '';
         // Handle cases like "n2sf_base/Connection$1" or "Connection123$0"
         const parts = l.split('/');
-        const lastPart = parts[parts.length - 1];
-        return lastPart.split('$')[0];
+        let lastPart = parts[parts.length - 1];
+        lastPart = lastPart.split('$')[0];
+
+        // Strip prefixes added by alloyGenerator.js
+        if (lastPart.startsWith('System')) return lastPart.substring(6);
+        if (lastPart.startsWith('Location')) return lastPart.substring(8);
+        if (lastPart.startsWith('Connection')) return lastPart.substring(10);
+        if (lastPart.startsWith('Data')) return lastPart.substring(4);
+
+        return lastPart;
     };
 
     // Initialize Threats
@@ -126,9 +134,22 @@ function parseAlloyXML(xml) {
     const fieldRegex = /<field label="([^"]+)"[^>]*>([\s\S]*?)<\/field>/g;
     let fieldMatch;
 
+    // Debug: Save XML to file
+    try {
+        fs.writeFileSync('debug_last_run.xml', xml);
+        console.log('Saved XML to debug_last_run.xml');
+    } catch (err) {
+        console.error('Failed to save debug XML:', err);
+    }
+
+    // Debug: Log XML content length and first 500 chars
+    console.log(`XML Content Length: ${xml.length}`);
+    console.log(`XML Preview: ${xml.substring(0, 500)}`);
+
     while ((fieldMatch = fieldRegex.exec(xml)) !== null) {
         const fieldName = fieldMatch[1];
         const content = fieldMatch[2];
+        console.log(`Found field: ${fieldName}`);
 
         if (threatConfig[fieldName]) {
             const config = threatConfig[fieldName];
@@ -137,12 +158,15 @@ function parseAlloyXML(xml) {
 
             while ((tupleMatch = tupleRegex.exec(content)) !== null) {
                 const tupleContent = tupleMatch[1];
-                const atomRegex = /<atom label="([^"]+)"\/>/g;
+                // Allow optional whitespace before />
+                const atomRegex = /<atom label="([^"]+)"\s*\/>/g;
                 const atoms = [];
                 let am;
                 while ((am = atomRegex.exec(tupleContent)) !== null) {
                     atoms.push(cleanLabel(am[1]));
                 }
+
+                console.log(`Parsed atoms for ${fieldName}:`, atoms);
 
                 // atoms[0] is usually AnalysisResult$0
                 // Data starts from atoms[1]
@@ -179,6 +203,7 @@ function parseAlloyXML(xml) {
         }
     }
 
+    console.log('Parsed Threats:', JSON.stringify(threats, null, 2));
     return { threats, total_count };
 }
 

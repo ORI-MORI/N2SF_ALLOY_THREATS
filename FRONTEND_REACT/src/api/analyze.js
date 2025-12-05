@@ -9,7 +9,11 @@ export async function analyzeGraph(payload) {
         });
 
         const data = await response.json();
-        return data;
+        if (data.success) {
+            return data.result;
+        } else {
+            throw new Error(data.error || 'Unknown error from server');
+        }
     } catch (error) {
         console.error('Analysis failed:', error);
         return { success: false, error: error.message };

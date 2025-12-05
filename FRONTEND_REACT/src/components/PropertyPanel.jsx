@@ -667,7 +667,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                                 ? 'bg-blue-50 border-l-4 border-blue-500'
                                                 : 'border-l-4 border-transparent'
                                                 }`}
-                                            onClick={() => onThreatClick && onThreatClick(item, key, idx)}
+                                            onClick={() => onThreatClick && onThreatClick(uniqueId)}
                                         >
                                             <div className="flex justify-between items-start mb-1">
                                                 <span className="font-semibold text-gray-700 text-xs">Violation #{idx + 1}</span>

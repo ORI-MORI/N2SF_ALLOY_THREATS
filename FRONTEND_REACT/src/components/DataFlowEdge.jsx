@@ -93,11 +93,12 @@ export default function DataFlowEdge({
     // Ensure style includes animation if animated prop is true
     const edgeStyle = {
         ...style,
-        strokeWidth: selected ? 3 : 2,
-        stroke: selected ? '#6366f1' : '#94a3b8', // Indigo-500 : Slate-400
+        strokeWidth: (selected || data?.isThreat) ? 3 : 2,
+        stroke: data?.isThreat ? '#ef4444' : (selected ? '#6366f1' : '#94a3b8'), // Red if threat, Indigo if selected
         strokeDasharray: (animated && !isBidirectional) ? 5 : 'none',
         animation: (animated && !isBidirectional) ? 'dashdraw 0.5s linear infinite' : 'none',
-        filter: selected ? 'drop-shadow(0 0 3px rgba(99, 102, 241, 0.5))' : undefined,
+        filter: data?.isThreat ? 'drop-shadow(0 0 3px rgba(239, 68, 68, 0.6))' : (selected ? 'drop-shadow(0 0 3px rgba(99, 102, 241, 0.5))' : undefined),
+        zIndex: (selected || data?.isThreat) ? 100 : 0, // Bring to front
     };
 
     // Calculate arrow rotation based on target position

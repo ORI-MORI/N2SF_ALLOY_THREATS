@@ -45,7 +45,9 @@ const SystemNode = ({ data, selected }) => {
             )}
 
             {/* Main Card */}
-            <div className={`relative min-w-[120px] p-3 rounded-xl glass-panel flex flex-col items-center gap-2 transition-all duration-300 ${selected ? 'border-indigo-500/50 shadow-indigo-500/20' : 'border-white/40 hover:border-white/60'}`}>
+            <div className={`relative min-w-[120px] p-3 rounded-xl glass-panel flex flex-col items-center gap-2 transition-all duration-300 
+                ${data.isThreat ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.6)]' :
+                    selected ? 'border-indigo-500/50 shadow-indigo-500/20' : 'border-white/40 hover:border-white/60'}`}>
 
                 {/* Icon Circle */}
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${getIconBackground(data.type)} text-white`}>
@@ -61,8 +63,8 @@ const SystemNode = ({ data, selected }) => {
                 {/* Grade Badge */}
                 {data.grade && (
                     <div className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wide shadow-sm ${data.grade === 'Classified' ? 'bg-red-100 text-red-700 border border-red-200' :
-                            data.grade === 'Sensitive' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                                'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                        data.grade === 'Sensitive' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                            'bg-emerald-100 text-emerald-700 border border-emerald-200'
                         }`}>
                         {data.grade}
                     </div>

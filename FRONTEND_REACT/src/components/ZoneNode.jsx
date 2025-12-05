@@ -4,6 +4,8 @@ import { Globe, Cloud, Building } from 'lucide-react';
 
 const ZoneNode = ({ data, selected }) => {
     const getZoneStyle = (grade) => {
+        if (data.isThreat) return 'border-red-500 bg-red-50/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]';
+
         switch (grade) {
             case 'Classified':
                 return selected
