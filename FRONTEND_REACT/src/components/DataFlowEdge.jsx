@@ -4,11 +4,12 @@ import { FileText, Cpu, Image as ImageIcon, Database } from 'lucide-react';
 
 // Helper to get icon component based on file type
 const getIcon = (type) => {
+    const staticClass = "static-icon";
     switch (type) {
-        case 'Document': return <FileText size={14} color="#2563eb" fill="white" />;
-        case 'Executable': return <Cpu size={14} color="#dc2626" fill="white" />;
-        case 'Media': return <ImageIcon size={14} color="#16a34a" fill="white" />;
-        default: return <Database size={14} color="#9333ea" fill="white" />;
+        case 'Document': return <FileText size={14} color="#2563eb" fill="white" className={staticClass} />;
+        case 'Executable': return <Cpu size={14} color="#dc2626" fill="white" className={staticClass} />;
+        case 'Media': return <ImageIcon size={14} color="#16a34a" fill="white" className={staticClass} />;
+        default: return <Database size={14} color="#9333ea" fill="white" className={staticClass} />;
     }
 };
 
@@ -136,72 +137,21 @@ export default function DataFlowEdge({
             )}
 
             {carriedData.length > 0 && (
-                <g>
-                    {isBidirectional ? (
-                        // Static Badge for Bidirectional
-                        <foreignObject
-                            width={carriedData.length * 28 + 16}
-                            height={34}
-                            x={labelX - (carriedData.length * 28 + 16) / 2}
-                            y={labelY - 17}
-                            className="overflow-visible pointer-events-none"
-                        >
-                            <div className="flex items-center justify-center gap-1 px-1.5 py-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm border border-indigo-100 w-full h-full">
-                                {carriedData.map((item) => (
-                                    <div key={item.id} className="flex items-center justify-center w-6 h-6 bg-indigo-50 rounded-full border border-indigo-100 shadow-sm" title={item.label}>
-                                        {getIcon(item.fileType)}
-                                    </div>
-                                ))}
+                <foreignObject
+                    width={carriedData.length * 28 + 16}
+                    height={34}
+                    x={labelX - (carriedData.length * 28 + 16) / 2}
+                    y={labelY - 17}
+                    className="overflow-visible pointer-events-none"
+                >
+                    <div className="flex items-center justify-center gap-1 px-1.5 py-1.5 bg-white rounded-full border border-gray-200 w-full h-full">
+                        {carriedData.map((item) => (
+                            <div key={item.id} className="flex items-center justify-center w-6 h-6 bg-gray-50 rounded-full border border-gray-100 animate-none" title={item.label}>
+                                {getIcon(item.fileType)}
                             </div>
-                        </foreignObject>
-                    ) : (
-                        // Moving Particles for Unidirectional
-                        carriedData.map((item, index) => {
-                            // Stagger animations if multiple items
-                            const duration = 3; // seconds
-                            const delay = index * (duration / carriedData.length);
-
-                            return (
-                                <g key={`${id}-data-${item.id}`}>
-                                    {/* Invisible circle to guide the animation along the path */}
-                                    <circle r="0" fill="none">
-                                        <animateMotion
-                                            dur={`${duration}s`}
-                                            repeatCount="indefinite"
-                                            path={edgePath}
-                                            begin={`-${delay}s`}
-                                            rotate="auto"
-                                        >
-                                            <mpath href={`#${id}`} />
-                                        </animateMotion>
-                                    </circle>
-
-                                    {/* The actual moving content */}
-                                    <foreignObject
-                                        width={28}
-                                        height={28}
-                                        x={-14}
-                                        y={-14}
-                                        className="overflow-visible pointer-events-none"
-                                    >
-                                        <div className="flex items-center justify-center w-7 h-7 bg-white/90 backdrop-blur-md rounded-full shadow-md border border-indigo-200" title={item.label}>
-                                            {getIcon(item.fileType)}
-                                        </div>
-                                    </foreignObject>
-
-                                    {/* Apply the motion to the foreignObject directly as fallback/ensure */}
-                                    <animateMotion
-                                        dur={`${duration}s`}
-                                        repeatCount="indefinite"
-                                        path={edgePath}
-                                        begin={`-${delay}s`}
-                                        rotate="auto"
-                                    />
-                                </g>
-                            );
-                        })
-                    )}
-                </g>
+                        ))}
+                    </div>
+                </foreignObject>
             )}
         </>
     );

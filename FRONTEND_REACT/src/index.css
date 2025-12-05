@@ -36,3 +36,11 @@ body,
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
 }
+
+/* Force Static Icons */
+.static-icon,
+.static-icon * {
+  stroke-dasharray: none !important;
+  animation: none !important;
+  transition: none !important;
+}
