@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useReactFlow } from 'reactflow';
 import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Shield } from 'lucide-react';
 import useStore from '../store';
@@ -611,6 +611,59 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
         );
     };
 
+    // --- Helper to merge threats by context and remediation (Moved to component scope) ---
+    const mergeThreatItems = (items) => {
+        const merged = [];
+        const processedIndices = new Set();
+
+        items.forEach((item, index) => {
+            if (processedIndices.has(index)) return;
+
+            const group = {
+                primary: item,
+                indices: [index],
+                allData: item.data ? [item.data] : []
+            };
+
+            for (let i = index + 1; i < items.length; i++) {
+                if (processedIndices.has(i)) continue;
+                const other = items[i];
+
+                const sameSystem = item.system === other.system;
+                const sameConnection = item.connection === other.connection;
+                const sameRemediation = item.remediation === other.remediation;
+
+                const isMatch = sameRemediation && (
+                    (item.system && sameSystem) ||
+                    (item.connection && sameConnection)
+                );
+
+                if (isMatch) {
+                    group.indices.push(i);
+                    if (other.data && !group.allData.includes(other.data)) {
+                        group.allData.push(other.data);
+                    }
+                    processedIndices.add(i);
+                }
+            }
+
+            merged.push(group);
+            processedIndices.add(index);
+        });
+        return merged;
+    };
+
+    // Calculate merged count for Tab Badge
+    const mergedTotalCount = useMemo(() => {
+        if (!analysisResult || !analysisResult.threats) return 0;
+        let count = 0;
+        Object.values(analysisResult.threats).forEach(items => {
+            count += mergeThreatItems(items).length;
+        });
+        return count;
+    }, [analysisResult]);
+
+
     const renderThreatsTab = () => {
         if (!analysisResult) {
             return (
@@ -643,115 +696,29 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
             );
         }
 
-        // --- Helper to merge bidirectional threats ---
-        const getMergedThreats = (violationType, items) => {
-            const merged = [];
-            const processedIndices = new Set();
+        // --- Merging logic moved to component scope ---
+        // We can use mergedTotalCount directly
+        const visibleCount = mergedTotalCount;
 
-            items.forEach((item, index) => {
-                if (processedIndices.has(index)) return;
+        // Pre-calculate merged threats
+        const mergedThreats = {};
 
-                // Find potential duplicate (same system, same data, similar connection)
-                // Note: Connections might have different IDs like "flow_a_b" and "flow_b_a"
-                // But usually for bidirectional they share other properties.
-                // A better heuristic is: if everything except the connection ID is the same,
-                // AND the connection IDs look like reverse of each other or we know they are pair.
-                // For simplicity, let's group by "System + Data" for now, as that's usually the unique pair for a threat type.
-                // Or "Source + Target + Data".
-
-                // Let's look ahead for a match
-                let matchIndex = -1;
-                for (let i = index + 1; i < items.length; i++) {
-                    if (processedIndices.has(i)) continue;
-                    const other = items[i];
-
-                    // Heuristic: If they involve the same System and the same Data, they are likely the same threat just reverse direction
-                    // Adjust this logic if needed based on specific threat types
-                    const sameSystem = item.system === other.system;
-                    // Some threats might not have 'system' but 'connection'
-                    const sameData = item.data === other.data; // assuming 'data' field exists in threat detail
-
-                    // Specific check for connection reversal if available
-                    // const connectionReversed = item.connection && other.connection && ...
-
-                    if (sameSystem && sameData) {
-                        // Found a duplicate candidate
-                        matchIndex = i;
-                        break;
-                    }
-                }
-
-                if (matchIndex !== -1) {
-                    // Merge
-                    merged.push({
-                        ...item,
-                        _mergedIndices: [index, matchIndex], // Keep track of original indices
-                        label: `${item.system} (Bidirectional)`
-                    });
-                    processedIndices.add(index);
-                    processedIndices.add(matchIndex);
-                } else {
-                    // No duplicate found
-                    merged.push({
-                        ...item,
-                        _mergedIndices: [index],
-                    });
-                    processedIndices.add(index);
-                }
-            });
-            return merged;
-        };
-
+        Object.entries(threats).forEach(([key, items]) => {
+            const merged = mergeThreatItems(items);
+            if (merged.length > 0) {
+                mergedThreats[key] = merged;
+            }
+        });
 
         return (
             <div className="space-y-4 p-1">
                 <div className="flex items-center gap-2 mb-2 bg-red-50 p-3 rounded-lg border border-red-100">
-                    <span className="font-bold text-red-700">{total_count} Violations Found</span>
+                    <span className="font-bold text-red-700">{visibleCount} Violations Found</span>
                 </div>
-                {Object.entries(threats).map(([key, items]) => {
-                    if (items.length === 0) return null;
+                {Object.entries(mergedThreats).map(([key, mergedItems]) => {
+                    // mergedItems is already calculated
 
-                    // --- Merging Logic ---
-                    const mergedItems = [];
-                    const processedIndices = new Set();
-
-                    items.forEach((item, index) => {
-                        if (processedIndices.has(index)) return;
-
-                        const group = {
-                            primary: item,
-                            indices: [index],
-                            allData: item.data ? [item.data] : []
-                        };
-
-                        // Look for duplicates in the rest of the list
-                        for (let i = index + 1; i < items.length; i++) {
-                            if (processedIndices.has(i)) continue;
-                            const other = items[i];
-
-                            // Check for identity: Same System/Connection AND Same Remediation
-                            const sameSystem = item.system === other.system;
-                            const sameConnection = item.connection === other.connection;
-                            const sameRemediation = item.remediation === other.remediation;
-
-                            // Match if Remediation matches AND (System or Connection matches)
-                            const isMatch = sameRemediation && (
-                                (item.system && sameSystem) ||
-                                (item.connection && sameConnection)
-                            );
-
-                            if (isMatch) {
-                                group.indices.push(i);
-                                if (other.data && !group.allData.includes(other.data)) {
-                                    group.allData.push(other.data);
-                                }
-                                processedIndices.add(i);
-                            }
-                        }
-
-                        mergedItems.push(group);
-                        processedIndices.add(index);
-                    });
+                    // --- Merging Logic Removed (Already done) ---
 
 
                     return (
@@ -839,9 +806,9 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                     onClick={() => setActiveTab('threats')}
                 >
                     Threats
-                    {analysisResult && analysisResult.total_count > 0 && (
+                    {mergedTotalCount > 0 && (
                         <span className="ml-2 bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">
-                            {analysisResult.total_count}
+                            {mergedTotalCount}
                         </span>
                     )}
                 </button>

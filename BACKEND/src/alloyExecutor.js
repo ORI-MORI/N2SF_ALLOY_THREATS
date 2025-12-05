@@ -214,7 +214,34 @@ function parseAlloyXML(xml) {
         }
     }
 
-    console.log('Parsed Threats:', JSON.stringify(threats, null, 2));
+    // Helper: Cleanup Temp Files
+    const cleanupTempFiles = (directory) => {
+        try {
+            if (!fs.existsSync(directory)) return;
+            const files = fs.readdirSync(directory);
+            files.forEach(file => {
+                // Delete patterns: tmp*, *.cnf, *.tmp
+                if (file.startsWith('tmp') || file.endsWith('.cnf') || file.endsWith('.tmp')) {
+                    const fullPath = path.join(directory, file);
+                    try {
+                        fs.unlinkSync(fullPath);
+                        console.log(`Cleaned up temp file: ${fullPath}`);
+                    } catch (e) {
+                        console.warn(`Failed to delete temp file ${fullPath}: ${e.message}`);
+                    }
+                }
+            });
+        } catch (err) {
+            console.warn(`Error during cleanup of ${directory}: ${err.message}`);
+        }
+    };
+
+    console.log(`Parsed Threats:`, JSON.stringify(threats, null, 2));
+
+    // Cleanup 'alloy' directory
+    const alloyDir = path.join(process.cwd(), 'alloy');
+    cleanupTempFiles(alloyDir);
+
     return { threats, total_count };
 }
 
