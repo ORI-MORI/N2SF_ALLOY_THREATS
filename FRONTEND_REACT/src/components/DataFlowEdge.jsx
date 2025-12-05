@@ -85,13 +85,14 @@ export default function DataFlowEdge({
 
     // Ensure style includes animation if animated prop is true
     // Ensure style includes animation if animated prop is true
+    // Ensure style includes animation if animated prop is true
     const edgeStyle = {
         ...style,
-        strokeWidth: 2, // Keep constant width to prevent arrow scaling
-        stroke: selected ? '#2563eb' : (style.stroke || '#000000'), // Blue if selected
+        strokeWidth: selected ? 3 : 2,
+        stroke: selected ? '#6366f1' : '#94a3b8', // Indigo-500 : Slate-400
         strokeDasharray: (animated && !isBidirectional) ? 5 : 'none',
         animation: (animated && !isBidirectional) ? 'dashdraw 0.5s linear infinite' : 'none',
-        filter: selected ? 'drop-shadow(0 0 2px rgba(37, 99, 235, 0.5))' : undefined,
+        filter: selected ? 'drop-shadow(0 0 3px rgba(99, 102, 241, 0.5))' : undefined,
     };
 
     // Calculate arrow rotation based on target position
@@ -119,7 +120,7 @@ export default function DataFlowEdge({
                 <g transform={`translate(${targetX}, ${targetY}) rotate(${arrowRotation})`}>
                     <path
                         d="M -10 -5 L 0 0 L -10 5 Z" // Simple arrow head pointing right (0 deg)
-                        fill={selected ? '#2563eb' : '#000000'}
+                        fill={selected ? '#6366f1' : '#94a3b8'}
                     />
                 </g>
             )}
@@ -139,15 +140,15 @@ export default function DataFlowEdge({
                     {isBidirectional ? (
                         // Static Badge for Bidirectional
                         <foreignObject
-                            width={carriedData.length * 24 + 12}
-                            height={30}
-                            x={labelX - (carriedData.length * 24 + 12) / 2}
-                            y={labelY - 15}
+                            width={carriedData.length * 28 + 16}
+                            height={34}
+                            x={labelX - (carriedData.length * 28 + 16) / 2}
+                            y={labelY - 17}
                             className="overflow-visible pointer-events-none"
                         >
-                            <div className="flex items-center justify-center gap-1 px-1 py-1 bg-white rounded-full shadow-sm border border-gray-200 w-full h-full">
+                            <div className="flex items-center justify-center gap-1 px-1.5 py-1.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm border border-indigo-100 w-full h-full">
                                 {carriedData.map((item) => (
-                                    <div key={item.id} className="flex items-center justify-center w-5 h-5">
+                                    <div key={item.id} className="flex items-center justify-center w-6 h-6 bg-indigo-50 rounded-full border border-indigo-100 shadow-sm" title={item.label}>
                                         {getIcon(item.fileType)}
                                     </div>
                                 ))}
@@ -177,13 +178,13 @@ export default function DataFlowEdge({
 
                                     {/* The actual moving content */}
                                     <foreignObject
-                                        width={24}
-                                        height={24}
-                                        x={-12}
-                                        y={-12}
+                                        width={28}
+                                        height={28}
+                                        x={-14}
+                                        y={-14}
                                         className="overflow-visible pointer-events-none"
                                     >
-                                        <div className="flex items-center justify-center w-6 h-6 bg-white rounded-full shadow-sm border border-gray-200">
+                                        <div className="flex items-center justify-center w-7 h-7 bg-white/90 backdrop-blur-md rounded-full shadow-md border border-indigo-200" title={item.label}>
                                             {getIcon(item.fileType)}
                                         </div>
                                     </foreignObject>
