@@ -193,7 +193,7 @@ function parseAlloyXML(xml) {
             while ((tupleMatch = tupleRegex.exec(content)) !== null) {
                 const tupleContent = tupleMatch[1];
                 // Allow optional whitespace before />
-                const atomRegex = /<atom label="([^"]+)"\s*\/>/g;
+                const atomRegex = /<atom label="([^"]+)"/g;
                 const atoms = [];
                 let am;
                 while ((am = atomRegex.exec(tupleContent)) !== null) {

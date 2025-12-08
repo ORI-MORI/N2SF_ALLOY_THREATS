@@ -1,0 +1,23 @@
+{
+    "nodes": [
+        {
+            "id": "node_1",
+            "type": "system",
+            "data": {
+                "label": "Data Server",
+                "type": "Server",
+                "grade": "Sensitive",
+                "isStorageEncrypted": false,
+                "mediaType": "HDD",
+                "storedData": [
+                    {
+                        "id": 1,
+                        "grade": "Sensitive",
+                        "fileType": "Document"
+                    }
+                ]
+            }
+        }
+    ],
+    "edges": []
+}

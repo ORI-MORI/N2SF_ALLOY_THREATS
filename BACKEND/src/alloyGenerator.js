@@ -105,6 +105,7 @@ const generateAlloyFile = (jsonData) => {
     console.log("Processing Systems...");
     if (jsonData.systems && jsonData.systems.length > 0) {
         jsonData.systems.forEach(sys => {
+            console.log(`[DEBUG] Processing System ID: ${sys.id}, LOC: ${sys.loc}, LOCATION: ${sys.location}`);
             // List Handling: stores -> Data1 + Data2
             const stores = formatList(sys.stores, 'Data');
 
@@ -112,31 +113,33 @@ const generateAlloyFile = (jsonData) => {
             const grade = sys.grade || 'Open';
             const deviceType = sys.deviceType || 'Server';
             const serviceModel = sys.serviceModel || 'OnPremise';
-            const lifeCycle = sys.eol_status || 'Active';
-            const patchStatus = sys.patch_status || 'UpToDate';
-            const cdsType = sys.cds_type || 'NotCDS';
-            const authMechanism = sys.auth_type || 'Single_Factor';
-            const keyMgmt = sys.key_storage || 'Local_Storage';
-            const virtStatus = sys.virt_status || 'Physical';
-            const tenantIsolation = sys.tenant_isolation || 'Dedicated';
-            const dataVolatility = sys.data_volatility || 'Persistent_Disk';
-            const failureMode = sys.failure_mode || (deviceType === 'Gateway' ? 'Fail_Secure' : 'Fail_Open'); // Template Logic
-            const sessionPolicy = sys.session_policy || 'Unsafe';
+            const lifeCycle = sys.eol_status || sys.lifeCycle || 'Active';
+            const patchStatus = sys.patch_status || sys.patchStatus || 'UpToDate';
+            const cdsType = sys.cds_type || sys.cdsType || 'NotCDS';
+            const authRaw = sys.auth_type || sys.authType || 'Single_Factor';
+            const authMechanism = (authRaw === 'Single') ? 'Single_Factor' : (authRaw === 'Multi' ? 'Multi_Factor' : authRaw);
+            const keyMgmt = sys.key_storage || sys.keyMgmt || 'Local_Storage';
+            const virtStatus = sys.virt_status || sys.virtStatus || 'Physical';
+            const isolationRaw = sys.tenant_isolation || sys.tenantIsolation || 'Dedicated';
+            const tenantIsolation = (isolationRaw === 'None') ? 'Dedicated' : isolationRaw;
+            const dataVolatility = sys.data_volatility || sys.dataVolatility || 'Persistent_Disk';
+            const failureMode = sys.failure_mode || sys.failureMode || (deviceType === 'Gateway' ? 'Fail_Secure' : 'Fail_Open'); // Template Logic
+            const sessionPolicy = sys.session_policy || sys.sessionPolicy || 'Unsafe';
 
             // Boolean / Int Conversions
-            const isManagementDevice = sys.is_admin ? '1' : '0';
-            const isRegistered = sys.is_registered !== undefined ? (sys.is_registered ? '1' : '0') : '1'; // Default to 1 (Registered)
-            const isCertified = sys.is_certified ? '1' : '0';
-            const hasHwIntegrity = sys.has_tpm ? '1' : '0';
-            const hasSwIntegrity = sys.has_os_sign ? '1' : '0';
-            const hasContainer = (deviceType === 'Mobile' || sys.has_container) ? '1' : '0'; // Template Logic
-            const hasWirelessInterface = (deviceType === 'Mobile' || sys.has_wifi) ? '1' : '0';
-            const hasPhysicalPortControl = sys.usb_control ? '1' : '0';
-            const hasAuditLogging = sys.audit_log ? '1' : '0';
-            const isHardened = sys.os_hardening ? '1' : '0';
-            const isRedundant = (deviceType === 'Gateway' && sys.is_ha) ? '1' : '0'; // Gateway default
-            const hasSecureClock = sys.ntp_sync ? '1' : '0';
-            const hasDDoSProtection = sys.ddos_agent ? '1' : '0';
+            const isManagementDevice = (sys.is_admin || sys.isManagement) ? '1' : '0';
+            const isRegistered = (sys.is_registered !== undefined ? sys.is_registered : (sys.isRegistered !== undefined ? sys.isRegistered : true)) ? '1' : '0';
+            const isCertified = (sys.is_certified || sys.isCertified) ? '1' : '0';
+            const hasHwIntegrity = (sys.has_tpm || sys.hasHwIntegrity) ? '1' : '0';
+            const hasSwIntegrity = (sys.has_os_sign || sys.hasSwIntegrity) ? '1' : '0';
+            const hasContainer = (deviceType === 'Mobile' || sys.has_container || sys.hasContainer) ? '1' : '0'; // Template Logic
+            const hasWirelessInterface = (deviceType === 'Mobile' || sys.has_wifi || sys.hasWirelessInterface) ? '1' : '0';
+            const hasPhysicalPortControl = (sys.usb_control || sys.hasPhysicalPortControl) ? '1' : '0';
+            const hasAuditLogging = (sys.audit_log || sys.hasAuditLogging) ? '1' : '0';
+            const isHardened = (sys.os_hardening || sys.isHardened) ? '1' : '0';
+            const isRedundant = (deviceType === 'Gateway' && (sys.is_ha || sys.isRedundant)) ? '1' : '0'; // Gateway default
+            const hasSecureClock = (sys.ntp_sync || sys.hasSecureClock) ? '1' : '0';
+            const hasDDoSProtection = (sys.ddos_agent || sys.hasDDoSProtection) ? '1' : '0';
 
             systemsCode += `one sig System${sys.id} extends System {}\n`;
             systemsCode += `fact {\n`;
@@ -144,8 +147,8 @@ const generateAlloyFile = (jsonData) => {
             systemsCode += `    System${sys.id}.grade = ${grade}\n`;
             systemsCode += `    System${sys.id}.stores = ${stores}\n`;
             systemsCode += `    System${sys.id}.supportedGrades = ${grade}\n`; // Default to self grade for now
-            systemsCode += `    System${sys.id}.physicalLoc = Zone${sys.location}\n`;
-            systemsCode += `    System${sys.id}.connectedZones = Zone${sys.location}\n`; // Simplified
+            systemsCode += `    System${sys.id}.physicalLoc = Zone${sys.location || sys.loc}\n`;
+            systemsCode += `    System${sys.id}.connectedZones = Zone${sys.location || sys.loc}\n`; // Simplified
 
             systemsCode += `    // [Asset Info]\n`;
             systemsCode += `    System${sys.id}.deviceType = ${deviceType}\n`;
@@ -194,19 +197,19 @@ const generateAlloyFile = (jsonData) => {
             const inspections = formatList(conn.inspections, '');
 
             // Mappings
-            const connType = conn.conn_type || 'FileTransfer';
+            const connType = conn.conn_type || conn.connType || 'FileTransfer';
             const protocol = conn.protocol || 'Generic_TCP';
-            const encQuality = conn.encryption || 'NoEncryption';
-            const integrityStatus = conn.integrity_check || 'NoIntegrity';
+            const encQuality = conn.encryption || conn.encQuality || (conn.isEncrypted ? 'SSL_TLS' : 'NoEncryption');
+            const integrityStatus = conn.integrity_check || conn.integrityStatus || 'NoIntegrity';
             const duration = conn.duration || 'Ephemeral';
-            const accessPolicy = conn.access_policy || 'Temporary_Approval';
-            const targetPortType = conn.target_port || 'ServicePort';
-            const isolationMethod = conn.isolation || 'Direct_Browser';
+            const accessPolicy = conn.access_policy || conn.accessPolicy || 'Temporary_Approval';
+            const targetPortType = conn.target_port || conn.targetPortType || 'ServicePort';
+            const isolationMethod = conn.isolation || conn.isolationMethod || 'Direct_Browser';
 
             // Int Conversions
-            const isAdminTraffic = conn.is_admin_traffic ? '1' : '0';
-            const hasContentFilter = conn.has_dlp ? '1' : '0'; // Or redundant with inspections
-            const hasCDR = conn.has_cdr ? '1' : '0';
+            const isAdminTraffic = (conn.is_admin_traffic || conn.isAdminTraffic) ? '1' : '0';
+            const hasContentFilter = (conn.has_dlp || conn.hasDLP) ? '1' : '0'; // Or redundant with inspections
+            const hasCDR = (conn.has_cdr || conn.hasCDR) ? '1' : '0';
 
             connectionsCode += `one sig Connection${connId} extends Connection {}\n`;
             connectionsCode += `fact {\n`;
@@ -354,6 +357,8 @@ const generateAlloyFile = (jsonData) => {
 
     fs.writeFileSync(outputPath, als);
     console.log(`Alloy file generated successfully at ${outputPath}`);
+    console.log(`Generated ALS Content Length: ${als.length}`);
+    // console.log(`Generated ALS Content Preview:\n${als.substring(0, 500)}`);
     return outputPath;
 };
 
