@@ -86,8 +86,8 @@ graph LR
 
 **1. 저장소 복제 (Clone Repository)**
 ```bash
-git clone https://github.com/your-repo/otd-alloy.git
-cd otd-alloy
+git clone https://github.com/ORI-MORI/N2SF_WITH_ALLOY.git
+cd AMADEUS
 ```
 
 **2. 백엔드 실행 (Backend)**
