@@ -43,7 +43,7 @@ export default function LandingPage({ onStartProject }) {
 
                 {/* Header */}
                 <div className="text-center space-y-4 mb-8">
-                    <img src="/owl_AMADEUS.png" alt="AMADEUS Logo" className="mx-auto w-[500px] h-auto object-contain animate-fade-in-up" />
+                    <img src="/AMADEUS.png" alt="AMADEUS Logo" className="mx-auto w-[500px] h-auto object-contain animate-fade-in-up" />
                 </div>
 
                 {/* Main Actions */}

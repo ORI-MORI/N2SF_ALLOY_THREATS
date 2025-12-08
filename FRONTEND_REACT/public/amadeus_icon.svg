@@ -1,0 +1,30 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3730A3;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  
+  <!-- Circular Background -->
+  <circle cx="256" cy="256" r="240" fill="url(#grad1)" />
+  
+  <!-- Content Group -->
+  <g filter="url(#shadow)" transform="translate(256 256) scale(0.6) translate(-256 -256)">
+    <!-- Security Shield -->
+    <path d="M256 460C256 460 416 380 416 230V110L256 50L96 110V230C96 380 256 460 256 460Z" 
+          stroke="white" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          
+    <!-- Network Nodes (Abstract A shape) -->
+    <circle cx="256" cy="180" r="30" fill="white"/>
+    <circle cx="180" cy="320" r="25" fill="white" fill-opacity="0.8"/>
+    <circle cx="332" cy="320" r="25" fill="white" fill-opacity="0.8"/>
+    
+    <!-- Connections -->
+    <path d="M256 180L180 320M256 180L332 320M180 320H332" 
+          stroke="white" stroke-width="24" stroke-linecap="round" stroke-opacity="0.8"/>
+  </g>
+</svg>
