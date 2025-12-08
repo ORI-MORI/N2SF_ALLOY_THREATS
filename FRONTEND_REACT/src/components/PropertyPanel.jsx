@@ -18,9 +18,9 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
         }
     }, [selectedElement]);
 
-    // Automatically switch to threats tab if there are violations
+    // Automatically switch to threats tab if there are violations OR analysis errors (like empty diagram)
     useEffect(() => {
-        if (analysisResult && analysisResult.total_count > 0) {
+        if (analysisResult) {
             setActiveTab('threats');
         }
     }, [analysisResult]);
