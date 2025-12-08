@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useReactFlow } from 'reactflow';
-import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Shield } from 'lucide-react';
+import { CheckCircle, Shield } from 'lucide-react';
 import useStore from '../store';
 
 export default function PropertyPanel({ analysisResult, onThreatClick, selectedThreatId }) {

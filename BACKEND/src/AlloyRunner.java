@@ -9,41 +9,46 @@ import edu.mit.csail.sdg.alloy4compiler.translator.A4Solution;
 import edu.mit.csail.sdg.alloy4compiler.translator.TranslateAlloyToKodkod;
 
 public class AlloyRunner {
-    public static void main(String[] args) throws Err {
-        if (args.length < 1) {
-            System.out.println("Usage: java -cp .;alloy4.2.jar AlloyRunner <als_file>");
-            return;
-        }
-
-        String filename = args[0];
-
-        A4Reporter rep = new A4Reporter() {
-            @Override
-            public void warning(ErrorWarning msg) {
-                System.out.print("Relevance Warning:\n" + (msg.toString().trim()) + "\n\n");
-                System.out.flush();
+    public static void main(String[] args) {
+        try {
+            if (args.length < 1) {
+                System.out.println("Usage: java AlloyRunner <alloy_file.als>");
+                return;
             }
-        };
 
-        Module world = CompUtil.parseEverything_fromFile(rep, null, filename);
-        A4Options options = new A4Options();
-        options.solver = A4Options.SatSolver.SAT4J;
+            String filename = args[0];
+            A4Reporter rep = new A4Reporter() {
+                @Override
+                public void warning(ErrorWarning msg) {
+                    System.out.print("Relevance Warning:\n" + (msg.toString().trim()) + "\n\n");
+                    System.out.flush();
+                }
+            };
 
-        System.out.println("Available commands: " + world.getAllCommands());
+            Module world = CompUtil.parseEverything_fromFile(rep, null, filename);
+            A4Options options = new A4Options();
+            options.solver = A4Options.SatSolver.SAT4J;
 
-        for (Command command : world.getAllCommands()) {
-            System.out.println("Executing command: " + command.label);
-
-            // Execute the command
+            Command command = world.getAllCommands().get(0);
             A4Solution ans = TranslateAlloyToKodkod.execute_command(rep, world.getAllReachableSigs(), command, options);
 
-            // Export to XML
             String xmlPath = filename.replace(".als", ".xml");
             ans.writeXML(xmlPath);
-            System.out.println("XML generated at: " + xmlPath);
+            System.out.println("XML generated: " + xmlPath);
 
-            // We only need to run the first command
-            break;
+        } catch (Throwable t) {
+            try {
+                java.io.FileWriter fw = new java.io.FileWriter("crash.log");
+                java.io.PrintWriter pw = new java.io.PrintWriter(fw);
+                t.printStackTrace(pw);
+                pw.close();
+                fw.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            System.err.println("CRASH_DUMP: " + t.toString());
+            t.printStackTrace();
+            System.exit(1);
         }
     }
 }

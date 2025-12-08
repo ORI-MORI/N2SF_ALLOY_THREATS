@@ -1,70 +1,132 @@
 module n2sf_base
 
-// 1. 보안 등급 정의 (순서: 공개 < 민감 < 기밀)
 open util/ordering[Grade]
+
+// ============================================================
+// 1. 보안 등급 및 구역 정의 (N2SF 제2장, 부록2)
+// ============================================================
 enum Grade { Open, Sensitive, Classified }
+enum ZoneType { Internet, Intranet, DMZ, Cloud, PPP, Wireless, ManagementZone, DevTestZone }
 
-// 2. 각종 열거형(Enum) 정의
-// [ZoneType] PPP(민관협력), Cloud 추가
-enum ZoneType { Internet, Intranet, DMZ, Wireless, PPP, Cloud } 
+// 구역별 보호 상태 (무선 WIPS, DDoS 등)
+enum ZoneProtection { NoProtection, WIPS_Active }
 
-// [NodeType] Mobile, WirelessAP, SaaS 추가
-enum NodeType { Terminal, Server, SecurityDevice, NetworkDevice, Mobile, WirelessAP, SaaS }
+// ============================================================
+// 2. 자산 및 서비스 특성 (N2SF 제6장, 부록2 모델 3,8,9)
+// ============================================================
+enum DeviceType { Generic_PC, Server, Mobile, IoT, SecurityGear, DNS_Server, Gateway }
+enum ServiceModel { OnPremise, IaaS, PaaS, SaaS }
+enum LifecycleStatus { Active, EOL } // 기술지원 종료 여부
+enum PatchStatus { UpToDate, Vulnerable } // 보안 패치 상태
+enum Volatility { Volatile_Memory, Persistent_Disk } // 데이터 휘발성
 
-// [IsolationType] 논리적 망분리용 (VDI, RBI)
-enum IsolationType { None, VDI, RBI }
+// ============================================================
+// 3. 보안 메커니즘 및 기술 (N2SF 제1~3장, 부록1)
+// ============================================================
+// 망연계(CDS) 유형 (부록2 모델 11)
+enum CDSType { NotCDS, OneWay_Out, OneWay_In, TwoWay_Relay, Access_CDS, MLS_CDS }
 
-enum AuthType { Single, MFA }
-enum Protocol { HTTPS, SSH, VPN_Tunnel, ClearText, SQL }
-enum FileType { Document, Executable, Media }
-enum Boolean { True, False }
+// 암호 키 관리 (부록1 EK)
+enum KeyMgmtType { NoKey, Local_Storage, Separated_HSM }
 
-// 3. 위치 (Location/망 영역)
-// 3. 위치 (Location/망 영역)
-abstract sig Location {
-    grade: Grade,
-    type: ZoneType
-}
+// 인증 방식 (부록1 MA)
+enum AuthType { Single_Factor, Multi_Factor }
 
-// 4. 업무 정보 (Data)
-// 4. 업무 정보 (Data)
+// 가상화/클라우드 격리 (부록1 IS, 부록2 모델 3)
+enum VirtualizationType { Physical, Virtual_Secured, Virtual_Insecure }
+enum TenantIsolation { Dedicated, Shared_Logical, Shared_Unsafe }
+
+// ============================================================
+// 4. 연결 및 검사 속성 (N2SF 제4장, 제5장, 부록1 IF/EB)
+// ============================================================
+enum ConnectionType { FileTransfer, ScreenView, ControlSignal }
+enum EncryptionQuality { NoEncryption, Weak_Algo, Validated_Module, Opaque_Traffic }
+enum IntegrityStatus { NoIntegrity, Hmac_Signed }
+enum ConnectionDuration { Persistent, Ephemeral }
+enum Protocol { Generic_TCP, DNS, SSH, RDP, HTTPs }
+enum AccessPolicy { Permanent, Temporary_Approval }
+enum IsolationMethod { Direct_Browser, VDI_RBI_Separation }
+enum PortType { ServicePort, ManagementPort }
+
+// 심층 검사 기능 (Set으로 사용)
+enum InspectionCapability { AntiVirus, DLP, CDR, FormatCheck, AI_Filter, DeIdentification }
+enum SessionConfig { Unsafe, Timeout_Only, Strict_Timeout_Concurrency }
+
+// ============================================================
+// 5. 시그니처(Signature) 정의
+// ============================================================
+
 abstract sig Data {
     grade: Grade,
-    fileType: FileType
+    dataType: DataType // 일반 데이터 vs 개인정보(PII)
 }
+enum DataType { GeneralData, PII, AuthCredential }
 
-// 5. 정보시스템 (System - 주체/객체)
-// 5. 정보시스템 (System - 주체/객체)
-abstract sig System {
+sig Zone {
+    type: ZoneType,
     grade: Grade,
-    loc: Location,
-    type: NodeType,
-    
-    // [보안 속성]
-    isolation: IsolationType,   // 망분리 방식 (None/VDI/RBI)
-    authType: AuthType,         // 인증 방식 (Single/MFA)
-    
-    // [기능/상태 플래그]
-    isCDS: Boolean,             // 연계체계(망연계) 여부
-    isRegistered: Boolean,      // 자산 등록 여부
-    hasMDM: Boolean,            // 모바일 단말 관리(MDM) 여부
-    isStorageEncrypted: Boolean,// 저장 데이터 암호화 여부 (NEW)
-    isManagement: Boolean,      // 관리자 전용 단말/포트 여부 (NEW)
-    
-    stores: set Data            // 저장 중인 데이터
+    wipsStatus: ZoneProtection // [모델 10] 무선 침입 방지
 }
 
-// 6. 연결 (Connection - 데이터 흐름)
-// 6. 연결 (Connection - 데이터 흐름)
+abstract sig System {
+    // [기본 정보]
+    grade: Grade,
+    stores: set Data,
+    supportedGrades: set Grade, // MLS CDS용 다중 등급
+    physicalLoc: Zone,
+    connectedZones: set Zone,
+    
+    // [자산 정보]
+    deviceType: DeviceType,
+    serviceModel: ServiceModel,
+    isManagementDevice: Int, // 0:False, 1:True
+    isRegistered: Int,       // 자산 등록 여부 (Shadow IT 방지)
+    lifeCycle: LifecycleStatus,
+    patchStatus: PatchStatus,
+    isCertified: Int,        // CC인증 제품 여부
+
+    // [보안 상태]
+    cdsType: CDSType,
+    hasHwIntegrity: Int,     // TPM 등
+    hasSwIntegrity: Int,     // Code Signing
+    authMechanism: AuthType,
+    hasContainer: Int,       // 모바일 컨테이너 격리
+    hasWirelessInterface: Int,
+    hasPhysicalPortControl: Int, // USB 통제
+    keyMgmt: KeyMgmtType,
+    virtStatus: VirtualizationType,
+    tenantIsolation: TenantIsolation,
+    
+    // [운영 상태]
+    dataVolatility: Volatility, // 재부팅 시 데이터 소거 여부
+    failureMode: FailureMode,   // 장애 시 동작 (Fail-Safe)
+    hasAuditLogging: Int,
+    isHardened: Int,            // Default PW 제거 등
+    isRedundant: Int,           // 이중화(HA)
+    hasSecureClock: Int,        // 시각 동기화
+    hasDDoSProtection: Int,
+    sessionPolicy: SessionConfig
+}
+enum FailureMode { Fail_Secure, Fail_Open }
+
 abstract sig Connection {
     from: System,
     to: System,
-    carries: set Data,          // 운반 데이터
+    carries: set Data,
     
-    // [전송 보안 속성]
+    // 연결 속성
+    connType: ConnectionType,
     protocol: Protocol,
-    isEncrypted: Boolean,
-    hasCDR: Boolean,            // 무해화 (악성코드 유입 방지)
-    hasDLP: Boolean,            // 정보 유출 방지 (NEW)
-    hasAntiVirus: Boolean       // 백신 검사
+    encQuality: EncryptionQuality,
+    integrityStatus: IntegrityStatus,
+    duration: ConnectionDuration,
+    accessPolicy: AccessPolicy,
+    targetPortType: PortType,
+    isAdminTraffic: Int,
+    isolationMethod: IsolationMethod,
+    
+    // 보안 필터링
+    hasContentFilter: Int, // DLP 적용 여부
+    hasCDR: Int,           // 무해화 적용 여부
+    inspections: set InspectionCapability
 }

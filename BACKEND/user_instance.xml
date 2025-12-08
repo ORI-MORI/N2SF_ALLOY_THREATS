@@ -1,0 +1,1373 @@
+<alloy builddate="2015-02-22 18:21 EST">
+
+<instance bitwidth="4" maxseq="4" command="Run CheckViolations" filename="">
+
+<sig label="seq/Int" ID="0" parentID="1" builtin="yes">
+</sig>
+
+<sig label="Int" ID="1" parentID="2" builtin="yes">
+</sig>
+
+<sig label="String" ID="3" parentID="2" builtin="yes">
+</sig>
+
+<sig label="this/AnalysisResult" ID="4" parentID="2" one="yes">
+   <atom label="AnalysisResult$0"/>
+</sig>
+
+<field label="FindSplitTunneling" ID="5" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindDirectConnection" ID="7" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection301$0"/> </tuple>
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection302$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindFlowViolations" ID="9" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection302$0"/> <atom label="Data102$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="8"/> <type ID="10"/> </types>
+</field>
+
+<field label="FindStorageViolations" ID="11" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System201$0"/> <atom label="Data101$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> <type ID="10"/> </types>
+</field>
+
+<field label="FindWeakCrypto" ID="12" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection301$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindIntegrityLoss" ID="13" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection301$0"/> </tuple>
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection302$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindInsecureKey" ID="14" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System201$0"/> </tuple>
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System203$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindWeakAuth" ID="15" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System201$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindExposedAdmin" ID="16" parentID="4">
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindPermanentAdmin" ID="17" parentID="4">
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindShadowIT" ID="18" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System202$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindIntegrityFailure" ID="19" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System202$0"/> </tuple>
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System203$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindUnpatchedExposure" ID="20" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindEOL" ID="21" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindUncertifiedGear" ID="22" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindWirelessThreat" ID="23" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System201$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindPortRisk" ID="24" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System201$0"/> </tuple>
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System203$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindMobileRisk" ID="25" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindMissingCDR" ID="26" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection301$0"/> </tuple>
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection302$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindFormatRisk" ID="27" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection301$0"/> </tuple>
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection302$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindDLPFailure" ID="28" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection302$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindAIFilterFailure" ID="29" parentID="4">
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindPIILeakage" ID="30" parentID="4">
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindBrowserIsolation" ID="31" parentID="4">
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindVirtRisk" ID="32" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindAuditFailure" ID="33" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System202$0"/> </tuple>
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System203$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindTimeSyncFailure" ID="34" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindHardeningFailure" ID="35" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System201$0"/> </tuple>
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System203$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindRedundancyFailure" ID="36" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindFailOpenRisk" ID="37" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindDDoSRisk" ID="38" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindWeakSession" ID="39" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System202$0"/> </tuple>
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System203$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindPersistentRisk" ID="40" parentID="4">
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindResidualData" ID="41" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindDNSViolation" ID="42" parentID="4">
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindDevProdViolation" ID="43" parentID="4">
+   <types> <type ID="4"/> <type ID="6"/> </types>
+</field>
+
+<field label="FindOpaqueTraffic" ID="44" parentID="4">
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<field label="FindTransitiveLeaks" ID="45" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="System203$0"/> <atom label="Data102$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="6"/> <type ID="10"/> </types>
+</field>
+
+<field label="FindBypass" ID="46" parentID="4">
+   <tuple> <atom label="AnalysisResult$0"/> <atom label="Connection301$0"/> </tuple>
+   <types> <type ID="4"/> <type ID="8"/> </types>
+</field>
+
+<sig label="n2sf_base/Open" ID="47" parentID="48" one="yes">
+   <atom label="n2sf_base/Open$0"/>
+</sig>
+
+<sig label="n2sf_base/Sensitive" ID="49" parentID="48" one="yes">
+   <atom label="n2sf_base/Sensitive$0"/>
+</sig>
+
+<sig label="n2sf_base/Classified" ID="50" parentID="48" one="yes">
+   <atom label="n2sf_base/Classified$0"/>
+</sig>
+
+<sig label="n2sf_base/Grade" ID="48" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Internet" ID="51" parentID="52" one="yes">
+   <atom label="n2sf_base/Internet$0"/>
+</sig>
+
+<sig label="n2sf_base/Intranet" ID="53" parentID="52" one="yes">
+   <atom label="n2sf_base/Intranet$0"/>
+</sig>
+
+<sig label="n2sf_base/DMZ" ID="54" parentID="52" one="yes">
+   <atom label="n2sf_base/DMZ$0"/>
+</sig>
+
+<sig label="n2sf_base/Cloud" ID="55" parentID="52" one="yes">
+   <atom label="n2sf_base/Cloud$0"/>
+</sig>
+
+<sig label="n2sf_base/PPP" ID="56" parentID="52" one="yes">
+   <atom label="n2sf_base/PPP$0"/>
+</sig>
+
+<sig label="n2sf_base/Wireless" ID="57" parentID="52" one="yes">
+   <atom label="n2sf_base/Wireless$0"/>
+</sig>
+
+<sig label="n2sf_base/ManagementZone" ID="58" parentID="52" one="yes">
+   <atom label="n2sf_base/ManagementZone$0"/>
+</sig>
+
+<sig label="n2sf_base/DevTestZone" ID="59" parentID="52" one="yes">
+   <atom label="n2sf_base/DevTestZone$0"/>
+</sig>
+
+<sig label="n2sf_base/ZoneType" ID="52" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/NoProtection" ID="60" parentID="61" one="yes">
+   <atom label="n2sf_base/NoProtection$0"/>
+</sig>
+
+<sig label="n2sf_base/WIPS_Active" ID="62" parentID="61" one="yes">
+   <atom label="n2sf_base/WIPS_Active$0"/>
+</sig>
+
+<sig label="n2sf_base/ZoneProtection" ID="61" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Generic_PC" ID="63" parentID="64" one="yes">
+   <atom label="n2sf_base/Generic_PC$0"/>
+</sig>
+
+<sig label="n2sf_base/Server" ID="65" parentID="64" one="yes">
+   <atom label="n2sf_base/Server$0"/>
+</sig>
+
+<sig label="n2sf_base/Mobile" ID="66" parentID="64" one="yes">
+   <atom label="n2sf_base/Mobile$0"/>
+</sig>
+
+<sig label="n2sf_base/IoT" ID="67" parentID="64" one="yes">
+   <atom label="n2sf_base/IoT$0"/>
+</sig>
+
+<sig label="n2sf_base/SecurityGear" ID="68" parentID="64" one="yes">
+   <atom label="n2sf_base/SecurityGear$0"/>
+</sig>
+
+<sig label="n2sf_base/DNS_Server" ID="69" parentID="64" one="yes">
+   <atom label="n2sf_base/DNS_Server$0"/>
+</sig>
+
+<sig label="n2sf_base/Gateway" ID="70" parentID="64" one="yes">
+   <atom label="n2sf_base/Gateway$0"/>
+</sig>
+
+<sig label="n2sf_base/DeviceType" ID="64" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/OnPremise" ID="71" parentID="72" one="yes">
+   <atom label="n2sf_base/OnPremise$0"/>
+</sig>
+
+<sig label="n2sf_base/IaaS" ID="73" parentID="72" one="yes">
+   <atom label="n2sf_base/IaaS$0"/>
+</sig>
+
+<sig label="n2sf_base/PaaS" ID="74" parentID="72" one="yes">
+   <atom label="n2sf_base/PaaS$0"/>
+</sig>
+
+<sig label="n2sf_base/SaaS" ID="75" parentID="72" one="yes">
+   <atom label="n2sf_base/SaaS$0"/>
+</sig>
+
+<sig label="n2sf_base/ServiceModel" ID="72" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Active" ID="76" parentID="77" one="yes">
+   <atom label="n2sf_base/Active$0"/>
+</sig>
+
+<sig label="n2sf_base/EOL" ID="78" parentID="77" one="yes">
+   <atom label="n2sf_base/EOL$0"/>
+</sig>
+
+<sig label="n2sf_base/LifecycleStatus" ID="77" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/UpToDate" ID="79" parentID="80" one="yes">
+   <atom label="n2sf_base/UpToDate$0"/>
+</sig>
+
+<sig label="n2sf_base/Vulnerable" ID="81" parentID="80" one="yes">
+   <atom label="n2sf_base/Vulnerable$0"/>
+</sig>
+
+<sig label="n2sf_base/PatchStatus" ID="80" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Volatile_Memory" ID="82" parentID="83" one="yes">
+   <atom label="n2sf_base/Volatile_Memory$0"/>
+</sig>
+
+<sig label="n2sf_base/Persistent_Disk" ID="84" parentID="83" one="yes">
+   <atom label="n2sf_base/Persistent_Disk$0"/>
+</sig>
+
+<sig label="n2sf_base/Volatility" ID="83" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/NotCDS" ID="85" parentID="86" one="yes">
+   <atom label="n2sf_base/NotCDS$0"/>
+</sig>
+
+<sig label="n2sf_base/OneWay_Out" ID="87" parentID="86" one="yes">
+   <atom label="n2sf_base/OneWay_Out$0"/>
+</sig>
+
+<sig label="n2sf_base/OneWay_In" ID="88" parentID="86" one="yes">
+   <atom label="n2sf_base/OneWay_In$0"/>
+</sig>
+
+<sig label="n2sf_base/TwoWay_Relay" ID="89" parentID="86" one="yes">
+   <atom label="n2sf_base/TwoWay_Relay$0"/>
+</sig>
+
+<sig label="n2sf_base/Access_CDS" ID="90" parentID="86" one="yes">
+   <atom label="n2sf_base/Access_CDS$0"/>
+</sig>
+
+<sig label="n2sf_base/MLS_CDS" ID="91" parentID="86" one="yes">
+   <atom label="n2sf_base/MLS_CDS$0"/>
+</sig>
+
+<sig label="n2sf_base/CDSType" ID="86" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/NoKey" ID="92" parentID="93" one="yes">
+   <atom label="n2sf_base/NoKey$0"/>
+</sig>
+
+<sig label="n2sf_base/Local_Storage" ID="94" parentID="93" one="yes">
+   <atom label="n2sf_base/Local_Storage$0"/>
+</sig>
+
+<sig label="n2sf_base/Separated_HSM" ID="95" parentID="93" one="yes">
+   <atom label="n2sf_base/Separated_HSM$0"/>
+</sig>
+
+<sig label="n2sf_base/KeyMgmtType" ID="93" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Single_Factor" ID="96" parentID="97" one="yes">
+   <atom label="n2sf_base/Single_Factor$0"/>
+</sig>
+
+<sig label="n2sf_base/Multi_Factor" ID="98" parentID="97" one="yes">
+   <atom label="n2sf_base/Multi_Factor$0"/>
+</sig>
+
+<sig label="n2sf_base/AuthType" ID="97" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Physical" ID="99" parentID="100" one="yes">
+   <atom label="n2sf_base/Physical$0"/>
+</sig>
+
+<sig label="n2sf_base/Virtual_Secured" ID="101" parentID="100" one="yes">
+   <atom label="n2sf_base/Virtual_Secured$0"/>
+</sig>
+
+<sig label="n2sf_base/Virtual_Insecure" ID="102" parentID="100" one="yes">
+   <atom label="n2sf_base/Virtual_Insecure$0"/>
+</sig>
+
+<sig label="n2sf_base/VirtualizationType" ID="100" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Dedicated" ID="103" parentID="104" one="yes">
+   <atom label="n2sf_base/Dedicated$0"/>
+</sig>
+
+<sig label="n2sf_base/Shared_Logical" ID="105" parentID="104" one="yes">
+   <atom label="n2sf_base/Shared_Logical$0"/>
+</sig>
+
+<sig label="n2sf_base/Shared_Unsafe" ID="106" parentID="104" one="yes">
+   <atom label="n2sf_base/Shared_Unsafe$0"/>
+</sig>
+
+<sig label="n2sf_base/TenantIsolation" ID="104" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/FileTransfer" ID="107" parentID="108" one="yes">
+   <atom label="n2sf_base/FileTransfer$0"/>
+</sig>
+
+<sig label="n2sf_base/ScreenView" ID="109" parentID="108" one="yes">
+   <atom label="n2sf_base/ScreenView$0"/>
+</sig>
+
+<sig label="n2sf_base/ControlSignal" ID="110" parentID="108" one="yes">
+   <atom label="n2sf_base/ControlSignal$0"/>
+</sig>
+
+<sig label="n2sf_base/ConnectionType" ID="108" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/NoEncryption" ID="111" parentID="112" one="yes">
+   <atom label="n2sf_base/NoEncryption$0"/>
+</sig>
+
+<sig label="n2sf_base/Weak_Algo" ID="113" parentID="112" one="yes">
+   <atom label="n2sf_base/Weak_Algo$0"/>
+</sig>
+
+<sig label="n2sf_base/Validated_Module" ID="114" parentID="112" one="yes">
+   <atom label="n2sf_base/Validated_Module$0"/>
+</sig>
+
+<sig label="n2sf_base/Opaque_Traffic" ID="115" parentID="112" one="yes">
+   <atom label="n2sf_base/Opaque_Traffic$0"/>
+</sig>
+
+<sig label="n2sf_base/EncryptionQuality" ID="112" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/NoIntegrity" ID="116" parentID="117" one="yes">
+   <atom label="n2sf_base/NoIntegrity$0"/>
+</sig>
+
+<sig label="n2sf_base/Hmac_Signed" ID="118" parentID="117" one="yes">
+   <atom label="n2sf_base/Hmac_Signed$0"/>
+</sig>
+
+<sig label="n2sf_base/IntegrityStatus" ID="117" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Persistent" ID="119" parentID="120" one="yes">
+   <atom label="n2sf_base/Persistent$0"/>
+</sig>
+
+<sig label="n2sf_base/Ephemeral" ID="121" parentID="120" one="yes">
+   <atom label="n2sf_base/Ephemeral$0"/>
+</sig>
+
+<sig label="n2sf_base/ConnectionDuration" ID="120" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Generic_TCP" ID="122" parentID="123" one="yes">
+   <atom label="n2sf_base/Generic_TCP$0"/>
+</sig>
+
+<sig label="n2sf_base/DNS" ID="124" parentID="123" one="yes">
+   <atom label="n2sf_base/DNS$0"/>
+</sig>
+
+<sig label="n2sf_base/SSH" ID="125" parentID="123" one="yes">
+   <atom label="n2sf_base/SSH$0"/>
+</sig>
+
+<sig label="n2sf_base/RDP" ID="126" parentID="123" one="yes">
+   <atom label="n2sf_base/RDP$0"/>
+</sig>
+
+<sig label="n2sf_base/HTTPs" ID="127" parentID="123" one="yes">
+   <atom label="n2sf_base/HTTPs$0"/>
+</sig>
+
+<sig label="n2sf_base/Protocol" ID="123" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Permanent" ID="128" parentID="129" one="yes">
+   <atom label="n2sf_base/Permanent$0"/>
+</sig>
+
+<sig label="n2sf_base/Temporary_Approval" ID="130" parentID="129" one="yes">
+   <atom label="n2sf_base/Temporary_Approval$0"/>
+</sig>
+
+<sig label="n2sf_base/AccessPolicy" ID="129" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Direct_Browser" ID="131" parentID="132" one="yes">
+   <atom label="n2sf_base/Direct_Browser$0"/>
+</sig>
+
+<sig label="n2sf_base/VDI_RBI_Separation" ID="133" parentID="132" one="yes">
+   <atom label="n2sf_base/VDI_RBI_Separation$0"/>
+</sig>
+
+<sig label="n2sf_base/IsolationMethod" ID="132" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/ServicePort" ID="134" parentID="135" one="yes">
+   <atom label="n2sf_base/ServicePort$0"/>
+</sig>
+
+<sig label="n2sf_base/ManagementPort" ID="136" parentID="135" one="yes">
+   <atom label="n2sf_base/ManagementPort$0"/>
+</sig>
+
+<sig label="n2sf_base/PortType" ID="135" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/AntiVirus" ID="137" parentID="138" one="yes">
+   <atom label="n2sf_base/AntiVirus$0"/>
+</sig>
+
+<sig label="n2sf_base/DLP" ID="139" parentID="138" one="yes">
+   <atom label="n2sf_base/DLP$0"/>
+</sig>
+
+<sig label="n2sf_base/CDR" ID="140" parentID="138" one="yes">
+   <atom label="n2sf_base/CDR$0"/>
+</sig>
+
+<sig label="n2sf_base/FormatCheck" ID="141" parentID="138" one="yes">
+   <atom label="n2sf_base/FormatCheck$0"/>
+</sig>
+
+<sig label="n2sf_base/AI_Filter" ID="142" parentID="138" one="yes">
+   <atom label="n2sf_base/AI_Filter$0"/>
+</sig>
+
+<sig label="n2sf_base/DeIdentification" ID="143" parentID="138" one="yes">
+   <atom label="n2sf_base/DeIdentification$0"/>
+</sig>
+
+<sig label="n2sf_base/InspectionCapability" ID="138" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="n2sf_base/Unsafe" ID="144" parentID="145" one="yes">
+   <atom label="n2sf_base/Unsafe$0"/>
+</sig>
+
+<sig label="n2sf_base/Timeout_Only" ID="146" parentID="145" one="yes">
+   <atom label="n2sf_base/Timeout_Only$0"/>
+</sig>
+
+<sig label="n2sf_base/Strict_Timeout_Concurrency" ID="147" parentID="145" one="yes">
+   <atom label="n2sf_base/Strict_Timeout_Concurrency$0"/>
+</sig>
+
+<sig label="n2sf_base/SessionConfig" ID="145" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="this/Data101" ID="148" parentID="10" one="yes">
+   <atom label="Data101$0"/>
+</sig>
+
+<sig label="this/Data102" ID="149" parentID="10" one="yes">
+   <atom label="Data102$0"/>
+</sig>
+
+<sig label="n2sf_base/Data" ID="10" parentID="2" abstract="yes">
+</sig>
+
+<field label="grade" ID="150" parentID="10">
+   <tuple> <atom label="Data101$0"/> <atom label="n2sf_base/Sensitive$0"/> </tuple>
+   <tuple> <atom label="Data102$0"/> <atom label="n2sf_base/Classified$0"/> </tuple>
+   <types> <type ID="10"/> <type ID="48"/> </types>
+</field>
+
+<field label="dataType" ID="151" parentID="10">
+   <tuple> <atom label="Data101$0"/> <atom label="n2sf_base/PII$0"/> </tuple>
+   <tuple> <atom label="Data102$0"/> <atom label="n2sf_base/GeneralData$0"/> </tuple>
+   <types> <type ID="10"/> <type ID="152"/> </types>
+</field>
+
+<sig label="n2sf_base/GeneralData" ID="153" parentID="152" one="yes">
+   <atom label="n2sf_base/GeneralData$0"/>
+</sig>
+
+<sig label="n2sf_base/PII" ID="154" parentID="152" one="yes">
+   <atom label="n2sf_base/PII$0"/>
+</sig>
+
+<sig label="n2sf_base/AuthCredential" ID="155" parentID="152" one="yes">
+   <atom label="n2sf_base/AuthCredential$0"/>
+</sig>
+
+<sig label="n2sf_base/DataType" ID="152" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="this/Zone1" ID="156" parentID="157" one="yes">
+   <atom label="Zone1$0"/>
+</sig>
+
+<sig label="this/Zone2" ID="158" parentID="157" one="yes">
+   <atom label="Zone2$0"/>
+</sig>
+
+<sig label="n2sf_base/Zone" ID="157" parentID="2">
+</sig>
+
+<field label="type" ID="159" parentID="157">
+   <tuple> <atom label="Zone1$0"/> <atom label="n2sf_base/Internet$0"/> </tuple>
+   <tuple> <atom label="Zone2$0"/> <atom label="n2sf_base/Intranet$0"/> </tuple>
+   <types> <type ID="157"/> <type ID="52"/> </types>
+</field>
+
+<field label="grade" ID="160" parentID="157">
+   <tuple> <atom label="Zone1$0"/> <atom label="n2sf_base/Open$0"/> </tuple>
+   <tuple> <atom label="Zone2$0"/> <atom label="n2sf_base/Sensitive$0"/> </tuple>
+   <types> <type ID="157"/> <type ID="48"/> </types>
+</field>
+
+<field label="wipsStatus" ID="161" parentID="157">
+   <tuple> <atom label="Zone1$0"/> <atom label="n2sf_base/NoProtection$0"/> </tuple>
+   <tuple> <atom label="Zone2$0"/> <atom label="n2sf_base/WIPS_Active$0"/> </tuple>
+   <types> <type ID="157"/> <type ID="61"/> </types>
+</field>
+
+<sig label="this/System201" ID="162" parentID="6" one="yes">
+   <atom label="System201$0"/>
+</sig>
+
+<sig label="this/System202" ID="163" parentID="6" one="yes">
+   <atom label="System202$0"/>
+</sig>
+
+<sig label="this/System203" ID="164" parentID="6" one="yes">
+   <atom label="System203$0"/>
+</sig>
+
+<sig label="n2sf_base/System" ID="6" parentID="2" abstract="yes">
+</sig>
+
+<field label="grade" ID="165" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Open$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Sensitive$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Classified$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="48"/> </types>
+</field>
+
+<field label="stores" ID="166" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="Data101$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="Data102$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="10"/> </types>
+</field>
+
+<field label="supportedGrades" ID="167" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Open$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Sensitive$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Classified$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="48"/> </types>
+</field>
+
+<field label="physicalLoc" ID="168" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="Zone1$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="Zone2$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="Zone2$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="157"/> </types>
+</field>
+
+<field label="connectedZones" ID="169" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="Zone1$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="Zone2$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="Zone2$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="157"/> </types>
+</field>
+
+<field label="deviceType" ID="170" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Mobile$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Server$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Server$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="64"/> </types>
+</field>
+
+<field label="serviceModel" ID="171" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/OnPremise$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/OnPremise$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/OnPremise$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="72"/> </types>
+</field>
+
+<field label="isManagementDevice" ID="172" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="isRegistered" ID="173" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="1"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="1"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="lifeCycle" ID="174" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Active$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Active$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Active$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="77"/> </types>
+</field>
+
+<field label="patchStatus" ID="175" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/UpToDate$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/UpToDate$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/UpToDate$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="80"/> </types>
+</field>
+
+<field label="isCertified" ID="176" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="cdsType" ID="177" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/NotCDS$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/NotCDS$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/NotCDS$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="86"/> </types>
+</field>
+
+<field label="hasHwIntegrity" ID="178" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="hasSwIntegrity" ID="179" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="authMechanism" ID="180" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Single_Factor$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Single_Factor$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Single_Factor$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="97"/> </types>
+</field>
+
+<field label="hasContainer" ID="181" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="1"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="hasWirelessInterface" ID="182" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="1"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="hasPhysicalPortControl" ID="183" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="keyMgmt" ID="184" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Local_Storage$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Local_Storage$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Local_Storage$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="93"/> </types>
+</field>
+
+<field label="virtStatus" ID="185" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Physical$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Physical$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Physical$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="100"/> </types>
+</field>
+
+<field label="tenantIsolation" ID="186" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Dedicated$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Dedicated$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Dedicated$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="104"/> </types>
+</field>
+
+<field label="dataVolatility" ID="187" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Persistent_Disk$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Persistent_Disk$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Persistent_Disk$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="83"/> </types>
+</field>
+
+<field label="failureMode" ID="188" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Fail_Open$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Fail_Open$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Fail_Open$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="189"/> </types>
+</field>
+
+<field label="hasAuditLogging" ID="190" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="isHardened" ID="191" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="isRedundant" ID="192" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="hasSecureClock" ID="193" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="hasDDoSProtection" ID="194" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="6"/> <type ID="1"/> </types>
+</field>
+
+<field label="sessionPolicy" ID="195" parentID="6">
+   <tuple> <atom label="System201$0"/> <atom label="n2sf_base/Unsafe$0"/> </tuple>
+   <tuple> <atom label="System202$0"/> <atom label="n2sf_base/Unsafe$0"/> </tuple>
+   <tuple> <atom label="System203$0"/> <atom label="n2sf_base/Unsafe$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="145"/> </types>
+</field>
+
+<sig label="n2sf_base/Fail_Secure" ID="196" parentID="189" one="yes">
+   <atom label="n2sf_base/Fail_Secure$0"/>
+</sig>
+
+<sig label="n2sf_base/Fail_Open" ID="197" parentID="189" one="yes">
+   <atom label="n2sf_base/Fail_Open$0"/>
+</sig>
+
+<sig label="n2sf_base/FailureMode" ID="189" parentID="2" abstract="yes" enum="yes">
+</sig>
+
+<sig label="this/Connection301" ID="198" parentID="8" one="yes">
+   <atom label="Connection301$0"/>
+</sig>
+
+<sig label="this/Connection302" ID="199" parentID="8" one="yes">
+   <atom label="Connection302$0"/>
+</sig>
+
+<sig label="n2sf_base/Connection" ID="8" parentID="2" abstract="yes">
+</sig>
+
+<field label="from" ID="200" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="System201$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="System203$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="6"/> </types>
+</field>
+
+<field label="to" ID="201" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="System202$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="System201$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="6"/> </types>
+</field>
+
+<field label="carries" ID="202" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="Data101$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="Data102$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="10"/> </types>
+</field>
+
+<field label="connType" ID="203" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="n2sf_base/FileTransfer$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="n2sf_base/FileTransfer$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="108"/> </types>
+</field>
+
+<field label="protocol" ID="204" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="n2sf_base/Generic_TCP$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="n2sf_base/SSH$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="123"/> </types>
+</field>
+
+<field label="encQuality" ID="205" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="n2sf_base/Weak_Algo$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="n2sf_base/Validated_Module$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="112"/> </types>
+</field>
+
+<field label="integrityStatus" ID="206" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="n2sf_base/NoIntegrity$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="n2sf_base/NoIntegrity$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="117"/> </types>
+</field>
+
+<field label="duration" ID="207" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="n2sf_base/Ephemeral$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="n2sf_base/Ephemeral$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="120"/> </types>
+</field>
+
+<field label="accessPolicy" ID="208" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="n2sf_base/Temporary_Approval$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="n2sf_base/Temporary_Approval$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="129"/> </types>
+</field>
+
+<field label="targetPortType" ID="209" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="n2sf_base/ServicePort$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="n2sf_base/ServicePort$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="135"/> </types>
+</field>
+
+<field label="isAdminTraffic" ID="210" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="8"/> <type ID="1"/> </types>
+</field>
+
+<field label="isolationMethod" ID="211" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="n2sf_base/Direct_Browser$0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="n2sf_base/Direct_Browser$0"/> </tuple>
+   <types> <type ID="8"/> <type ID="132"/> </types>
+</field>
+
+<field label="hasContentFilter" ID="212" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="8"/> <type ID="1"/> </types>
+</field>
+
+<field label="hasCDR" ID="213" parentID="8">
+   <tuple> <atom label="Connection301$0"/> <atom label="0"/> </tuple>
+   <tuple> <atom label="Connection302$0"/> <atom label="0"/> </tuple>
+   <types> <type ID="8"/> <type ID="1"/> </types>
+</field>
+
+<field label="inspections" ID="214" parentID="8">
+   <types> <type ID="8"/> <type ID="138"/> </types>
+</field>
+
+<sig label="n2sf_base/ordering/Ord" ID="215" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/ordering/Ord$0"/>
+</sig>
+
+<field label="First" ID="216" parentID="215" private="yes">
+   <tuple> <atom label="n2sf_base/ordering/Ord$0"/> <atom label="n2sf_base/Open$0"/> </tuple>
+   <types> <type ID="215"/> <type ID="48"/> </types>
+</field>
+
+<field label="Next" ID="217" parentID="215" private="yes">
+   <tuple> <atom label="n2sf_base/ordering/Ord$0"/> <atom label="n2sf_base/Open$0"/> <atom label="n2sf_base/Sensitive$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/ordering/Ord$0"/> <atom label="n2sf_base/Sensitive$0"/> <atom label="n2sf_base/Classified$0"/> </tuple>
+   <types> <type ID="215"/> <type ID="48"/> <type ID="48"/> </types>
+</field>
+
+<sig label="n2sf_base/open$4/Ord" ID="218" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$4/Ord$0"/>
+</sig>
+
+<field label="First" ID="219" parentID="218" private="yes">
+   <tuple> <atom label="n2sf_base/open$4/Ord$0"/> <atom label="n2sf_base/Internet$0"/> </tuple>
+   <types> <type ID="218"/> <type ID="52"/> </types>
+</field>
+
+<field label="Next" ID="220" parentID="218" private="yes">
+   <tuple> <atom label="n2sf_base/open$4/Ord$0"/> <atom label="n2sf_base/Internet$0"/> <atom label="n2sf_base/Intranet$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$4/Ord$0"/> <atom label="n2sf_base/Intranet$0"/> <atom label="n2sf_base/DMZ$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$4/Ord$0"/> <atom label="n2sf_base/DMZ$0"/> <atom label="n2sf_base/Cloud$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$4/Ord$0"/> <atom label="n2sf_base/Cloud$0"/> <atom label="n2sf_base/PPP$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$4/Ord$0"/> <atom label="n2sf_base/PPP$0"/> <atom label="n2sf_base/Wireless$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$4/Ord$0"/> <atom label="n2sf_base/Wireless$0"/> <atom label="n2sf_base/ManagementZone$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$4/Ord$0"/> <atom label="n2sf_base/ManagementZone$0"/> <atom label="n2sf_base/DevTestZone$0"/> </tuple>
+   <types> <type ID="218"/> <type ID="52"/> <type ID="52"/> </types>
+</field>
+
+<sig label="n2sf_base/open$5/Ord" ID="221" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$5/Ord$0"/>
+</sig>
+
+<field label="First" ID="222" parentID="221" private="yes">
+   <tuple> <atom label="n2sf_base/open$5/Ord$0"/> <atom label="n2sf_base/NoProtection$0"/> </tuple>
+   <types> <type ID="221"/> <type ID="61"/> </types>
+</field>
+
+<field label="Next" ID="223" parentID="221" private="yes">
+   <tuple> <atom label="n2sf_base/open$5/Ord$0"/> <atom label="n2sf_base/NoProtection$0"/> <atom label="n2sf_base/WIPS_Active$0"/> </tuple>
+   <types> <type ID="221"/> <type ID="61"/> <type ID="61"/> </types>
+</field>
+
+<sig label="n2sf_base/open$6/Ord" ID="224" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$6/Ord$0"/>
+</sig>
+
+<field label="First" ID="225" parentID="224" private="yes">
+   <tuple> <atom label="n2sf_base/open$6/Ord$0"/> <atom label="n2sf_base/Generic_PC$0"/> </tuple>
+   <types> <type ID="224"/> <type ID="64"/> </types>
+</field>
+
+<field label="Next" ID="226" parentID="224" private="yes">
+   <tuple> <atom label="n2sf_base/open$6/Ord$0"/> <atom label="n2sf_base/Generic_PC$0"/> <atom label="n2sf_base/Server$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$6/Ord$0"/> <atom label="n2sf_base/Server$0"/> <atom label="n2sf_base/Mobile$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$6/Ord$0"/> <atom label="n2sf_base/Mobile$0"/> <atom label="n2sf_base/IoT$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$6/Ord$0"/> <atom label="n2sf_base/IoT$0"/> <atom label="n2sf_base/SecurityGear$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$6/Ord$0"/> <atom label="n2sf_base/SecurityGear$0"/> <atom label="n2sf_base/DNS_Server$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$6/Ord$0"/> <atom label="n2sf_base/DNS_Server$0"/> <atom label="n2sf_base/Gateway$0"/> </tuple>
+   <types> <type ID="224"/> <type ID="64"/> <type ID="64"/> </types>
+</field>
+
+<sig label="n2sf_base/open$7/Ord" ID="227" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$7/Ord$0"/>
+</sig>
+
+<field label="First" ID="228" parentID="227" private="yes">
+   <tuple> <atom label="n2sf_base/open$7/Ord$0"/> <atom label="n2sf_base/OnPremise$0"/> </tuple>
+   <types> <type ID="227"/> <type ID="72"/> </types>
+</field>
+
+<field label="Next" ID="229" parentID="227" private="yes">
+   <tuple> <atom label="n2sf_base/open$7/Ord$0"/> <atom label="n2sf_base/OnPremise$0"/> <atom label="n2sf_base/IaaS$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$7/Ord$0"/> <atom label="n2sf_base/IaaS$0"/> <atom label="n2sf_base/PaaS$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$7/Ord$0"/> <atom label="n2sf_base/PaaS$0"/> <atom label="n2sf_base/SaaS$0"/> </tuple>
+   <types> <type ID="227"/> <type ID="72"/> <type ID="72"/> </types>
+</field>
+
+<sig label="n2sf_base/open$8/Ord" ID="230" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$8/Ord$0"/>
+</sig>
+
+<field label="First" ID="231" parentID="230" private="yes">
+   <tuple> <atom label="n2sf_base/open$8/Ord$0"/> <atom label="n2sf_base/Active$0"/> </tuple>
+   <types> <type ID="230"/> <type ID="77"/> </types>
+</field>
+
+<field label="Next" ID="232" parentID="230" private="yes">
+   <tuple> <atom label="n2sf_base/open$8/Ord$0"/> <atom label="n2sf_base/Active$0"/> <atom label="n2sf_base/EOL$0"/> </tuple>
+   <types> <type ID="230"/> <type ID="77"/> <type ID="77"/> </types>
+</field>
+
+<sig label="n2sf_base/open$9/Ord" ID="233" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$9/Ord$0"/>
+</sig>
+
+<field label="First" ID="234" parentID="233" private="yes">
+   <tuple> <atom label="n2sf_base/open$9/Ord$0"/> <atom label="n2sf_base/UpToDate$0"/> </tuple>
+   <types> <type ID="233"/> <type ID="80"/> </types>
+</field>
+
+<field label="Next" ID="235" parentID="233" private="yes">
+   <tuple> <atom label="n2sf_base/open$9/Ord$0"/> <atom label="n2sf_base/UpToDate$0"/> <atom label="n2sf_base/Vulnerable$0"/> </tuple>
+   <types> <type ID="233"/> <type ID="80"/> <type ID="80"/> </types>
+</field>
+
+<sig label="n2sf_base/open$10/Ord" ID="236" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$10/Ord$0"/>
+</sig>
+
+<field label="First" ID="237" parentID="236" private="yes">
+   <tuple> <atom label="n2sf_base/open$10/Ord$0"/> <atom label="n2sf_base/Volatile_Memory$0"/> </tuple>
+   <types> <type ID="236"/> <type ID="83"/> </types>
+</field>
+
+<field label="Next" ID="238" parentID="236" private="yes">
+   <tuple> <atom label="n2sf_base/open$10/Ord$0"/> <atom label="n2sf_base/Volatile_Memory$0"/> <atom label="n2sf_base/Persistent_Disk$0"/> </tuple>
+   <types> <type ID="236"/> <type ID="83"/> <type ID="83"/> </types>
+</field>
+
+<sig label="n2sf_base/open$11/Ord" ID="239" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$11/Ord$0"/>
+</sig>
+
+<field label="First" ID="240" parentID="239" private="yes">
+   <tuple> <atom label="n2sf_base/open$11/Ord$0"/> <atom label="n2sf_base/NotCDS$0"/> </tuple>
+   <types> <type ID="239"/> <type ID="86"/> </types>
+</field>
+
+<field label="Next" ID="241" parentID="239" private="yes">
+   <tuple> <atom label="n2sf_base/open$11/Ord$0"/> <atom label="n2sf_base/NotCDS$0"/> <atom label="n2sf_base/OneWay_Out$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$11/Ord$0"/> <atom label="n2sf_base/OneWay_Out$0"/> <atom label="n2sf_base/OneWay_In$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$11/Ord$0"/> <atom label="n2sf_base/OneWay_In$0"/> <atom label="n2sf_base/TwoWay_Relay$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$11/Ord$0"/> <atom label="n2sf_base/TwoWay_Relay$0"/> <atom label="n2sf_base/Access_CDS$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$11/Ord$0"/> <atom label="n2sf_base/Access_CDS$0"/> <atom label="n2sf_base/MLS_CDS$0"/> </tuple>
+   <types> <type ID="239"/> <type ID="86"/> <type ID="86"/> </types>
+</field>
+
+<sig label="n2sf_base/open$12/Ord" ID="242" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$12/Ord$0"/>
+</sig>
+
+<field label="First" ID="243" parentID="242" private="yes">
+   <tuple> <atom label="n2sf_base/open$12/Ord$0"/> <atom label="n2sf_base/NoKey$0"/> </tuple>
+   <types> <type ID="242"/> <type ID="93"/> </types>
+</field>
+
+<field label="Next" ID="244" parentID="242" private="yes">
+   <tuple> <atom label="n2sf_base/open$12/Ord$0"/> <atom label="n2sf_base/NoKey$0"/> <atom label="n2sf_base/Local_Storage$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$12/Ord$0"/> <atom label="n2sf_base/Local_Storage$0"/> <atom label="n2sf_base/Separated_HSM$0"/> </tuple>
+   <types> <type ID="242"/> <type ID="93"/> <type ID="93"/> </types>
+</field>
+
+<sig label="n2sf_base/open$13/Ord" ID="245" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$13/Ord$0"/>
+</sig>
+
+<field label="First" ID="246" parentID="245" private="yes">
+   <tuple> <atom label="n2sf_base/open$13/Ord$0"/> <atom label="n2sf_base/Single_Factor$0"/> </tuple>
+   <types> <type ID="245"/> <type ID="97"/> </types>
+</field>
+
+<field label="Next" ID="247" parentID="245" private="yes">
+   <tuple> <atom label="n2sf_base/open$13/Ord$0"/> <atom label="n2sf_base/Single_Factor$0"/> <atom label="n2sf_base/Multi_Factor$0"/> </tuple>
+   <types> <type ID="245"/> <type ID="97"/> <type ID="97"/> </types>
+</field>
+
+<sig label="n2sf_base/open$14/Ord" ID="248" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$14/Ord$0"/>
+</sig>
+
+<field label="First" ID="249" parentID="248" private="yes">
+   <tuple> <atom label="n2sf_base/open$14/Ord$0"/> <atom label="n2sf_base/Physical$0"/> </tuple>
+   <types> <type ID="248"/> <type ID="100"/> </types>
+</field>
+
+<field label="Next" ID="250" parentID="248" private="yes">
+   <tuple> <atom label="n2sf_base/open$14/Ord$0"/> <atom label="n2sf_base/Physical$0"/> <atom label="n2sf_base/Virtual_Secured$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$14/Ord$0"/> <atom label="n2sf_base/Virtual_Secured$0"/> <atom label="n2sf_base/Virtual_Insecure$0"/> </tuple>
+   <types> <type ID="248"/> <type ID="100"/> <type ID="100"/> </types>
+</field>
+
+<sig label="n2sf_base/open$15/Ord" ID="251" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$15/Ord$0"/>
+</sig>
+
+<field label="First" ID="252" parentID="251" private="yes">
+   <tuple> <atom label="n2sf_base/open$15/Ord$0"/> <atom label="n2sf_base/Dedicated$0"/> </tuple>
+   <types> <type ID="251"/> <type ID="104"/> </types>
+</field>
+
+<field label="Next" ID="253" parentID="251" private="yes">
+   <tuple> <atom label="n2sf_base/open$15/Ord$0"/> <atom label="n2sf_base/Dedicated$0"/> <atom label="n2sf_base/Shared_Logical$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$15/Ord$0"/> <atom label="n2sf_base/Shared_Logical$0"/> <atom label="n2sf_base/Shared_Unsafe$0"/> </tuple>
+   <types> <type ID="251"/> <type ID="104"/> <type ID="104"/> </types>
+</field>
+
+<sig label="n2sf_base/open$16/Ord" ID="254" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$16/Ord$0"/>
+</sig>
+
+<field label="First" ID="255" parentID="254" private="yes">
+   <tuple> <atom label="n2sf_base/open$16/Ord$0"/> <atom label="n2sf_base/FileTransfer$0"/> </tuple>
+   <types> <type ID="254"/> <type ID="108"/> </types>
+</field>
+
+<field label="Next" ID="256" parentID="254" private="yes">
+   <tuple> <atom label="n2sf_base/open$16/Ord$0"/> <atom label="n2sf_base/FileTransfer$0"/> <atom label="n2sf_base/ScreenView$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$16/Ord$0"/> <atom label="n2sf_base/ScreenView$0"/> <atom label="n2sf_base/ControlSignal$0"/> </tuple>
+   <types> <type ID="254"/> <type ID="108"/> <type ID="108"/> </types>
+</field>
+
+<sig label="n2sf_base/open$17/Ord" ID="257" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$17/Ord$0"/>
+</sig>
+
+<field label="First" ID="258" parentID="257" private="yes">
+   <tuple> <atom label="n2sf_base/open$17/Ord$0"/> <atom label="n2sf_base/NoEncryption$0"/> </tuple>
+   <types> <type ID="257"/> <type ID="112"/> </types>
+</field>
+
+<field label="Next" ID="259" parentID="257" private="yes">
+   <tuple> <atom label="n2sf_base/open$17/Ord$0"/> <atom label="n2sf_base/NoEncryption$0"/> <atom label="n2sf_base/Weak_Algo$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$17/Ord$0"/> <atom label="n2sf_base/Weak_Algo$0"/> <atom label="n2sf_base/Validated_Module$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$17/Ord$0"/> <atom label="n2sf_base/Validated_Module$0"/> <atom label="n2sf_base/Opaque_Traffic$0"/> </tuple>
+   <types> <type ID="257"/> <type ID="112"/> <type ID="112"/> </types>
+</field>
+
+<sig label="n2sf_base/open$18/Ord" ID="260" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$18/Ord$0"/>
+</sig>
+
+<field label="First" ID="261" parentID="260" private="yes">
+   <tuple> <atom label="n2sf_base/open$18/Ord$0"/> <atom label="n2sf_base/NoIntegrity$0"/> </tuple>
+   <types> <type ID="260"/> <type ID="117"/> </types>
+</field>
+
+<field label="Next" ID="262" parentID="260" private="yes">
+   <tuple> <atom label="n2sf_base/open$18/Ord$0"/> <atom label="n2sf_base/NoIntegrity$0"/> <atom label="n2sf_base/Hmac_Signed$0"/> </tuple>
+   <types> <type ID="260"/> <type ID="117"/> <type ID="117"/> </types>
+</field>
+
+<sig label="n2sf_base/open$19/Ord" ID="263" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$19/Ord$0"/>
+</sig>
+
+<field label="First" ID="264" parentID="263" private="yes">
+   <tuple> <atom label="n2sf_base/open$19/Ord$0"/> <atom label="n2sf_base/Persistent$0"/> </tuple>
+   <types> <type ID="263"/> <type ID="120"/> </types>
+</field>
+
+<field label="Next" ID="265" parentID="263" private="yes">
+   <tuple> <atom label="n2sf_base/open$19/Ord$0"/> <atom label="n2sf_base/Persistent$0"/> <atom label="n2sf_base/Ephemeral$0"/> </tuple>
+   <types> <type ID="263"/> <type ID="120"/> <type ID="120"/> </types>
+</field>
+
+<sig label="n2sf_base/open$20/Ord" ID="266" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$20/Ord$0"/>
+</sig>
+
+<field label="First" ID="267" parentID="266" private="yes">
+   <tuple> <atom label="n2sf_base/open$20/Ord$0"/> <atom label="n2sf_base/Generic_TCP$0"/> </tuple>
+   <types> <type ID="266"/> <type ID="123"/> </types>
+</field>
+
+<field label="Next" ID="268" parentID="266" private="yes">
+   <tuple> <atom label="n2sf_base/open$20/Ord$0"/> <atom label="n2sf_base/Generic_TCP$0"/> <atom label="n2sf_base/DNS$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$20/Ord$0"/> <atom label="n2sf_base/DNS$0"/> <atom label="n2sf_base/SSH$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$20/Ord$0"/> <atom label="n2sf_base/SSH$0"/> <atom label="n2sf_base/RDP$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$20/Ord$0"/> <atom label="n2sf_base/RDP$0"/> <atom label="n2sf_base/HTTPs$0"/> </tuple>
+   <types> <type ID="266"/> <type ID="123"/> <type ID="123"/> </types>
+</field>
+
+<sig label="n2sf_base/open$21/Ord" ID="269" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$21/Ord$0"/>
+</sig>
+
+<field label="First" ID="270" parentID="269" private="yes">
+   <tuple> <atom label="n2sf_base/open$21/Ord$0"/> <atom label="n2sf_base/Permanent$0"/> </tuple>
+   <types> <type ID="269"/> <type ID="129"/> </types>
+</field>
+
+<field label="Next" ID="271" parentID="269" private="yes">
+   <tuple> <atom label="n2sf_base/open$21/Ord$0"/> <atom label="n2sf_base/Permanent$0"/> <atom label="n2sf_base/Temporary_Approval$0"/> </tuple>
+   <types> <type ID="269"/> <type ID="129"/> <type ID="129"/> </types>
+</field>
+
+<sig label="n2sf_base/open$22/Ord" ID="272" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$22/Ord$0"/>
+</sig>
+
+<field label="First" ID="273" parentID="272" private="yes">
+   <tuple> <atom label="n2sf_base/open$22/Ord$0"/> <atom label="n2sf_base/Direct_Browser$0"/> </tuple>
+   <types> <type ID="272"/> <type ID="132"/> </types>
+</field>
+
+<field label="Next" ID="274" parentID="272" private="yes">
+   <tuple> <atom label="n2sf_base/open$22/Ord$0"/> <atom label="n2sf_base/Direct_Browser$0"/> <atom label="n2sf_base/VDI_RBI_Separation$0"/> </tuple>
+   <types> <type ID="272"/> <type ID="132"/> <type ID="132"/> </types>
+</field>
+
+<sig label="n2sf_base/open$23/Ord" ID="275" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$23/Ord$0"/>
+</sig>
+
+<field label="First" ID="276" parentID="275" private="yes">
+   <tuple> <atom label="n2sf_base/open$23/Ord$0"/> <atom label="n2sf_base/ServicePort$0"/> </tuple>
+   <types> <type ID="275"/> <type ID="135"/> </types>
+</field>
+
+<field label="Next" ID="277" parentID="275" private="yes">
+   <tuple> <atom label="n2sf_base/open$23/Ord$0"/> <atom label="n2sf_base/ServicePort$0"/> <atom label="n2sf_base/ManagementPort$0"/> </tuple>
+   <types> <type ID="275"/> <type ID="135"/> <type ID="135"/> </types>
+</field>
+
+<sig label="n2sf_base/open$24/Ord" ID="278" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$24/Ord$0"/>
+</sig>
+
+<field label="First" ID="279" parentID="278" private="yes">
+   <tuple> <atom label="n2sf_base/open$24/Ord$0"/> <atom label="n2sf_base/AntiVirus$0"/> </tuple>
+   <types> <type ID="278"/> <type ID="138"/> </types>
+</field>
+
+<field label="Next" ID="280" parentID="278" private="yes">
+   <tuple> <atom label="n2sf_base/open$24/Ord$0"/> <atom label="n2sf_base/AntiVirus$0"/> <atom label="n2sf_base/DLP$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$24/Ord$0"/> <atom label="n2sf_base/DLP$0"/> <atom label="n2sf_base/CDR$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$24/Ord$0"/> <atom label="n2sf_base/CDR$0"/> <atom label="n2sf_base/FormatCheck$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$24/Ord$0"/> <atom label="n2sf_base/FormatCheck$0"/> <atom label="n2sf_base/AI_Filter$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$24/Ord$0"/> <atom label="n2sf_base/AI_Filter$0"/> <atom label="n2sf_base/DeIdentification$0"/> </tuple>
+   <types> <type ID="278"/> <type ID="138"/> <type ID="138"/> </types>
+</field>
+
+<sig label="n2sf_base/open$25/Ord" ID="281" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$25/Ord$0"/>
+</sig>
+
+<field label="First" ID="282" parentID="281" private="yes">
+   <tuple> <atom label="n2sf_base/open$25/Ord$0"/> <atom label="n2sf_base/Unsafe$0"/> </tuple>
+   <types> <type ID="281"/> <type ID="145"/> </types>
+</field>
+
+<field label="Next" ID="283" parentID="281" private="yes">
+   <tuple> <atom label="n2sf_base/open$25/Ord$0"/> <atom label="n2sf_base/Unsafe$0"/> <atom label="n2sf_base/Timeout_Only$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$25/Ord$0"/> <atom label="n2sf_base/Timeout_Only$0"/> <atom label="n2sf_base/Strict_Timeout_Concurrency$0"/> </tuple>
+   <types> <type ID="281"/> <type ID="145"/> <type ID="145"/> </types>
+</field>
+
+<sig label="n2sf_base/open$26/Ord" ID="284" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$26/Ord$0"/>
+</sig>
+
+<field label="First" ID="285" parentID="284" private="yes">
+   <tuple> <atom label="n2sf_base/open$26/Ord$0"/> <atom label="n2sf_base/GeneralData$0"/> </tuple>
+   <types> <type ID="284"/> <type ID="152"/> </types>
+</field>
+
+<field label="Next" ID="286" parentID="284" private="yes">
+   <tuple> <atom label="n2sf_base/open$26/Ord$0"/> <atom label="n2sf_base/GeneralData$0"/> <atom label="n2sf_base/PII$0"/> </tuple>
+   <tuple> <atom label="n2sf_base/open$26/Ord$0"/> <atom label="n2sf_base/PII$0"/> <atom label="n2sf_base/AuthCredential$0"/> </tuple>
+   <types> <type ID="284"/> <type ID="152"/> <type ID="152"/> </types>
+</field>
+
+<sig label="n2sf_base/open$27/Ord" ID="287" parentID="2" one="yes" private="yes">
+   <atom label="n2sf_base/open$27/Ord$0"/>
+</sig>
+
+<field label="First" ID="288" parentID="287" private="yes">
+   <tuple> <atom label="n2sf_base/open$27/Ord$0"/> <atom label="n2sf_base/Fail_Secure$0"/> </tuple>
+   <types> <type ID="287"/> <type ID="189"/> </types>
+</field>
+
+<field label="Next" ID="289" parentID="287" private="yes">
+   <tuple> <atom label="n2sf_base/open$27/Ord$0"/> <atom label="n2sf_base/Fail_Secure$0"/> <atom label="n2sf_base/Fail_Open$0"/> </tuple>
+   <types> <type ID="287"/> <type ID="189"/> <type ID="189"/> </types>
+</field>
+
+<sig label="univ" ID="2" builtin="yes">
+</sig>
+
+</instance>
+
+</alloy>

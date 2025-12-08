@@ -16,7 +16,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/analyze', async (req, res) => {
     try {
         const diagramData = req.body;
-        console.log('Received diagram data:', JSON.stringify(diagramData, null, 2));
+        console.log('Received analysis request');
+
+        // Debug: Save payload
+        try {
+            fs.writeFileSync('last_request_payload.json', JSON.stringify(diagramData, null, 2));
+            console.log('Saved payload to last_request_payload.json');
+        } catch (e) {
+            console.error('Failed to save payload:', e);
+        }
 
         // 1. Generate Alloy file
         const alloyFilePath = await generateAlloyFile(diagramData);
@@ -26,15 +34,7 @@ app.post('/analyze', async (req, res) => {
         const executionResult = await executeAlloy(alloyFilePath);
         console.log('Alloy execution result:', executionResult);
 
-        // 3. Cleanup
-        try {
-            // if (fs.existsSync(alloyFilePath)) fs.unlinkSync(alloyFilePath);
-            // const xmlPath = alloyFilePath.replace('.als', '.xml');
-            // if (fs.existsSync(xmlPath)) fs.unlinkSync(xmlPath);
-            console.log('Cleaned up generated files (SKIPPED for debugging).');
-        } catch (cleanupError) {
-            console.error('Error during cleanup:', cleanupError);
-        }
+        // 3. Cleanup (Skipped for debugging)
 
         if (executionResult.success) {
             res.json({ success: true, result: executionResult.result });

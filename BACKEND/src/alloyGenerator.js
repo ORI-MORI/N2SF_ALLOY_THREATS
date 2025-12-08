@@ -2,9 +2,6 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Deterministic Template Engine for N2SF Alloy Generation
- * Maps JSON data strictly to the defined Alloy templates.
- * 
  * [Implementation Principles]
  * 1. Enum Mapping: JSON strings must map to Alloy Enum Atoms (e.g., "HTTPS" -> HTTPS).
  * 2. Set Operations: Arrays must be joined with '+' or become 'none' if empty.
@@ -12,11 +9,14 @@ const path = require('path');
  */
 const generateAlloyFile = (jsonData) => {
     console.log("Starting generateAlloyFile...");
-    // Use __dirname to resolve path relative to this script (src/alloyGenerator.js)
-    // alloy folder is at ../alloy
+
+    // Directory Configuration
+    // Directory Configuration
+    // Use __dirname to resolve paths relative to this file (src/alloyGenerator.js) checks BACKEND/alloy
     const alloyDir = path.join(__dirname, '..', 'alloy');
     const templatePath = path.join(alloyDir, 'user_instance.als');
     const outputPath = path.join(alloyDir, 'user_instance_real.als');
+    console.log(`Template path resolved to: ${templatePath}`);
     console.log(`Template path: ${templatePath}`);
 
     console.log(`Current Working Directory: ${process.cwd()}`);
@@ -26,16 +26,6 @@ const generateAlloyFile = (jsonData) => {
     if (!fs.existsSync(templatePath)) {
         console.error(`Template file not found at: ${templatePath}`);
         throw new Error(`Template file not found: ${templatePath}`);
-    }
-
-    // [Clean up] Delete existing file if it exists
-    if (fs.existsSync(outputPath)) {
-        try {
-            fs.unlinkSync(outputPath);
-            console.log(`Existing file deleted: ${outputPath}`);
-        } catch (err) {
-            console.error(`Failed to delete existing file: ${err.message}`);
-        }
     }
 
     let als = null;
@@ -69,14 +59,20 @@ const generateAlloyFile = (jsonData) => {
     }
 
     // 0. Update Module Name
-    als = als.replace(/module\s+user_instance/, 'module user_instance_real');
+    als = als.replace('module user_instance', 'module user_instance_real');
 
     // Helper Functions
     const formatBoolean = (val) => val ? 'True' : 'False';
 
     const formatList = (list, prefix = '') => {
         if (!list || list.length === 0) return 'none';
-        return list.map(item => prefix ? `${prefix}${item}` : item).join(' + ');
+
+        // Handle array of IDs (e.g., [101, 102])
+        if (typeof list[0] === 'number' || typeof list[0] === 'string') {
+            return list.map(id => prefix + id).join(' + ');
+        }
+        // Handle array of objects (if any) - not expected for stores/carries usually
+        return 'none';
     };
 
     let zonesCode = "";
@@ -88,8 +84,9 @@ const generateAlloyFile = (jsonData) => {
     console.log("Processing Zones...");
     if (jsonData.locations && jsonData.locations.length > 0) {
         jsonData.locations.forEach(loc => {
-            zonesCode += `one sig Location${loc.id} extends Location {}\n`;
-            zonesCode += `fact { Location${loc.id}.grade = ${loc.grade} and Location${loc.id}.type = ${loc.type} }\n\n`;
+            const wips = loc.wips_enabled ? 'WIPS_Active' : 'NoProtection';
+            zonesCode += `one sig Zone${loc.id} extends Zone {}\n`;
+            zonesCode += `fact { Zone${loc.id}.grade = ${loc.grade} and Zone${loc.id}.type = ${loc.type} and Zone${loc.id}.wipsStatus = ${wips} }\n\n`;
         });
     }
 
@@ -97,8 +94,10 @@ const generateAlloyFile = (jsonData) => {
     console.log("Processing Data...");
     if (jsonData.data && jsonData.data.length > 0) {
         jsonData.data.forEach(d => {
+            // Default to GeneralData if not specified
+            const dataType = d.dataType || 'GeneralData';
             dataCode += `one sig Data${d.id} extends Data {}\n`;
-            dataCode += `fact { Data${d.id}.grade = ${d.grade} and Data${d.id}.fileType = ${d.fileType} }\n\n`;
+            dataCode += `fact { Data${d.id}.grade = ${d.grade} and Data${d.id}.dataType = ${dataType} }\n\n`;
         });
     }
 
@@ -109,29 +108,75 @@ const generateAlloyFile = (jsonData) => {
             // List Handling: stores -> Data1 + Data2
             const stores = formatList(sys.stores, 'Data');
 
-            // Enum Handling
-            const isolation = sys.isolation || 'None';
-            const authType = sys.authType || 'Single';
+            // Enum Mapping
             const grade = sys.grade || 'Open';
-            const type = sys.type || 'Server';
+            const deviceType = sys.deviceType || 'Server';
+            const serviceModel = sys.serviceModel || 'OnPremise';
+            const lifeCycle = sys.eol_status || 'Active';
+            const patchStatus = sys.patch_status || 'UpToDate';
+            const cdsType = sys.cds_type || 'NotCDS';
+            const authMechanism = sys.auth_type || 'Single_Factor';
+            const keyMgmt = sys.key_storage || 'Local_Storage';
+            const virtStatus = sys.virt_status || 'Physical';
+            const tenantIsolation = sys.tenant_isolation || 'Dedicated';
+            const dataVolatility = sys.data_volatility || 'Persistent_Disk';
+            const failureMode = sys.failure_mode || (deviceType === 'Gateway' ? 'Fail_Secure' : 'Fail_Open'); // Template Logic
+            const sessionPolicy = sys.session_policy || 'Unsafe';
+
+            // Boolean / Int Conversions
+            const isManagementDevice = sys.is_admin ? '1' : '0';
+            const isRegistered = sys.is_registered !== undefined ? (sys.is_registered ? '1' : '0') : '1'; // Default to 1 (Registered)
+            const isCertified = sys.is_certified ? '1' : '0';
+            const hasHwIntegrity = sys.has_tpm ? '1' : '0';
+            const hasSwIntegrity = sys.has_os_sign ? '1' : '0';
+            const hasContainer = (deviceType === 'Mobile' || sys.has_container) ? '1' : '0'; // Template Logic
+            const hasWirelessInterface = (deviceType === 'Mobile' || sys.has_wifi) ? '1' : '0';
+            const hasPhysicalPortControl = sys.usb_control ? '1' : '0';
+            const hasAuditLogging = sys.audit_log ? '1' : '0';
+            const isHardened = sys.os_hardening ? '1' : '0';
+            const isRedundant = (deviceType === 'Gateway' && sys.is_ha) ? '1' : '0'; // Gateway default
+            const hasSecureClock = sys.ntp_sync ? '1' : '0';
+            const hasDDoSProtection = sys.ddos_agent ? '1' : '0';
 
             systemsCode += `one sig System${sys.id} extends System {}\n`;
             systemsCode += `fact {\n`;
+            systemsCode += `    // [Basic Info]\n`;
             systemsCode += `    System${sys.id}.grade = ${grade}\n`;
-            systemsCode += `    System${sys.id}.loc = Location${sys.loc || sys.location}\n`;
-            systemsCode += `    System${sys.id}.type = ${type}\n`;
-            systemsCode += `    System${sys.id}.authType = ${authType}\n`;
-
-            // Boolean Properties
-            systemsCode += `    System${sys.id}.isCDS = ${formatBoolean(sys.isCDS)}\n`;
-            systemsCode += `    System${sys.id}.isRegistered = ${formatBoolean(sys.isRegistered)}\n`;
-            systemsCode += `    System${sys.id}.isStorageEncrypted = ${formatBoolean(sys.isStorageEncrypted)}\n`;
-            systemsCode += `    System${sys.id}.isManagement = ${formatBoolean(sys.isManagement)}\n`;
-            systemsCode += `    System${sys.id}.isolation = ${isolation}\n`;
-            systemsCode += `    System${sys.id}.hasMDM = ${formatBoolean(sys.hasMDM)}\n`;
-
-            // Set Relation
             systemsCode += `    System${sys.id}.stores = ${stores}\n`;
+            systemsCode += `    System${sys.id}.supportedGrades = ${grade}\n`; // Default to self grade for now
+            systemsCode += `    System${sys.id}.physicalLoc = Zone${sys.location}\n`;
+            systemsCode += `    System${sys.id}.connectedZones = Zone${sys.location}\n`; // Simplified
+
+            systemsCode += `    // [Asset Info]\n`;
+            systemsCode += `    System${sys.id}.deviceType = ${deviceType}\n`;
+            systemsCode += `    System${sys.id}.serviceModel = ${serviceModel}\n`;
+            systemsCode += `    System${sys.id}.isManagementDevice = ${isManagementDevice}\n`;
+            systemsCode += `    System${sys.id}.isRegistered = ${isRegistered}\n`;
+            systemsCode += `    System${sys.id}.lifeCycle = ${lifeCycle}\n`;
+            systemsCode += `    System${sys.id}.patchStatus = ${patchStatus}\n`;
+            systemsCode += `    System${sys.id}.isCertified = ${isCertified}\n`;
+
+            systemsCode += `    // [Security State]\n`;
+            systemsCode += `    System${sys.id}.cdsType = ${cdsType}\n`;
+            systemsCode += `    System${sys.id}.hasHwIntegrity = ${hasHwIntegrity}\n`;
+            systemsCode += `    System${sys.id}.hasSwIntegrity = ${hasSwIntegrity}\n`;
+            systemsCode += `    System${sys.id}.authMechanism = ${authMechanism}\n`;
+            systemsCode += `    System${sys.id}.hasContainer = ${hasContainer}\n`;
+            systemsCode += `    System${sys.id}.hasWirelessInterface = ${hasWirelessInterface}\n`;
+            systemsCode += `    System${sys.id}.hasPhysicalPortControl = ${hasPhysicalPortControl}\n`;
+            systemsCode += `    System${sys.id}.keyMgmt = ${keyMgmt}\n`;
+            systemsCode += `    System${sys.id}.virtStatus = ${virtStatus}\n`;
+            systemsCode += `    System${sys.id}.tenantIsolation = ${tenantIsolation}\n`;
+
+            systemsCode += `    // [Ops State]\n`;
+            systemsCode += `    System${sys.id}.dataVolatility = ${dataVolatility}\n`;
+            systemsCode += `    System${sys.id}.failureMode = ${failureMode}\n`;
+            systemsCode += `    System${sys.id}.hasAuditLogging = ${hasAuditLogging}\n`;
+            systemsCode += `    System${sys.id}.isHardened = ${isHardened}\n`;
+            systemsCode += `    System${sys.id}.isRedundant = ${isRedundant}\n`;
+            systemsCode += `    System${sys.id}.hasSecureClock = ${hasSecureClock}\n`;
+            systemsCode += `    System${sys.id}.hasDDoSProtection = ${hasDDoSProtection}\n`;
+            systemsCode += `    System${sys.id}.sessionPolicy = ${sessionPolicy}\n`;
             systemsCode += `}\n\n`;
         });
     }
@@ -145,23 +190,45 @@ const generateAlloyFile = (jsonData) => {
             // List Handling: carries -> Data1 + Data2
             const carries = formatList(conn.carries, 'Data');
 
-            // Enum Handling
-            // If protocol is 'HTTP' (from user input guide), map to 'ClearText', otherwise use value
-            let protocol = conn.protocol || 'HTTPS';
-            if (protocol === 'HTTP') protocol = 'ClearText';
+            // Set Handling: inspections -> DLP + AntiVirus + ...
+            const inspections = formatList(conn.inspections, '');
+
+            // Mappings
+            const connType = conn.conn_type || 'FileTransfer';
+            const protocol = conn.protocol || 'Generic_TCP';
+            const encQuality = conn.encryption || 'NoEncryption';
+            const integrityStatus = conn.integrity_check || 'NoIntegrity';
+            const duration = conn.duration || 'Ephemeral';
+            const accessPolicy = conn.access_policy || 'Temporary_Approval';
+            const targetPortType = conn.target_port || 'ServicePort';
+            const isolationMethod = conn.isolation || 'Direct_Browser';
+
+            // Int Conversions
+            const isAdminTraffic = conn.is_admin_traffic ? '1' : '0';
+            const hasContentFilter = conn.has_dlp ? '1' : '0'; // Or redundant with inspections
+            const hasCDR = conn.has_cdr ? '1' : '0';
 
             connectionsCode += `one sig Connection${connId} extends Connection {}\n`;
             connectionsCode += `fact {\n`;
             connectionsCode += `    Connection${connId}.from = System${conn.from}\n`;
             connectionsCode += `    Connection${connId}.to = System${conn.to}\n`;
             connectionsCode += `    Connection${connId}.carries = ${carries}\n`;
-            connectionsCode += `    Connection${connId}.protocol = ${protocol}\n`;
 
-            // Boolean Properties
-            connectionsCode += `    Connection${connId}.isEncrypted = ${formatBoolean(conn.isEncrypted)}\n`;
-            connectionsCode += `    Connection${connId}.hasCDR = ${formatBoolean(conn.hasCDR)}\n`;
-            connectionsCode += `    Connection${connId}.hasDLP = ${formatBoolean(conn.hasDLP)}\n`;
-            connectionsCode += `    Connection${connId}.hasAntiVirus = ${formatBoolean(conn.hasAntiVirus)}\n`;
+            connectionsCode += `    // [Connection Properties]\n`;
+            connectionsCode += `    Connection${connId}.connType = ${connType}\n`;
+            connectionsCode += `    Connection${connId}.protocol = ${protocol}\n`;
+            connectionsCode += `    Connection${connId}.encQuality = ${encQuality}\n`;
+            connectionsCode += `    Connection${connId}.integrityStatus = ${integrityStatus}\n`;
+            connectionsCode += `    Connection${connId}.duration = ${duration}\n`;
+            connectionsCode += `    Connection${connId}.accessPolicy = ${accessPolicy}\n`;
+            connectionsCode += `    Connection${connId}.targetPortType = ${targetPortType}\n`;
+            connectionsCode += `    Connection${connId}.isAdminTraffic = ${isAdminTraffic}\n`;
+            connectionsCode += `    Connection${connId}.isolationMethod = ${isolationMethod}\n`;
+
+            connectionsCode += `    // [Security Filtering]\n`;
+            connectionsCode += `    Connection${connId}.hasContentFilter = ${hasContentFilter}\n`;
+            connectionsCode += `    Connection${connId}.hasCDR = ${hasCDR}\n`;
+            connectionsCode += `    Connection${connId}.inspections = ${inspections}\n`;
             connectionsCode += `}\n\n`;
         });
     }
@@ -170,30 +237,112 @@ const generateAlloyFile = (jsonData) => {
     let analysisResultCode = "";
     analysisResultCode += `// ============================================================\n`;
     analysisResultCode += `// [GENERATED] 결과 집합 (Analysis Result)\n`;
-    analysisResultCode += `// ============================================================\n\n`;
+    analysisResultCode += `// 39개 위협 탐지 규칙 모두 매핑\n`;
+    analysisResultCode += `// ============================================================\n`;
     analysisResultCode += `one sig AnalysisResult {\n`;
-    analysisResultCode += `    FindStorageViolations: set System -> Data,\n`;
+    analysisResultCode += `    // Group A. 구조 및 흐름 위협\n`;
+    analysisResultCode += `    FindSplitTunneling: set System,\n`;
+    analysisResultCode += `    FindDirectConnection: set Connection,\n`;
     analysisResultCode += `    FindFlowViolations: set Connection -> Data,\n`;
-    analysisResultCode += `    FindLocationViolations: set System,\n`;
-    analysisResultCode += `    FindBypassViolations: set Connection,\n`;
-    analysisResultCode += `    FindUnencryptedChannels: set Connection,\n`;
-    analysisResultCode += `    FindAuthIntegrityGaps: set System,\n`;
-    analysisResultCode += `    FindContentControlFailures: set Connection -> Data,\n`;
-    analysisResultCode += `    FindUnencryptedStorage: set System -> Data,\n`;
-    analysisResultCode += `    FindAdminAccessViolation: set Connection\n`;
+
+    analysisResultCode += `    // Group B. 데이터 및 암호화 위협\n`;
+    analysisResultCode += `    FindStorageViolations: set System -> Data,\n`;
+    analysisResultCode += `    FindWeakCrypto: set Connection,\n`;
+    analysisResultCode += `    FindIntegrityLoss: set Connection,\n`;
+    analysisResultCode += `    FindInsecureKey: set System,\n`;
+
+    analysisResultCode += `    // Group C. 접근 통제 및 인증\n`;
+    analysisResultCode += `    FindWeakAuth: set System,\n`;
+    analysisResultCode += `    FindExposedAdmin: set Connection,\n`;
+    analysisResultCode += `    FindPermanentAdmin: set Connection,\n`;
+
+    analysisResultCode += `    // Group D. 자산 및 무결성\n`;
+    analysisResultCode += `    FindShadowIT: set System,\n`;
+    analysisResultCode += `    FindIntegrityFailure: set System,\n`;
+    analysisResultCode += `    FindUnpatchedExposure: set System,\n`;
+    analysisResultCode += `    FindEOL: set System,\n`;
+    analysisResultCode += `    FindUncertifiedGear: set System,\n`;
+
+    analysisResultCode += `    // Group E. 물리 및 환경 보안\n`;
+    analysisResultCode += `    FindWirelessThreat: set System,\n`;
+    analysisResultCode += `    FindPortRisk: set System,\n`;
+    analysisResultCode += `    FindMobileRisk: set System,\n`;
+
+    analysisResultCode += `    // Group F. 콘텐츠 및 신기술 위협\n`;
+    analysisResultCode += `    FindMissingCDR: set Connection,\n`;
+    analysisResultCode += `    FindFormatRisk: set Connection,\n`;
+    analysisResultCode += `    FindDLPFailure: set Connection,\n`;
+    analysisResultCode += `    FindAIFilterFailure: set Connection,\n`;
+    analysisResultCode += `    FindPIILeakage: set Connection,\n`;
+    analysisResultCode += `    FindBrowserIsolation: set Connection,\n`;
+    analysisResultCode += `    FindVirtRisk: set System,\n`;
+
+    analysisResultCode += `    // Group G. 운영 및 가용성\n`;
+    analysisResultCode += `    FindAuditFailure: set System,\n`;
+    analysisResultCode += `    FindTimeSyncFailure: set System,\n`;
+    analysisResultCode += `    FindHardeningFailure: set System,\n`;
+    analysisResultCode += `    FindRedundancyFailure: set System,\n`;
+    analysisResultCode += `    FindFailOpenRisk: set System,\n`;
+    analysisResultCode += `    FindDDoSRisk: set System,\n`;
+    analysisResultCode += `    FindWeakSession: set System,\n`;
+    analysisResultCode += `    FindPersistentRisk: set Connection,\n`;
+    analysisResultCode += `    FindResidualData: set System,\n`;
+    analysisResultCode += `    FindDNSViolation: set Connection,\n`;
+    analysisResultCode += `    FindDevProdViolation: set System,\n`;
+    analysisResultCode += `    FindOpaqueTraffic: set Connection,\n`;
+    analysisResultCode += `    FindTransitiveLeaks: set System -> Data,\n`;
+    analysisResultCode += `    FindBypass: set Connection\n`;
     analysisResultCode += `}\n\n`;
 
     analysisResultCode += `fact DefineAnalysisResult {\n`;
-    analysisResultCode += `    AnalysisResult.FindStorageViolations = FindStorageViolations\n`;
+    analysisResultCode += `    AnalysisResult.FindSplitTunneling = FindSplitTunneling\n`;
+    analysisResultCode += `    AnalysisResult.FindDirectConnection = FindDirectConnection\n`;
     analysisResultCode += `    AnalysisResult.FindFlowViolations = FindFlowViolations\n`;
-    analysisResultCode += `    AnalysisResult.FindLocationViolations = FindLocationViolations\n`;
-    analysisResultCode += `    AnalysisResult.FindBypassViolations = FindBypassViolations\n`;
-    analysisResultCode += `    AnalysisResult.FindUnencryptedChannels = FindUnencryptedChannels\n`;
-    analysisResultCode += `    AnalysisResult.FindAuthIntegrityGaps = FindAuthIntegrityGaps\n`;
-    analysisResultCode += `    AnalysisResult.FindContentControlFailures = FindContentControlFailures\n`;
-    analysisResultCode += `    AnalysisResult.FindUnencryptedStorage = FindUnencryptedStorage\n`;
-    analysisResultCode += `    AnalysisResult.FindAdminAccessViolation = FindAdminAccessViolation\n`;
+
+    analysisResultCode += `    AnalysisResult.FindStorageViolations = FindStorageViolations\n`;
+    analysisResultCode += `    AnalysisResult.FindWeakCrypto = FindWeakCrypto\n`;
+    analysisResultCode += `    AnalysisResult.FindIntegrityLoss = FindIntegrityLoss\n`;
+    analysisResultCode += `    AnalysisResult.FindInsecureKey = FindInsecureKey\n`;
+
+    analysisResultCode += `    AnalysisResult.FindWeakAuth = FindWeakAuth\n`;
+    analysisResultCode += `    AnalysisResult.FindExposedAdmin = FindExposedAdmin\n`;
+    analysisResultCode += `    AnalysisResult.FindPermanentAdmin = FindPermanentAdmin\n`;
+
+    analysisResultCode += `    AnalysisResult.FindShadowIT = FindShadowIT\n`;
+    analysisResultCode += `    AnalysisResult.FindIntegrityFailure = FindIntegrityFailure\n`;
+    analysisResultCode += `    AnalysisResult.FindUnpatchedExposure = FindUnpatchedExposure\n`;
+    analysisResultCode += `    AnalysisResult.FindEOL = FindEOL\n`;
+    analysisResultCode += `    AnalysisResult.FindUncertifiedGear = FindUncertifiedGear\n`;
+
+    analysisResultCode += `    AnalysisResult.FindWirelessThreat = FindWirelessThreat\n`;
+    analysisResultCode += `    AnalysisResult.FindPortRisk = FindPortRisk\n`;
+    analysisResultCode += `    AnalysisResult.FindMobileRisk = FindMobileRisk\n`;
+
+    analysisResultCode += `    AnalysisResult.FindMissingCDR = FindMissingCDR\n`;
+    analysisResultCode += `    AnalysisResult.FindFormatRisk = FindFormatRisk\n`;
+    analysisResultCode += `    AnalysisResult.FindDLPFailure = FindDLPFailure\n`;
+    analysisResultCode += `    AnalysisResult.FindAIFilterFailure = FindAIFilterFailure\n`;
+    analysisResultCode += `    AnalysisResult.FindPIILeakage = FindPIILeakage\n`;
+    analysisResultCode += `    AnalysisResult.FindBrowserIsolation = FindBrowserIsolation\n`;
+    analysisResultCode += `    AnalysisResult.FindVirtRisk = FindVirtRisk\n`;
+
+    analysisResultCode += `    AnalysisResult.FindAuditFailure = FindAuditFailure\n`;
+    analysisResultCode += `    AnalysisResult.FindTimeSyncFailure = FindTimeSyncFailure\n`;
+    analysisResultCode += `    AnalysisResult.FindHardeningFailure = FindHardeningFailure\n`;
+    analysisResultCode += `    AnalysisResult.FindRedundancyFailure = FindRedundancyFailure\n`;
+    analysisResultCode += `    AnalysisResult.FindFailOpenRisk = FindFailOpenRisk\n`;
+    analysisResultCode += `    AnalysisResult.FindDDoSRisk = FindDDoSRisk\n`;
+    analysisResultCode += `    AnalysisResult.FindWeakSession = FindWeakSession\n`;
+    analysisResultCode += `    AnalysisResult.FindPersistentRisk = FindPersistentRisk\n`;
+    analysisResultCode += `    AnalysisResult.FindResidualData = FindResidualData\n`;
+    analysisResultCode += `    AnalysisResult.FindDNSViolation = FindDNSViolation\n`;
+    analysisResultCode += `    AnalysisResult.FindDevProdViolation = FindDevProdViolation\n`;
+    analysisResultCode += `    AnalysisResult.FindOpaqueTraffic = FindOpaqueTraffic\n`;
+
+    analysisResultCode += `    AnalysisResult.FindTransitiveLeaks = FindTransitiveLeaks\n`;
+    analysisResultCode += `    AnalysisResult.FindBypass = FindBypass\n`;
     analysisResultCode += `}\n\n`;
+
     // Inject generated content into the template
     als = als.replace('// [ZONES_HERE]', zonesCode);
     als = als.replace('// [DATA_HERE]', dataCode);
@@ -206,6 +355,6 @@ const generateAlloyFile = (jsonData) => {
     fs.writeFileSync(outputPath, als);
     console.log(`Alloy file generated successfully at ${outputPath}`);
     return outputPath;
-}
+};
 
 module.exports = { generateAlloyFile };
