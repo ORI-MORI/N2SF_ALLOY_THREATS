@@ -112,7 +112,10 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
             return (
                 <div className="flex flex-col items-center justify-center h-full text-gray-500 p-8 text-center">
                     <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                            <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path>
+                            <path d="M13 13l6 6"></path>
+                        </svg>
                     </div>
                     <p className="text-sm font-medium text-gray-600">No Selection</p>
                     <p className="text-xs text-gray-400 mt-1">Select a node or edge to view properties.</p>
