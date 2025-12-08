@@ -117,8 +117,8 @@ fun FindPermanentAdmin: Connection {
 // Group D. 자산 및 무결성 (Asset Integrity)
 // ============================================================
 
-// 11. 자산 미등록 (Shadow IT) -> JS Validator로 이관
-fun FindShadowIT: System { none }
+// 11. 자산 미등록 (Shadow IT) [N2SF-DV-M1]
+fun FindShadowIT: System { { s: System | s.isRegistered = 0 and #s.connectedZones > 0 } }
 
 // 12. 시스템 무결성 위반 (Integrity Failure) [N2SF-DV-1, IN-15]
 // S/C 등급 시스템은 TPM 및 SW 서명 검증 필수
@@ -131,11 +131,15 @@ fun FindIntegrityFailure: System {
 
 // 13. 취약한 시스템 노출 (Unpatched Exposure) [N2SF-IN-1]
 // 패치 안 된 시스템이 외부 접점에 있으면 위협
-// 13. 취약한 시스템 노출 (Unpatched Exposure) -> JS Validator로 이관
-fun FindUnpatchedExposure: System { none }
+fun FindUnpatchedExposure: System {
+    { s: System |
+      s.patchStatus = Vulnerable
+      and (s.physicalLoc.type in Internet + DMZ + Cloud)
+    }
+}
 
-// 14. EOL 자산 사용 (EOL Risk) -> JS Validator로 이관
-fun FindEOL: System { none }
+// 14. EOL 자산 사용 (EOL Risk) [N2SF-IN-9]
+fun FindEOL: System { { s: System | s.grade in Sensitive + Classified and s.lifeCycle = EOL } }
 
 // 15. 미인증 보안 제품 (Uncertified Gear) [부록2 모델 9]
 // 보안 장비는 CC인증 등 필수
@@ -242,11 +246,11 @@ fun FindVirtRisk: System {
 // Group G. 운영 및 가용성 (Ops & Availability)
 // ============================================================
 
-// 26. 감사 로그 미비 (Audit Failure) -> JS Validator로 이관
-fun FindAuditFailure: System { none }
+// 26. 감사 로그 미비 (Audit Failure) [공통]
+fun FindAuditFailure: System { { s: System | s.grade in Sensitive + Classified and s.hasAuditLogging = 0 } }
 
-// 27. 시각 동기화 미비 (Time Sync Failure) -> JS Validator로 이관
-fun FindTimeSyncFailure: System { none }
+// 27. 시각 동기화 미비 (Time Sync Failure) [공통]
+fun FindTimeSyncFailure: System { { s: System | s.hasAuditLogging = 1 and s.hasSecureClock = 0 } }
 
 // 28. 보안 설정 강화 미흡 (Hardening Failure) [N2SF-AM-4]
 fun FindHardeningFailure: System {
@@ -277,8 +281,10 @@ fun FindDDoSRisk: System {
     }
 }
 
-// 32. 세션 정책 미비 (Session Policy) -> JS Validator로 이관
-fun FindWeakSession: System { none }
+// 32. 세션 정책 미비 (Session Policy) [N2SF-SN-3]
+fun FindWeakSession: System {
+    { s: System | s.grade in Sensitive + Classified and s.sessionPolicy != Strict_Timeout_Concurrency }
+}
 
 // 33. 불필요한 지속 연결 (Persistent Conn) [N2SF-IN-14]
 fun FindPersistentRisk: Connection {

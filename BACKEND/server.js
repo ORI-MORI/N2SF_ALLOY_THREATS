@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { generateAlloyFile } = require('./src/alloyGenerator');
 const { executeAlloy } = require('./src/alloyExecutor');
+const { validateCommonProperties } = require('./src/simpleValidator');
 const fs = require('fs');
 const path = require('path');
 
@@ -26,19 +27,40 @@ app.post('/analyze', async (req, res) => {
             console.error('Failed to save payload:', e);
         }
 
-        // 1. Generate Alloy file
+        // 1. JS Validator (Fast Check) - Group B
+        const jsValidation = validateCommonProperties(diagramData);
+        console.log(`JS Validation found ${jsValidation.total_count} violations.`);
+
+        // 2. Alloy Engine (Deep Check) - Group A
         const alloyFilePath = await generateAlloyFile(diagramData);
         console.log('Generated Alloy file at:', alloyFilePath);
 
-        // 2. Execute Alloy
         const executionResult = await executeAlloy(alloyFilePath);
         console.log('Alloy execution result:', executionResult);
 
-        // 3. Cleanup (Skipped for debugging)
-
+        // 3. Merge Results (Hybrid Verification)
         if (executionResult.success) {
-            fs.writeFileSync('debug_response.json', JSON.stringify(executionResult.result, null, 2));
-            res.json({ success: true, result: executionResult.result });
+            const finalThreats = { ...executionResult.result.threats };
+            let finalCount = executionResult.result.total_count;
+
+            // Merge JS threats into Alloy threats
+            Object.keys(jsValidation.threats).forEach(key => {
+                if (jsValidation.threats[key] && jsValidation.threats[key].length > 0) {
+                    if (!finalThreats[key]) finalThreats[key] = [];
+                    finalThreats[key] = [...finalThreats[key], ...jsValidation.threats[key]];
+                    finalCount += jsValidation.threats[key].length;
+                }
+            });
+
+            const finalResult = {
+                threats: finalThreats,
+                total_count: finalCount
+            };
+
+            // Debug: Save merged result
+            fs.writeFileSync('debug_response_hybrid.json', JSON.stringify(finalResult, null, 2));
+
+            res.json({ success: true, result: finalResult });
         } else {
             res.status(500).json({ success: false, error: executionResult.error });
         }

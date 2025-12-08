@@ -86,6 +86,13 @@ export function convertGraphToJSON(nodes, edges) {
             isolation: data.isolation || 'None',
             hasMDM: data.hasMDM === true,
 
+            // New Security Properties (Explicit Mapping)
+            patchStatus: data.patchStatus || 'UpToDate',
+            lifeCycle: data.lifeCycle || 'Active',
+            hasAuditLogging: data.hasAuditLogging === true,
+            hasSecureClock: data.hasSecureClock === true,
+            sessionPolicy: data.sessionPolicy || 'Unsafe',
+
             stores: storesIds,
             _storedDataObjects: data.storedData || [], // Keep for data collection
         };

@@ -47,6 +47,50 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
         setSelectedElement({ ...selectedElement, data: newData });
     };
 
+    const handleBatchChange = (updates) => {
+        const newData = { ...formData, ...updates };
+        setFormData(newData);
+
+        if (selectedElement.source) {
+            setEdges((edges) => edges.map((e) => e.id === selectedElement.id ? { ...e, data: newData } : e));
+        } else {
+            setNodes((nodes) => nodes.map((n) => n.id === selectedElement.id ? { ...n, data: newData } : n));
+        }
+        setSelectedElement({ ...selectedElement, data: newData });
+    };
+
+    const applyProfile = (profile) => {
+        if (profile === 'GeneralPC') {
+            handleBatchChange({
+                profile: 'GeneralPC',
+                type: 'Terminal',
+                grade: 'Open',
+                patchStatus: 'UpToDate',
+                lifeCycle: 'Active',
+                hasAuditLogging: false,
+                authType: 'Single_Factor',
+                isRegistered: true,
+                sessionPolicy: 'Timeout_Only'
+            });
+        } else if (profile === 'ClassifiedServer') {
+            handleBatchChange({
+                profile: 'ClassifiedServer',
+                type: 'Server',
+                grade: 'Classified',
+                patchStatus: 'UpToDate',
+                lifeCycle: 'Active',
+                hasAuditLogging: true,
+                hasSecureClock: true,
+                isStorageEncrypted: true,
+                authType: 'Multi_Factor',
+                isRegistered: true,
+                sessionPolicy: 'Strict_Timeout_Concurrency'
+            });
+        } else {
+            handleBatchChange({ profile: 'Custom' });
+        }
+    };
+
     // Helper to update stored data list
     const addData = () => {
         const currentData = formData.storedData || [];
@@ -185,6 +229,18 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                 {/* System Specific */}
                 {isSystem && (
                     <>
+                        <div className="bg-indigo-50/50 p-2 rounded-lg border border-indigo-100 mb-2">
+                            <label className={labelClass}>Security Profile (Auto-Fill)</label>
+                            <select
+                                className="w-full text-xs border-indigo-200 rounded p-1.5 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+                                value={formData.profile || 'Custom'}
+                                onChange={(e) => applyProfile(e.target.value)}
+                            >
+                                <option value="Custom">Custom</option>
+                                <option value="GeneralPC">General PC (Open/Auto)</option>
+                                <option value="ClassifiedServer">Classified Server (Secure)</option>
+                            </select>
+                        </div>
                         <div>
                             <label className={labelClass}>Location (Zone)</label>
                             <select
@@ -236,11 +292,48 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                             <label className={labelClass}>Auth Type</label>
                             <select
                                 className={inputClass}
-                                value={formData.authType || 'Single'}
+                                value={formData.authType || 'Single_Factor'}
                                 onChange={(e) => handleChange('authType', e.target.value)}
                             >
-                                <option value="Single">Single Factor</option>
-                                <option value="MFA">MFA</option>
+                                <option value="Single_Factor">Single Factor</option>
+                                <option value="Multi_Factor">MFA</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className={labelClass}>Patch Status</label>
+                            <select
+                                className={inputClass}
+                                value={formData.patchStatus || 'UpToDate'}
+                                onChange={(e) => handleChange('patchStatus', e.target.value)}
+                            >
+                                <option value="UpToDate">Up To Date (Auto)</option>
+                                <option value="Vulnerable">Vulnerable (Manual/Old)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className={labelClass}>Lifecycle</label>
+                            <select
+                                className={inputClass}
+                                value={formData.lifeCycle || 'Active'}
+                                onChange={(e) => handleChange('lifeCycle', e.target.value)}
+                            >
+                                <option value="Active">Active Support</option>
+                                <option value="EOL">End of Life (EOL)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className={labelClass}>Session Policy</label>
+                            <select
+                                className={inputClass}
+                                value={formData.sessionPolicy || 'Unsafe'}
+                                onChange={(e) => handleChange('sessionPolicy', e.target.value)}
+                            >
+                                <option value="Unsafe">Unsafe</option>
+                                <option value="Timeout_Only">Timeout Only</option>
+                                <option value="Strict_Timeout_Concurrency">Strict (Timeout & Concurrency)</option>
                             </select>
                         </div>
 
@@ -269,6 +362,28 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     onChange={(e) => handleChange('isCDS', e.target.checked)}
                                 />
                                 <label htmlFor="isCDS" className="text-sm font-medium text-gray-700 cursor-pointer">Is CDS (Cross Domain)?</label>
+                            </div>
+
+                            <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/50 transition-colors">
+                                <input
+                                    type="checkbox"
+                                    id="hasAuditLogging"
+                                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                    checked={formData.hasAuditLogging || false}
+                                    onChange={(e) => handleChange('hasAuditLogging', e.target.checked)}
+                                />
+                                <label htmlFor="hasAuditLogging" className="text-sm font-medium text-gray-700 cursor-pointer">Has Audit Logging?</label>
+                            </div>
+
+                            <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/50 transition-colors">
+                                <input
+                                    type="checkbox"
+                                    id="hasSecureClock"
+                                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                    checked={formData.hasSecureClock || false}
+                                    onChange={(e) => handleChange('hasSecureClock', e.target.checked)}
+                                />
+                                <label htmlFor="hasSecureClock" className="text-sm font-medium text-gray-700 cursor-pointer">Has Secure Clock?</label>
                             </div>
 
                             <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/50 transition-colors">
