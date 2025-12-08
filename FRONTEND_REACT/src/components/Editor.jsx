@@ -222,6 +222,15 @@ const EditorContent = ({ initialData, onExit }) => {
 
     const handleAnalyze = async () => {
         setIsAnalyzing(true);
+
+        // 1. Empty Diagram Check
+        if (nodes.length === 0) {
+            console.warn("Attempting to analyze empty diagram. Blocking request.");
+            setAnalysisResult({ error: 'NO_DIAGRAM' });
+            setIsAnalyzing(false);
+            return;
+        }
+
         try {
             const graphData = convertGraphToJSON(nodes, edges);
             const result = await analyzeGraph(graphData);
