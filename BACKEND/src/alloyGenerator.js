@@ -199,6 +199,9 @@ const generateAlloyFile = (jsonData) => {
             // Mappings
             const connType = conn.conn_type || conn.connType || 'FileTransfer';
             const protocol = conn.protocol || 'Generic_TCP';
+            // Ensure protocol is valid Enum
+            const validProtocols = ['Generic_TCP', 'DNS', 'SSH', 'RDP', 'HTTPS', 'VPN_Tunnel', 'ClearText', 'SQL'];
+            const safeProtocol = validProtocols.includes(protocol) ? protocol : 'Generic_TCP';
             const encQuality = conn.encryption || conn.encQuality || (conn.isEncrypted ? 'SSL_TLS' : 'NoEncryption');
             const integrityStatus = conn.integrity_check || conn.integrityStatus || 'NoIntegrity';
             const duration = conn.duration || 'Ephemeral';
@@ -219,7 +222,7 @@ const generateAlloyFile = (jsonData) => {
 
             connectionsCode += `    // [Connection Properties]\n`;
             connectionsCode += `    Connection${connId}.connType = ${connType}\n`;
-            connectionsCode += `    Connection${connId}.protocol = ${protocol}\n`;
+            connectionsCode += `    Connection${connId}.protocol = ${safeProtocol}\n`;
             connectionsCode += `    Connection${connId}.encQuality = ${encQuality}\n`;
             connectionsCode += `    Connection${connId}.integrityStatus = ${integrityStatus}\n`;
             connectionsCode += `    Connection${connId}.duration = ${duration}\n`;
@@ -356,6 +359,10 @@ const generateAlloyFile = (jsonData) => {
     als += '\n' + analysisResultCode + '\nrun CheckViolations { some AnalysisResult }\n';
 
     fs.writeFileSync(outputPath, als);
+    try {
+        fs.writeFileSync(path.join(alloyDir, 'server_debug.als'), als);
+        console.log("Saved debug copy to server_debug.als");
+    } catch (e) { console.error("Failed to save debug copy", e); }
     console.log(`Alloy file generated successfully at ${outputPath}`);
     console.log(`Generated ALS Content Length: ${als.length}`);
     // console.log(`Generated ALS Content Preview:\n${als.substring(0, 500)}`);

@@ -37,6 +37,7 @@ app.post('/analyze', async (req, res) => {
         // 3. Cleanup (Skipped for debugging)
 
         if (executionResult.success) {
+            fs.writeFileSync('debug_response.json', JSON.stringify(executionResult.result, null, 2));
             res.json({ success: true, result: executionResult.result });
         } else {
             res.status(500).json({ success: false, error: executionResult.error });

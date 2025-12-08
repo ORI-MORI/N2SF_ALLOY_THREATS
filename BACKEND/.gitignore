@@ -36,6 +36,11 @@ server_debug.txt
 test_payload_debug.json
 debug_result.json
 debug_last_run.xml
+last_request_payload.json
+debug_response.json
+server_debug.als
+crash_output.txt
+alloy/server_debug.als
 
 # Backend Alloy Artifacts
 BACKEND/alloy/user_instance_real.als

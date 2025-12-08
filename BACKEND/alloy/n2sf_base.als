@@ -43,7 +43,7 @@ enum ConnectionType { FileTransfer, ScreenView, ControlSignal }
 enum EncryptionQuality { NoEncryption, Weak_Algo, Validated_Module, Opaque_Traffic }
 enum IntegrityStatus { NoIntegrity, Hmac_Signed }
 enum ConnectionDuration { Persistent, Ephemeral }
-enum Protocol { Generic_TCP, DNS, SSH, RDP, HTTPs }
+enum Protocol { Generic_TCP, DNS, SSH, RDP, HTTPS, VPN_Tunnel, ClearText, SQL }
 enum AccessPolicy { Permanent, Temporary_Approval }
 enum IsolationMethod { Direct_Browser, VDI_RBI_Separation }
 enum PortType { ServicePort, ManagementPort }
