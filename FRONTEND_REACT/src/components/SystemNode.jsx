@@ -46,8 +46,13 @@ const SystemNode = ({ data, selected }) => {
 
             {/* Main Card */}
             <div className={`relative min-w-[120px] p-3 rounded-xl glass-panel flex flex-col items-center gap-2 transition-all duration-300 
-                ${data.isThreat ? 'border-2 !border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.8)] z-50' :
-                    selected ? 'border-indigo-500/50 shadow-indigo-500/20' : 'border-white/40 hover:border-white/60'}`}>
+                ${data.isSelectedThreat
+                    ? 'border-2 !border-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.9)] z-50 ring-2 ring-amber-300 ring-offset-2 animate-pulse'
+                    : data.isThreat
+                        ? 'border-2 !border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.8)] z-40'
+                        : selected
+                            ? 'border-indigo-500/50 shadow-indigo-500/20'
+                            : 'border-white/40 hover:border-white/60'}`}>
 
                 {/* Icon Circle */}
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${getIconBackground(data.type)} text-white`}>

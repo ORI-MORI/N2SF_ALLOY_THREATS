@@ -257,57 +257,51 @@ const EditorContent = ({ initialData, onExit }) => {
         setSelectedThreatId(prev => prev === threatId ? null : threatId);
     };
 
-    // Effect to highlight nodes/edges when a threat is selected
+    // Effect to highlight nodes/edges: Red for ANY threat, distinct for SELECTED threat
     useEffect(() => {
-        // Helper update function to avoid infinite loops
-        const updateElements = (elements, shouldBeThreatFn) => {
+        // Helper update function
+        const updateElements = (elements, allThreatSet, selectedThreatSet) => {
             let hasChanges = false;
             const newElements = elements.map(el => {
-                const isThreat = shouldBeThreatFn(el);
-                if (!!el.data.isThreat !== isThreat) {
+                // Check Global Threat Status
+                const isGlobalThreat = (
+                    allThreatSet.has(el.id) ||
+                    (el.data.label && allThreatSet.has(el.data.label))
+                );
+
+                // Check Selected Threat Status
+                const isSelectedThreat = (
+                    selectedThreatSet.has(el.id) ||
+                    (el.data.label && selectedThreatSet.has(el.data.label))
+                );
+
+                // Update if changed
+                if (!!el.data.isThreat !== isGlobalThreat || !!el.data.isSelectedThreat !== isSelectedThreat) {
                     hasChanges = true;
-                    return { ...el, data: { ...el.data, isThreat } };
+                    return { ...el, data: { ...el.data, isThreat: isGlobalThreat, isSelectedThreat: isSelectedThreat } };
                 }
                 return el;
             });
             return hasChanges ? newElements : elements;
         };
 
-        if (!analysisResult || !selectedThreatId) {
-            // Clear highlights safely
-            setNodes(nds => updateElements(nds, () => false));
-            setEdges(eds => updateElements(eds, () => false));
-            return;
-        }
-
         // Helper to sanitize ID consistent with graphConverter
         const sanitizeId = (id) => id.toString().replace(/[^a-zA-Z0-9]/g, '_');
 
+        // Helper to match ID against a Set using heuristics (exact, sanitized, reverse lookup)
         const isMatch = (elementId, involveSet) => {
             if (!elementId) return false;
-
-            // 0. Absolute Exact Match (Fast path)
             if (involveSet.has(elementId)) return true;
-
             const cleanId = sanitizeId(elementId);
-
-            // 1. Exact match of sanitized ID
             if (involveSet.has(cleanId)) return true;
-
-            // 2. Match with _return suffix
             if (involveSet.has(cleanId + '_return')) return true;
 
-            // 3. Reverse lookup and Prefix/Suffix matching
             for (const rawThreatId of involveSet) {
-                // Strip Alloy Skolem suffixes (e.g., $0)
                 let threatId = rawThreatId.split('$')[0].trim();
-
                 if (threatId === elementId) return true;
                 if (threatId === cleanId) return true;
                 if (threatId.endsWith('_' + cleanId)) return true;
                 if (cleanId.endsWith('_' + threatId)) return true;
-
-                // Handle potential path prefixes like "System/dndnode_1"
                 if (threatId.includes('/')) {
                     const pathPart = threatId.split('/').pop();
                     if (pathPart === cleanId) return true;
@@ -316,42 +310,78 @@ const EditorContent = ({ initialData, onExit }) => {
             return false;
         };
 
-        // Parse threatId safely handling hyphens in the key
-        const lastDashIndex = selectedThreatId.lastIndexOf('-');
-        const threatType = selectedThreatId.substring(0, lastDashIndex);
-        const indicesStr = selectedThreatId.substring(lastDashIndex + 1);
+        // --- 1. Calculate All Threats Set ---
+        const allThreatIds = new Set();
+        if (analysisResult && analysisResult.threats) {
+            Object.values(analysisResult.threats).forEach(threatList => {
+                threatList.forEach(t => {
+                    if (t.system) allThreatIds.add(t.system);
+                    if (t.connection) allThreatIds.add(t.connection);
+                });
+            });
+        }
 
-        const indices = indicesStr.split(',').map(idx => parseInt(idx, 10));
-
-        const involvedIds = new Set();
-        indices.forEach(index => {
-            if (!analysisResult.threats || !analysisResult.threats[threatType]) return;
-            const threat = analysisResult.threats[threatType][index];
-            if (!threat) return;
-
-            if (threat.system) involvedIds.add(threat.system);
-            if (threat.connection) involvedIds.add(threat.connection);
-        });
-
-        // INFERENCE STEP
+        // Inference for Edges (All Threats)
         edges.forEach(e => {
-            if (isMatch(e.id, involvedIds)) {
-                involvedIds.add(e.source);
-                involvedIds.add(e.target);
+            if (isMatch(e.id, allThreatIds)) {
+                allThreatIds.add(e.source);
+                allThreatIds.add(e.target);
             }
         });
 
-        // Update Nodes
-        setNodes((nds) => updateElements(nds, (n) => {
-            return isMatch(n.id, involvedIds) || (n.data.label && isMatch(n.data.label, involvedIds));
-        }));
+        // --- 2. Calculate Selected Threat Set ---
+        const selectedThreatIds = new Set();
+        if (selectedThreatId && analysisResult && analysisResult.threats) {
+            const lastDashIndex = selectedThreatId.lastIndexOf('-');
+            const threatType = selectedThreatId.substring(0, lastDashIndex);
+            const indicesStr = selectedThreatId.substring(lastDashIndex + 1);
+            const indices = indicesStr.split(',').map(idx => parseInt(idx, 10));
 
-        // Update Edges
-        setEdges((eds) => updateElements(eds, (e) => {
-            return isMatch(e.id, involvedIds);
-        }));
+            indices.forEach(index => {
+                if (analysisResult.threats[threatType]) {
+                    const threat = analysisResult.threats[threatType][index];
+                    if (threat) {
+                        if (threat.system) selectedThreatIds.add(threat.system);
+                        if (threat.connection) selectedThreatIds.add(threat.connection);
+                    }
+                }
+            });
 
-    }, [selectedThreatId, analysisResult, setNodes, setEdges, edges]);
+            // Inference for Edges (Selected Threat)
+            edges.forEach(e => {
+                if (isMatch(e.id, selectedThreatIds)) {
+                    selectedThreatIds.add(e.source);
+                    selectedThreatIds.add(e.target);
+                }
+            });
+        }
+
+        // Apply Updates
+        // Note: We need extended sets that include matches (because our sets currently contain raw ID strings from Alloy)
+
+        const realAllThreatIds = new Set();
+        const realSelectedThreatIds = new Set();
+
+        const resolveToRealIds = (sourceSet, targetSet) => {
+            nodes.forEach(n => {
+                if (isMatch(n.id, sourceSet) || (n.data.label && isMatch(n.data.label, sourceSet))) {
+                    targetSet.add(n.id);
+                }
+            });
+            edges.forEach(e => {
+                if (isMatch(e.id, sourceSet)) {
+                    targetSet.add(e.id);
+                }
+            });
+        };
+
+        resolveToRealIds(allThreatIds, realAllThreatIds);
+        resolveToRealIds(selectedThreatIds, realSelectedThreatIds);
+
+        setNodes(nds => updateElements(nds, realAllThreatIds, realSelectedThreatIds));
+        setEdges(eds => updateElements(eds, realAllThreatIds, realSelectedThreatIds));
+
+    }, [selectedThreatId, analysisResult, setNodes, setEdges, nodes.length, edges.length]);
 
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
