@@ -1,0 +1,39 @@
+{
+    "locations": [
+        {
+            "id": "Zone1",
+            "type": "Intranet",
+            "grade": "Sensitive",
+            "wips_enabled": true
+        }
+    ],
+    "systems": [
+        {
+            "id": "System1",
+            "location": "Zone1",
+            "grade": "Sensitive",
+            "stores": [
+                "Data1"
+            ],
+            "deviceType": "Server",
+            "serviceModel": "OnPremise",
+            "is_admin": false,
+            "is_registered": true,
+            "is_certified": true,
+            "has_tpm": true,
+            "has_os_sign": true,
+            "auth_type": "Multi_Factor",
+            "//": "Intentionally vulnerable storage (Sensitive data in Unencrypted/Local storage)",
+            "key_storage": "Local_Storage",
+            "is_encrypted": false
+        }
+    ],
+    "data": [
+        {
+            "id": "Data1",
+            "grade": "Sensitive",
+            "dataType": "GeneralData"
+        }
+    ],
+    "connections": []
+}

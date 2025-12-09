@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "title": "N2SF Model 1: Internet Terminal Usage",
+    "version": "1.0",
+    "description": "Standard model for secure internet usage via physically separated terminals.",
+    "author": "AMADEUS System"
+  },
+  "viewport": {
+    "x": 50,
+    "y": 50,
+    "zoom": 0.8
+  },
+  "data": [
+    {
+      "id": "data_public_info",
+      "target": "node_external_server",
+      "type": "dataFlow",
+      "data": {
+        "protocol": "HTTPS",
+        "isEncrypted": true,
+        "hasCDR": false,
+        "hasDLP": false,
+        "hasAntiVirus": true,
+        "carries": [
+          "data_public_info"
+        ]
+      },
+      "label": "HTTPS (Public Data)"
+    }
+  ]
+}

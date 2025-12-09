@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N2SF Threat Modeling Tool</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        textarea { width: 100%; height: 300px; font-family: monospace; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; }
+        button:hover { background-color: #0056b3; }
+        #result { margin-top: 20px; white-space: pre-wrap; background: #f4f4f4; padding: 10px; border-radius: 5px; }
+        .violation { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>N2SF Threat Modeling Tool</h1>
+    <p>Paste your JSON payload below and click "Analyze".</p>
+    
+    <textarea id="jsonInput">{
+  "locations": [
+    { "id": 1, "type": "Internet", "grade": "Open" },
+    { "id": 2, "type": "DMZ", "grade": "Sensitive" }
+  ],
+  "data": [
+    { "id": 999, "grade": "Classified" }
+  ],
+  "systems": [
+    { "id": 99, "location": 1, "grade": "Open", "type": "PC", "authType": "NoAuth", "stores": [999] }
+  ],
+  "connections": []
+}</textarea>
+    <br><br>
+    <button onclick="analyze()">Analyze</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function analyze() {
+            const input = document.getElementById('jsonInput').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Analyzing...';
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: input
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.result.length === 0) {
+                        resultDiv.innerHTML = '<span style="color: green;">No violations found. System is secure.</span>';
+                    } else {
+                        let html = `<h3>Found ${data.result.length} Violations:</h3>`;
+                        data.result.forEach((v, i) => {
+                            html += `<div class="violation">Violation ${i+1}: ${v.rule}</div>`;
+                            html += `<pre>${v.details}</pre><hr>`;
+                        });
+                        resultDiv.innerHTML = html;
+                    }
+                } else {
+                    resultDiv.textContent = 'Error: ' + data.error;
+                }
+            } catch (e) {
+                resultDiv.textContent = 'Network Error: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>
