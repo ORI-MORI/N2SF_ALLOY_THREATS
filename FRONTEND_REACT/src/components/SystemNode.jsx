@@ -84,17 +84,47 @@ const SystemNode = ({ data, selected }) => {
                 <div className="p-3 bg-slate-900 text-slate-100">
                     <div className="text-sm font-bold truncate mb-2">{data.label}</div>
 
-                    {/* Compact Properties */}
-                    <div className="flex items-center justify-between text-[10px] text-slate-300 font-mono">
-                        <span>기밀성: {data.conf || '자동'}</span>
-                        {data.grade && (
-                            <span className={`px-1.5 py-0.5 border text-[9px] font-bold uppercase ${data.grade === 'Classified' ? 'border-red-800 text-red-500 bg-red-950/30' :
-                                data.grade === 'Sensitive' ? 'border-amber-800 text-amber-500 bg-amber-950/30' :
-                                    'border-emerald-800 text-emerald-500 bg-emerald-950/30'
-                                }`}>
-                                {data.grade === 'Classified' ? '기밀' : data.grade === 'Sensitive' ? '민감' : '공개'}
-                            </span>
+                    {/* Detailed Boolean Properties */}
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[9px] font-mono text-white mt-2 border-t border-slate-700 pt-1">
+                        <div className="flex justify-between">
+                            <span className="text-slate-200">CDS:</span>
+                            <span className={data.isCDS ? "text-emerald-300 font-bold" : "text-slate-400"}>{data.isCDS ? "yes" : "no"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-slate-200">Log:</span>
+                            <span className={data.hasAuditLogging ? "text-emerald-300 font-bold" : "text-slate-400"}>{data.hasAuditLogging ? "yes" : "no"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-slate-200">Clock:</span>
+                            <span className={data.hasSecureClock ? "text-emerald-300 font-bold" : "text-slate-400"}>{data.hasSecureClock ? "yes" : "no"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-slate-200">Auth:</span>
+                            <span className={data.isRegistered ? "text-emerald-300 font-bold" : "text-slate-400"}>{data.isRegistered ? "yes" : "no"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-slate-200">Enc:</span>
+                            <span className={data.isStorageEncrypted ? "text-emerald-300 font-bold" : "text-slate-400"}>{data.isStorageEncrypted ? "yes" : "no"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-slate-200">Admin:</span>
+                            <span className={data.isManagement ? "text-emerald-300 font-bold" : "text-slate-400"}>{data.isManagement ? "yes" : "no"}</span>
+                        </div>
+                        {data.type === 'Mobile' && (
+                            <div className="flex justify-between">
+                                <span className="text-slate-200">MDM:</span>
+                                <span className={data.hasMDM ? "text-emerald-300 font-bold" : "text-slate-400"}>{data.hasMDM ? "yes" : "no"}</span>
+                            </div>
                         )}
+                        <div className="flex justify-between col-span-2 mt-1 pt-1 border-t border-slate-700">
+                            <span className="text-slate-200">Grade:</span>
+                            <span className={`font-bold ${data.grade === 'Classified' ? 'text-red-400' :
+                                    data.grade === 'Sensitive' ? 'text-amber-400' :
+                                        'text-emerald-400'
+                                }`}>
+                                {data.grade || 'Open'}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
