@@ -22,6 +22,7 @@ import ScoreDashboard from './ScoreDashboard';
 import useStore from '../store';
 import { convertGraphToJSON } from '../utils/graphConverter';
 import { analyzeGraph } from '../api/analyze';
+import ConfirmModal from './ConfirmModal';
 
 const nodeTypes = {
     zone: ZoneNode,
@@ -44,6 +45,7 @@ const EditorContent = ({ initialData, onExit }) => {
     const [analysisResult, setAnalysisResult] = useState(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [selectedThreatId, setSelectedThreatId] = useState(null);
+    const [isClearModalOpen, setIsClearModalOpen] = useState(false);
 
     // Initialization & ID Sync
     useEffect(() => {
@@ -244,13 +246,15 @@ const EditorContent = ({ initialData, onExit }) => {
         }
     };
 
-    const handleClearAll = () => {
-        if (window.confirm('정말로 캔버스를 초기화하시겠습니까?')) {
-            setNodes([]);
-            setEdges([]);
-            setAnalysisResult(null);
-            id = 0; // Reset ID counter
-        }
+    const handleClearClick = () => {
+        setIsClearModalOpen(true);
+    };
+
+    const confirmClear = () => {
+        setNodes([]);
+        setEdges([]);
+        setAnalysisResult(null);
+        id = 0; // Reset ID counter
     };
 
     const handleThreatClick = (threatId) => {
@@ -437,7 +441,7 @@ const EditorContent = ({ initialData, onExit }) => {
                 </button>
                 <div className="w-px bg-slate-700 my-1"></div>
                 <button
-                    onClick={handleClearAll}
+                    onClick={handleClearClick}
                     className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-red-400 hover:bg-slate-700 transition-colors flex items-center gap-2"
                     title="캔버스 초기화"
                 >
@@ -480,6 +484,14 @@ const EditorContent = ({ initialData, onExit }) => {
                 analysisResult={analysisResult}
                 onThreatClick={handleThreatClick}
                 selectedThreatId={selectedThreatId}
+            />
+
+            <ConfirmModal
+                isOpen={isClearModalOpen}
+                onClose={() => setIsClearModalOpen(false)}
+                onConfirm={confirmClear}
+                title="캔버스 초기화 확인"
+                message="모든 노드와 연결이 삭제되며 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?"
             />
         </div>
     );

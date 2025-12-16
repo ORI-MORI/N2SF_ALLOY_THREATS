@@ -2,12 +2,14 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useReactFlow } from 'reactflow';
 import { CheckCircle, Shield } from 'lucide-react';
 import useStore from '../store';
+import ConfirmModal from './ConfirmModal';
 
 export default function PropertyPanel({ analysisResult, onThreatClick, selectedThreatId }) {
     const { selectedElement, setSelectedElement } = useStore();
     const { setNodes, setEdges, getNodes, getEdges } = useReactFlow();
     const [formData, setFormData] = useState({});
     const [activeTab, setActiveTab] = useState('properties'); // 'properties' | 'threats'
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     useEffect(() => {
         if (selectedElement) {
@@ -136,19 +138,20 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
         handleChange('storedData', currentData.map(d => d.id === id ? { ...d, [field]: value } : d));
     };
 
-    const handleDelete = () => {
+    const handleDeleteClick = () => {
         if (!selectedElement) return;
+        setIsDeleteModalOpen(true);
+    };
 
-        if (window.confirm('이 요소를 삭제하시겠습니까?')) {
-            if (selectedElement.source) {
-                // It's an edge
-                setEdges((edges) => edges.filter((edge) => edge.id !== selectedElement.id));
-            } else {
-                // It's a node
-                setNodes((nodes) => nodes.filter((node) => node.id !== selectedElement.id));
-            }
-            setSelectedElement(null);
+    const confirmDelete = () => {
+        if (selectedElement.source) {
+            // It's an edge
+            setEdges((edges) => edges.filter((edge) => edge.id !== selectedElement.id));
+        } else {
+            // It's a node
+            setNodes((nodes) => nodes.filter((node) => node.id !== selectedElement.id));
         }
+        setSelectedElement(null);
     };
 
     const renderPropertiesTab = () => {
@@ -720,7 +723,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                 {/* Delete Button */}
                 <div className="border-t-2 border-slate-700 pt-4 mt-4 pb-4">
                     <button
-                        onClick={handleDelete}
+                        onClick={handleDeleteClick}
                         className="w-full bg-red-900/20 text-red-500 border-2 border-red-900/50 py-2.5 rounded-none hover:bg-red-900/40 hover:text-red-400 transition-colors text-sm font-bold flex items-center justify-center gap-2"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -970,33 +973,42 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
     };
 
     return (
-        <div className="absolute right-4 top-4 bottom-4 w-80 bg-slate-800 border-2 border-slate-700 flex flex-col transition-all duration-300 z-20 shadow-2xl rugged-box">
-            {/* Tabs */}
-            <div className="flex border-b-2 border-slate-700 bg-slate-900">
-                <button
-                    className={`flex-1 py-3 text-sm font-bold transition-colors uppercase tracking-wider ${activeTab === 'properties' ? 'text-indigo-400 border-b-2 border-indigo-500 bg-slate-800' : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'}`}
-                    onClick={() => setActiveTab('properties')}
-                >
-                    속성 (Properties)
-                </button>
-                <button
-                    className={`flex-1 py-3 text-sm font-bold transition-colors uppercase tracking-wider ${activeTab === 'threats' ? 'text-red-400 border-b-2 border-red-500 bg-slate-800' : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'}`}
-                    onClick={() => setActiveTab('threats')}
-                >
-                    위협 감지
-                    {mergedTotalCount > 0 && (
-                        <span className="ml-2 bg-red-900 text-red-200 text-xs px-2 py-0.5 rounded-none border border-red-700">
-                            {mergedTotalCount}
-                        </span>
-                    )}
-                </button>
-            </div>
+        <>
+            <div className="absolute right-4 top-4 bottom-4 w-80 bg-slate-800 border-2 border-slate-700 flex flex-col transition-all duration-300 z-20 shadow-2xl rugged-box">
+                {/* Tabs */}
+                <div className="flex border-b-2 border-slate-700 bg-slate-900">
+                    <button
+                        className={`flex-1 py-3 text-sm font-bold transition-colors uppercase tracking-wider ${activeTab === 'properties' ? 'text-indigo-400 border-b-2 border-indigo-500 bg-slate-800' : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'}`}
+                        onClick={() => setActiveTab('properties')}
+                    >
+                        속성 (Properties)
+                    </button>
+                    <button
+                        className={`flex-1 py-3 text-sm font-bold transition-colors uppercase tracking-wider ${activeTab === 'threats' ? 'text-red-400 border-b-2 border-red-500 bg-slate-800' : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'}`}
+                        onClick={() => setActiveTab('threats')}
+                    >
+                        위협 감지
+                        {mergedTotalCount > 0 && (
+                            <span className="ml-2 bg-red-900 text-red-200 text-xs px-2 py-0.5 rounded-none border border-red-700">
+                                {mergedTotalCount}
+                            </span>
+                        )}
+                    </button>
+                </div>
 
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-800">
-                {activeTab === 'properties' ? renderPropertiesTab() : renderThreatsTab()}
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-800">
+                    {activeTab === 'properties' ? renderPropertiesTab() : renderThreatsTab()}
+                </div>
             </div>
-        </div>
+            <ConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={confirmDelete}
+                title="요소 삭제 확인"
+                message="선택한 요소를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+            />
+        </>
     );
 
 }
