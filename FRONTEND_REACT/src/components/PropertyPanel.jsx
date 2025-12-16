@@ -177,8 +177,8 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
         const isSystem = isNode && selectedElement.type === 'system';
         const isEdge = !!selectedElement.source;
 
-        const inputClass = "mt-1 block w-full rounded-none border-2 border-slate-700 bg-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 transition-all hover:border-slate-500 text-slate-200 placeholder-slate-400";
-        const labelClass = "block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1";
+        const inputClass = "mt-1 block w-full rounded-none border-2 border-slate-700 bg-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 transition-all hover:border-slate-500 text-white placeholder-slate-400";
+        const labelClass = "block text-xs font-bold text-slate-200 uppercase tracking-wider mb-1";
 
         return (
             <div className="flex flex-col gap-5">
@@ -366,7 +366,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     checked={formData.isCDS || false}
                                     onChange={(e) => handleChange('isCDS', e.target.checked)}
                                 />
-                                <label htmlFor="isCDS" className="text-sm font-medium text-slate-300 cursor-pointer">이 시스템은 망연계(CDS) 장비입니까?</label>
+                                <label htmlFor="isCDS" className="text-sm font-medium text-slate-200 cursor-pointer">이 시스템은 망연계(CDS) 장비입니까?</label>
                             </div>
 
                             <div className="flex items-center gap-2 p-2 hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
@@ -377,7 +377,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     checked={formData.hasAuditLogging || false}
                                     onChange={(e) => handleChange('hasAuditLogging', e.target.checked)}
                                 />
-                                <label htmlFor="hasAuditLogging" className="text-sm font-medium text-slate-300 cursor-pointer">감사 로그를 기록합니까?</label>
+                                <label htmlFor="hasAuditLogging" className="text-sm font-medium text-slate-200 cursor-pointer">감사 로그를 기록합니까?</label>
                             </div>
 
                             <div className="flex items-center gap-2 p-2 hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
@@ -388,7 +388,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     checked={formData.hasSecureClock || false}
                                     onChange={(e) => handleChange('hasSecureClock', e.target.checked)}
                                 />
-                                <label htmlFor="hasSecureClock" className="text-sm font-medium text-slate-300 cursor-pointer">보안 클럭을 사용합니까?</label>
+                                <label htmlFor="hasSecureClock" className="text-sm font-medium text-slate-200 cursor-pointer">보안 클럭을 사용합니까?</label>
                             </div>
 
                             <div className="flex items-center gap-2 p-2 hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
@@ -399,7 +399,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     checked={formData.isRegistered || false}
                                     onChange={(e) => handleChange('isRegistered', e.target.checked)}
                                 />
-                                <label htmlFor="isRegistered" className="text-sm font-medium text-slate-300 cursor-pointer">등록된 기기입니까?</label>
+                                <label htmlFor="isRegistered" className="text-sm font-medium text-slate-200 cursor-pointer">등록된 기기입니까?</label>
                             </div>
 
                             <div className="flex items-center gap-2 p-2 hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
@@ -410,7 +410,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     checked={formData.isStorageEncrypted || false}
                                     onChange={(e) => handleChange('isStorageEncrypted', e.target.checked)}
                                 />
-                                <label htmlFor="isStorageEncrypted" className="text-sm font-medium text-slate-300 cursor-pointer">저장소가 암호화되어 있습니까?</label>
+                                <label htmlFor="isStorageEncrypted" className="text-sm font-medium text-slate-200 cursor-pointer">저장소가 암호화되어 있습니까?</label>
                             </div>
 
                             <div className="flex items-center gap-2 p-2 hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-700">
@@ -421,7 +421,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     checked={formData.isManagement || false}
                                     onChange={(e) => handleChange('isManagement', e.target.checked)}
                                 />
-                                <label htmlFor="isManagement" className="text-sm font-medium text-slate-300 cursor-pointer">관리자 전용 단말입니까?</label>
+                                <label htmlFor="isManagement" className="text-sm font-medium text-slate-200 cursor-pointer">관리자 전용 단말입니까?</label>
                             </div>
 
                             {formData.type === 'Mobile' && (
@@ -433,7 +433,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                         checked={formData.hasMDM || false}
                                         onChange={(e) => handleChange('hasMDM', e.target.checked)}
                                     />
-                                    <label htmlFor="hasMDM" className="text-sm font-medium text-slate-300 cursor-pointer">MDM을 사용합니까?</label>
+                                    <label htmlFor="hasMDM" className="text-sm font-medium text-slate-200 cursor-pointer">MDM을 사용합니까?</label>
                                 </div>
                             )}
                         </div>
@@ -466,7 +466,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                             <div>
                                                 <label className="block text-[10px] text-slate-400 mb-1">등급</label>
                                                 <select
-                                                    className="w-full bg-slate-900 border border-slate-700 rounded-none text-xs p-1.5 focus:ring-indigo-500 focus:border-indigo-500 text-slate-200"
+                                                    className="w-full bg-slate-900 border border-slate-700 rounded-none text-xs p-1.5 focus:ring-indigo-500 focus:border-indigo-500 text-white"
                                                     value={data.grade}
                                                     onChange={(e) => updateData(data.id, 'grade', e.target.value)}
                                                 >
@@ -478,7 +478,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                             <div>
                                                 <label className="block text-[10px] text-slate-400 mb-1">유형</label>
                                                 <select
-                                                    className="w-full bg-slate-900 border border-slate-700 rounded-none text-xs p-1.5 focus:ring-indigo-500 focus:border-indigo-500 text-slate-200"
+                                                    className="w-full bg-slate-900 border border-slate-700 rounded-none text-xs p-1.5 focus:ring-indigo-500 focus:border-indigo-500 text-white"
                                                     value={data.fileType}
                                                     onChange={(e) => updateData(data.id, 'fileType', e.target.value)}
                                                 >
@@ -529,7 +529,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     <h4 className={labelClass}>연결 설정</h4>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-1">전송 방식</label>
+                                        <label className="block text-sm font-medium text-slate-200 mb-1">전송 방식</label>
                                         <select
                                             className={inputClass}
                                             value={formData.isBidirectional !== false ? 'bidirectional' : 'unidirectional'}
@@ -544,7 +544,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                         <div className="mt-2">
                                             <label className="block text-sm font-medium text-slate-400 mb-1">방향</label>
                                             <div className="flex items-center justify-between p-2 bg-slate-900 rounded-none border border-slate-700">
-                                                <span className="text-xs text-slate-300 font-medium truncate max-w-[150px]" title={`${sourceLabel} → ${targetLabel}`}>
+                                                <span className="text-xs text-white font-medium truncate max-w-[150px]" title={`${sourceLabel} → ${targetLabel}`}>
                                                     {sourceLabel} → {targetLabel}
                                                 </span>
                                                 <button
@@ -604,7 +604,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     checked={formData.isEncrypted || false}
                                     onChange={(e) => handleChange('isEncrypted', e.target.checked)}
                                 />
-                                <label htmlFor="isEncrypted" className="text-sm font-medium text-slate-300 cursor-pointer">데이터를 암호화하여 전송합니까?</label>
+                                <label htmlFor="isEncrypted" className="text-sm font-medium text-slate-200 cursor-pointer">데이터를 암호화하여 전송합니까?</label>
                             </div>
 
                             <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/50 transition-colors">
@@ -615,7 +615,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     checked={formData.hasCDR || false}
                                     onChange={(e) => handleChange('hasCDR', e.target.checked)}
                                 />
-                                <label htmlFor="hasCDR" className="text-sm font-medium text-slate-300 cursor-pointer">CDR 솔루션을 사용합니까?</label>
+                                <label htmlFor="hasCDR" className="text-sm font-medium text-slate-200 cursor-pointer">CDR 솔루션을 사용합니까?</label>
                             </div>
 
                             <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/50 transition-colors">
@@ -626,7 +626,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     checked={formData.hasDLP || false}
                                     onChange={(e) => handleChange('hasDLP', e.target.checked)}
                                 />
-                                <label htmlFor="hasDLP" className="text-sm font-medium text-slate-300 cursor-pointer">DLP 솔루션을 사용합니까?</label>
+                                <label htmlFor="hasDLP" className="text-sm font-medium text-slate-200 cursor-pointer">DLP 솔루션을 사용합니까?</label>
                             </div>
 
                             <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/50 transition-colors">
@@ -637,7 +637,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                     checked={formData.hasAntiVirus || false}
                                     onChange={(e) => handleChange('hasAntiVirus', e.target.checked)}
                                 />
-                                <label htmlFor="hasAntiVirus" className="text-sm font-medium text-slate-300 cursor-pointer">백신 프로그램을 사용합니까?</label>
+                                <label htmlFor="hasAntiVirus" className="text-sm font-medium text-slate-200 cursor-pointer">백신 프로그램을 사용합니까?</label>
                             </div>
                         </div>
 
@@ -686,7 +686,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                         {currentCarries.map((dataId, idx) => (
                                             <div key={idx} className="flex gap-2 items-center">
                                                 <select
-                                                    className="block w-full rounded-md bg-slate-900 border-slate-700 text-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-xs border p-1.5"
+                                                    className="block w-full rounded-md bg-slate-900 border-slate-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-xs border p-1.5"
                                                     value={dataId}
                                                     onChange={(e) => handleUpdateData(idx, e.target.value)}
                                                 >
@@ -978,13 +978,13 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                 {/* Tabs */}
                 <div className="flex border-b-2 border-slate-700 bg-slate-900">
                     <button
-                        className={`flex-1 py-3 text-sm font-bold transition-colors uppercase tracking-wider ${activeTab === 'properties' ? 'text-indigo-400 border-b-2 border-indigo-500 bg-slate-800' : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'}`}
+                        className={`flex-1 py-3 text-sm font-bold transition-colors uppercase tracking-wider ${activeTab === 'properties' ? 'text-indigo-400 border-b-2 border-indigo-500 bg-slate-800' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}
                         onClick={() => setActiveTab('properties')}
                     >
                         속성 (Properties)
                     </button>
                     <button
-                        className={`flex-1 py-3 text-sm font-bold transition-colors uppercase tracking-wider ${activeTab === 'threats' ? 'text-red-400 border-b-2 border-red-500 bg-slate-800' : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'}`}
+                        className={`flex-1 py-3 text-sm font-bold transition-colors uppercase tracking-wider ${activeTab === 'threats' ? 'text-red-400 border-b-2 border-red-500 bg-slate-800' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}
                         onClick={() => setActiveTab('threats')}
                     >
                         위협 감지

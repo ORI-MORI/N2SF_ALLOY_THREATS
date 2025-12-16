@@ -9,13 +9,13 @@ export default function Sidebar() {
 
     return (
         <div className="absolute left-4 top-48 z-10 w-52 bg-slate-800 border-2 border-slate-700 p-4 flex flex-col gap-4 shadow-xl rugged-box">
-            <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider border-b-2 border-slate-700 pb-2">
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-700 pb-2">
                 구성 요소 (Palette)
             </h2>
 
             <div className="space-y-3">
                 <div>
-                    <div className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">영역 (Zone)</div>
+                    <div className="text-xs font-bold text-white uppercase tracking-wider mb-2">영역 (Zone)</div>
                     <div
                         className="bg-slate-900 hover:bg-slate-700 p-3 border border-slate-700 cursor-grab transition-all hover:translate-x-1 flex items-center gap-2"
                         onDragStart={(event) => onDragStart(event, 'zone', 'New Zone')}
@@ -27,7 +27,7 @@ export default function Sidebar() {
                 </div>
 
                 <div>
-                    <div className="text-[10px] font-bold text-slate-300 uppercase mb-2">시스템 (Systems)</div>
+                    <div className="text-[10px] font-bold text-white uppercase mb-2">시스템 (Systems)</div>
                     <div className="grid grid-cols-1 gap-2">
                         {[
                             { type: 'Server', color: 'bg-indigo-600', label: '서버' },

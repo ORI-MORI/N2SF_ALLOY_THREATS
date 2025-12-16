@@ -424,7 +424,7 @@ const EditorContent = ({ initialData, onExit }) => {
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex gap-2 bg-slate-800 border-2 border-slate-700 p-1.5 shadow-lg">
                 <button
                     onClick={onExit}
-                    className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-700 transition-colors flex items-center gap-2"
                     title="메인으로"
                 >
                     <HomeIcon size={16} />
@@ -433,7 +433,7 @@ const EditorContent = ({ initialData, onExit }) => {
                 <div className="w-px bg-slate-700 my-1"></div>
                 <button
                     onClick={handleSave}
-                    className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400 hover:bg-slate-700 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 text-sm font-medium text-slate-200 hover:text-emerald-400 hover:bg-slate-700 transition-colors flex items-center gap-2"
                     title="프로젝트 저장"
                 >
                     <SaveIcon size={16} />
@@ -442,7 +442,7 @@ const EditorContent = ({ initialData, onExit }) => {
                 <div className="w-px bg-slate-700 my-1"></div>
                 <button
                     onClick={handleClearClick}
-                    className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-red-400 hover:bg-slate-700 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 text-sm font-medium text-slate-200 hover:text-red-400 hover:bg-slate-700 transition-colors flex items-center gap-2"
                     title="캔버스 초기화"
                 >
                     <TrashIcon size={16} />
