@@ -26,7 +26,7 @@ coverage/
 # Alloy Generated Files (Instances & Debug)
 alloy/user_instance_real.als
 alloy/user_instance_real.xml
-alloy/user_instance.als
+
 alloy/server_debug.als
 alloy/test_min.als
 alloy/*.xml

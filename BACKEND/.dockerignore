@@ -28,7 +28,7 @@ debug_*.json
 alloy/*.xml
 alloy/*.cnf
 alloy/*.tmp
-alloy/user_instance*
+alloy/user_instance_real*
 alloy/server_debug.als
 alloy/test_min.als
 debug_*.xml
