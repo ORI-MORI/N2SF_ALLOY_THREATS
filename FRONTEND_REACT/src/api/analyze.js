@@ -1,6 +1,7 @@
 export async function analyzeGraph(payload) {
     try {
-        const response = await fetch('http://localhost:3001/analyze', {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+        const response = await fetch(`${API_URL}/analyze`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

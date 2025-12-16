@@ -1,0 +1,40 @@
+# Git & Config
+.git
+.gitignore
+.dockerignore
+Dockerfile
+.env
+.env.*
+
+# Dependencies
+node_modules
+
+# Logs & Debug
+logs
+*.log
+npm-debug.log
+yarn-debug.log
+last_error.txt
+crash_output.txt
+
+# Debug Data JSONs
+last_request_payload.json
+debug_response_hybrid.json
+debug_result.json
+test_payload_debug.json
+debug_*.json
+
+# Alloy Generated Artifacts (Keep source .als and .jar)
+alloy/*.xml
+alloy/*.cnf
+alloy/*.tmp
+alloy/user_instance*
+alloy/server_debug.als
+alloy/test_min.als
+debug_*.xml
+
+# System & IDE
+.DS_Store
+.vscode
+.idea
+*.md

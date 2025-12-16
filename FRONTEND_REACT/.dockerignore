@@ -1,0 +1,25 @@
+# Git & Config
+.git
+.gitignore
+.dockerignore
+Dockerfile
+.env
+.env.*
+*.local
+
+# Dependencies
+node_modules
+
+# Build & Logs
+dist
+dist-ssr
+coverage
+logs
+*.log
+npm-debug.log
+
+# System & IDE
+.DS_Store
+.vscode
+.idea
+*.md
