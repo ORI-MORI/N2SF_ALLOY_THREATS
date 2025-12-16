@@ -486,7 +486,7 @@ const EditorContent = ({ initialData, onExit }) => {
                 onClose={() => setIsClearModalOpen(false)}
                 onConfirm={confirmClear}
                 title="캔버스 초기화 확인"
-                message="모든 노드와 연결이 삭제되며 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?"
+                message={`모든 노드와 연결이 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.`}
             />
         </div>
     );

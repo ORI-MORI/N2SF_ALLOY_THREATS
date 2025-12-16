@@ -1006,7 +1006,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={confirmDelete}
                 title="요소 삭제 확인"
-                message="선택한 요소를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+                message={`선택된 요소가 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.`}
             />
         </>
     );

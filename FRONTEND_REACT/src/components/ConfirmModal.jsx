@@ -19,7 +19,7 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message }) => {
                                 {title}
                             </h3>
                             <div className="mt-2">
-                                <p className="text-sm text-slate-400 font-mono">
+                                <p className="text-sm text-slate-400 font-mono whitespace-pre-line">
                                     {message}
                                 </p>
                             </div>
