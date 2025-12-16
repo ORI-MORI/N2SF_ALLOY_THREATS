@@ -113,12 +113,12 @@ const ScoreDashboard = ({ nodes, edges, analysisResult, isAnalyzing }) => {
                     <Shield size={20} strokeWidth={2.5} className={isAnalyzing ? 'animate-pulse' : ''} />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">보안 지수 (Health)</span>
+                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">보안 지수 (Health)</span>
                     <span className={`text-2xl font-black leading-none ${getScoreColor(displayedSecurityScore)}`}>
                         {isAnalyzing ? (
                             <span className="text-lg animate-pulse text-indigo-400">분석 중...</span>
                         ) : displayedSecurityScore === null ? (
-                            <span className="text-lg text-slate-600">-</span>
+                            <span className="text-lg text-slate-400">-</span>
                         ) : (
                             `${displayedSecurityScore}%`
                         )}
@@ -156,7 +156,7 @@ const ScoreDashboard = ({ nodes, edges, analysisResult, isAnalyzing }) => {
                     <CheckCircle size={20} strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">모델링 완성도</span>
+                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">모델링 완성도</span>
                     <span className={`text-2xl font-black leading-none ${getCompletenessColor(completenessData.ratio)}`}>
                         {completenessData.text}
                     </span>

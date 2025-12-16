@@ -52,7 +52,7 @@ export default function LandingPage({ onStartProject }) {
                 {/* Header */}
                 <div className="text-center space-y-6 mb-12">
                     <img src="/AMADEUS.png" alt="AMADEUS Logo" className="mx-auto w-[400px] h-auto object-contain animate-fade-in-up drop-shadow-2xl opacity-90" />
-                    <p className="text-slate-500 font-mono tracking-widest text-sm uppercase">Advanced Threat Modeling & Analysis Platform</p>
+                    <p className="text-slate-400 font-mono tracking-widest text-sm uppercase">Advanced Threat Modeling & Analysis Platform</p>
                 </div>
 
                 {/* Main Actions */}
@@ -118,7 +118,7 @@ export default function LandingPage({ onStartProject }) {
                     <div className="flex items-center gap-4">
                         <span className="w-2 h-2 bg-slate-700 transform rotate-45"></span>
                         <div className="h-px flex-1 bg-slate-800"></div>
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">System Templates</span>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">System Templates</span>
                         <div className="h-px flex-1 bg-slate-800"></div>
                         <span className="w-2 h-2 bg-slate-700 transform rotate-45"></span>
                     </div>
@@ -130,18 +130,18 @@ export default function LandingPage({ onStartProject }) {
                                 onClick={() => handlePresetLoad(preset)}
                                 className="group bg-slate-900/50 hover:bg-slate-900 p-5 border border-slate-800 hover:border-indigo-500/50 transition-all text-left flex items-start gap-4 relative overflow-hidden"
                             >
-                                <div className="w-10 h-10 bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 group-hover:text-indigo-400 group-hover:border-indigo-500/50 transition-colors shrink-0">
+                                <div className="w-10 h-10 bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 group-hover:text-indigo-400 group-hover:border-indigo-500/50 transition-colors shrink-0">
                                     <LayoutTemplate size={18} />
                                 </div>
                                 <div>
                                     <div className="font-bold text-slate-300 mb-1 text-sm group-hover:text-white uppercase tracking-wide transition-colors">{preset.name}</div>
-                                    <div className="text-[10px] text-slate-600 font-mono group-hover:text-slate-500">Standard N2SF Configuration</div>
+                                    <div className="text-[10px] text-slate-400 font-mono group-hover:text-slate-300">Standard N2SF Configuration</div>
                                 </div>
                             </button>
                         ))}
 
                         {/* Placeholder */}
-                        <div className="p-5 border border-dashed border-slate-800 text-slate-600 text-xs font-mono flex items-center justify-center uppercase tracking-widest opacity-50 select-none">
+                        <div className="p-5 border border-dashed border-slate-800 text-slate-500 text-xs font-mono flex items-center justify-center uppercase tracking-widest opacity-50 select-none">
                             More modules loading...
                         </div>
                     </div>
