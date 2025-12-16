@@ -157,17 +157,17 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
     const renderPropertiesTab = () => {
         if (!selectedElement) {
             return (
-                <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                    <div className="w-16 h-16 rounded-none bg-slate-900 border-2 border-dashed border-slate-700 flex items-center justify-center mb-4 shadow-sm group">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-orange-400 group-hover:scale-110 transition-transform duration-300">
+                <div className="flex flex-col items-center justify-center h-full text-slate-400 p-4 text-center">
+                    <div className="w-16 h-16 rounded shadow-lg bg-orange-900/10 border-2 border-orange-500/30 flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-orange-500">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                             <line x1="9" y1="3" x2="9" y2="21"></line>
                         </svg>
                     </div>
-                    <p className="text-orange-300 font-bold uppercase tracking-widest text-sm mb-2 glow-text">선택된 요소 없음</p>
-                    <div className="text-xs text-slate-400 font-mono bg-slate-900 px-3 py-2 border border-slate-800 rounded">
+                    <p className="text-base font-bold text-orange-400 uppercase tracking-widest">선택된 요소 없음</p>
+                    <p className="text-xs text-slate-400 mt-2 font-mono">
                         속성을 보려면<br />노드나 연결선을 선택하세요.
-                    </div>
+                    </p>
                 </div>
             );
         }
@@ -790,14 +790,14 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
     const renderThreatsTab = () => {
         if (!analysisResult) {
             return (
-                <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                    <div className="w-16 h-16 rounded-none bg-slate-900 border-2 border-dashed border-slate-700 flex items-center justify-center mb-4 shadow-sm group">
-                        <Shield size={32} strokeWidth={1.5} className="text-orange-400 group-hover:scale-110 transition-transform duration-300" />
+                <div className="flex flex-col items-center justify-center h-full text-slate-400 p-4 text-center">
+                    <div className="w-16 h-16 rounded shadow-lg bg-orange-900/10 border-2 border-orange-500/30 flex items-center justify-center mb-4">
+                        <Shield size={32} className="text-orange-500" strokeWidth={1.5} />
                     </div>
-                    <p className="text-orange-300 font-bold uppercase tracking-widest text-sm mb-2 glow-text">분석 결과 없음</p>
-                    <div className="text-xs text-slate-400 font-mono bg-slate-900 px-3 py-2 border border-slate-800 rounded">
+                    <p className="text-base font-bold text-orange-400 uppercase tracking-widest">분석 결과 없음</p>
+                    <p className="text-xs text-slate-400 mt-2 font-mono">
                         상단 '위협 분석' 버튼을<br />클릭하세요.
-                    </div>
+                    </p>
                 </div>
             );
         }
