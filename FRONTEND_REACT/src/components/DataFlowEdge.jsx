@@ -157,9 +157,9 @@ export default function DataFlowEdge({
                     y={labelY - 17}
                     className="overflow-visible pointer-events-none"
                 >
-                    <div className="flex items-center justify-center gap-1 px-1.5 py-1.5 bg-white rounded-full border border-gray-200 w-full h-full">
+                    <div className="flex items-center justify-center gap-1 px-1.5 py-1.5 bg-slate-900 rounded-full border border-slate-700 w-full h-full shadow-md">
                         {carriedData.map((item) => (
-                            <div key={item.id} className="flex items-center justify-center w-6 h-6 bg-gray-50 rounded-full border border-gray-100 animate-none" title={item.label}>
+                            <div key={item.id} className="flex items-center justify-center w-6 h-6 bg-slate-800 rounded-full border border-slate-600 animate-none" title={item.label}>
                                 {getIcon(item.fileType)}
                             </div>
                         ))}

@@ -177,7 +177,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
 
         return (
             <div className="flex flex-col gap-5">
-                <div className="text-[10px] font-mono text-gray-400 bg-gray-50/50 p-1 rounded inline-block self-start">ID: {selectedElement.id}</div>
+                <div className="text-[10px] font-mono text-slate-200 bg-slate-900 p-1.5 rounded border border-slate-700 inline-block self-start shadow-sm">ID: {selectedElement.id}</div>
 
                 {/* Common Label/Name */}
                 {isNode && (
@@ -204,7 +204,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                 onChange={(e) => handleChange('grade', e.target.value)}
                             >
                                 <option value="Classified">기밀 (Classified)</option>
-                                <option value="Sensitive">대외비 (Sensitive)</option>
+                                <option value="Sensitive">민감 (Sensitive)</option>
                                 <option value="Open">공개 (Open)</option>
                             </select>
                         </div>
@@ -266,7 +266,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                 onChange={(e) => handleChange('grade', e.target.value)}
                             >
                                 <option value="Classified">기밀 (Classified)</option>
-                                <option value="Sensitive">대외비 (Sensitive)</option>
+                                <option value="Sensitive">민감 (Sensitive)</option>
                                 <option value="Open">공개 (Open)</option>
                             </select>
                         </div>
@@ -459,21 +459,21 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                         </div>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div>
-                                                <label className="block text-[10px] text-gray-500 mb-1">등급</label>
+                                                <label className="block text-[10px] text-slate-400 mb-1">등급</label>
                                                 <select
-                                                    className="w-full border-gray-200/50 bg-white rounded text-xs p-1.5 focus:ring-indigo-500 focus:border-indigo-500"
+                                                    className="w-full bg-slate-900 border border-slate-700 rounded-none text-xs p-1.5 focus:ring-indigo-500 focus:border-indigo-500 text-slate-200"
                                                     value={data.grade}
                                                     onChange={(e) => updateData(data.id, 'grade', e.target.value)}
                                                 >
                                                     <option value="Open">공개</option>
-                                                    <option value="Sensitive">대외비</option>
+                                                    <option value="Sensitive">민감</option>
                                                     <option value="Classified">기밀</option>
                                                 </select>
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] text-gray-500 mb-1">유형</label>
+                                                <label className="block text-[10px] text-slate-400 mb-1">유형</label>
                                                 <select
-                                                    className="w-full border-gray-200/50 bg-white rounded text-xs p-1.5 focus:ring-indigo-500 focus:border-indigo-500"
+                                                    className="w-full bg-slate-900 border border-slate-700 rounded-none text-xs p-1.5 focus:ring-indigo-500 focus:border-indigo-500 text-slate-200"
                                                     value={data.fileType}
                                                     onChange={(e) => updateData(data.id, 'fileType', e.target.value)}
                                                 >
@@ -669,7 +669,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
 
                                 if (availableData.length === 0) {
                                     return (
-                                        <div className="text-xs text-gray-500 italic bg-gray-50/50 p-3 rounded-lg border border-dashed border-gray-300 text-center">
+                                        <div className="text-xs text-orange-300 italic bg-slate-900 p-3 border border-dashed border-slate-700 text-center shadow-sm">
                                             소스 노드에 데이터가 없습니다.
                                             <br />"저장된 데이터 자산"에 먼저 추가하세요.
                                         </div>
@@ -681,7 +681,7 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
                                         {currentCarries.map((dataId, idx) => (
                                             <div key={idx} className="flex gap-2 items-center">
                                                 <select
-                                                    className="block w-full rounded-md border-gray-200/50 bg-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-1.5"
+                                                    className="block w-full rounded-md bg-slate-900 border-slate-700 text-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-xs border p-1.5"
                                                     value={dataId}
                                                     onChange={(e) => handleUpdateData(idx, e.target.value)}
                                                 >
@@ -786,11 +786,11 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
         if (!analysisResult) {
             return (
                 <div className="flex flex-col items-center justify-center h-full text-slate-500 p-4 text-center">
-                    <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mb-3">
-                        <Shield size={24} className="text-slate-600" />
+                    <div className="w-16 h-16 rounded shadow-lg bg-slate-800 border-2 border-slate-700 flex items-center justify-center mb-4">
+                        <Shield size={32} className="text-slate-600" />
                     </div>
-                    <p className="text-sm font-bold text-slate-300">분석 결과가 없습니다.</p>
-                    <p className="text-xs mt-1 text-slate-500">'위협 분석' 버튼을 눌러주세요.</p>
+                    <p className="text-base font-bold text-slate-300 uppercase tracking-widest">분석 결과 없음</p>
+                    <p className="text-xs mt-2 text-slate-500 font-mono">상단 '위협 분석' 버튼을 클릭하세요.</p>
                 </div>
             );
         }
@@ -799,15 +799,15 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
         if (analysisResult.error === 'NO_DIAGRAM') {
             return (
                 <div className="flex flex-col items-center justify-center h-full text-slate-500 p-4 text-center">
-                    <div className="w-16 h-16 rounded-full bg-orange-900/20 flex items-center justify-center mb-4 border border-orange-500/20">
+                    <div className="w-16 h-16 rounded shadow-lg bg-orange-900/10 border-2 border-orange-500/30 flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-orange-500">
                             <circle cx="12" cy="12" r="10"></circle>
                             <line x1="12" y1="8" x2="12" y2="12"></line>
                             <line x1="12" y1="16" x2="12.01" y2="16"></line>
                         </svg>
                     </div>
-                    <p className="text-sm font-bold text-slate-300">Threat Diagram does not exist!</p>
-                    <p className="text-xs text-slate-500 mt-1">Please add at least one system to analyze.</p>
+                    <p className="text-base font-bold text-orange-400 uppercase tracking-widest">다이어그램 없음</p>
+                    <p className="text-xs text-slate-500 mt-2 font-mono">분석할 시스템을 추가해주세요.</p>
                 </div>
             );
         }
@@ -822,11 +822,11 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
         if (!hasViolations) {
             return (
                 <div className="flex flex-col items-center justify-center h-full text-slate-500 p-4 text-center">
-                    <div className="w-16 h-16 rounded-full bg-emerald-900/20 flex items-center justify-center mb-4">
+                    <div className="w-16 h-16 rounded shadow-lg bg-emerald-900/10 border-2 border-emerald-500/30 flex items-center justify-center mb-4">
                         <CheckCircle size={32} className="text-emerald-500" />
                     </div>
-                    <p className="text-lg font-bold text-emerald-500">Secure</p>
-                    <p className="text-sm text-slate-500 mt-1">No security violations found.</p>
+                    <p className="text-lg font-bold text-emerald-400 uppercase tracking-widest">안전함 (SECURE)</p>
+                    <p className="text-xs text-slate-500 mt-2 font-mono">보안 위협이 발견되지 않았습니다.</p>
                 </div>
             );
         }
@@ -846,69 +846,113 @@ export default function PropertyPanel({ analysisResult, onThreatClick, selectedT
         });
 
         return (
-            <div className="space-y-4 p-1">
-                <div className="flex items-center gap-2 mb-2 bg-red-900/20 p-3 border-l-4 border-red-600">
-                    <span className="font-bold text-red-500">{visibleCount} Violations Found</span>
+            <div className="space-y-6 p-2">
+                <div className="flex items-center gap-3 mb-4 bg-red-950/40 p-4 border-l-4 border-red-600 shadow-lg">
+                    <div className="p-2 bg-red-900/20 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <div>
+                        <span className="block text-xl font-black text-white">{visibleCount}</span>
+                        <span className="text-xs font-bold text-red-400 uppercase tracking-wider">위협 발견됨</span>
+                    </div>
                 </div>
+
                 {Object.entries(mergedThreats).map(([key, mergedItems]) => {
                     return (
-                        <div key={key} className="border-2 border-red-900/30 bg-slate-900 shadow-sm">
-                            <div className="bg-red-900/10 px-3 py-2 border-b-2 border-red-900/30 flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-none bg-red-500"></div>
-                                <h4 className="font-semibold text-red-400 text-xs uppercase tracking-wide">
-                                    {key.replace(/([A-Z])/g, ' $1').trim()}
-                                </h4>
-                            </div>
-                            <div className="divide-y-2 divide-slate-800">
+                        <div key={key} className="mb-6">
+                            <h4 className="flex items-center gap-2 font-bold text-slate-200 text-sm uppercase tracking-wider mb-2 pb-1 border-b border-slate-700">
+                                <span className="w-1.5 h-1.5 bg-red-500 rounded-none"></span>
+                                {key.replace(/([A-Z])/g, ' $1').trim()}
+                            </h4>
+
+                            <div className="space-y-3">
                                 {mergedItems.map((group, idx) => {
                                     const item = group.primary;
-                                    // Use a composite ID for selection dealing with merged items
                                     const compositeId = `${key}-${group.indices.join(',')}`;
                                     const isSelected = selectedThreatId === compositeId;
+
+                                    // Resolve Context Label
+                                    let contextLabel = '';
+                                    if (item.system) {
+                                        contextLabel = `SYS: ${item.system}`;
+                                    } else if (item.connection) {
+                                        const edge = getEdges().find(e => e.id === item.connection);
+                                        if (edge) {
+                                            const sourceNode = getNodes().find(n => n.id === edge.source);
+                                            const targetNode = getNodes().find(n => n.id === edge.target);
+                                            const sLabel = sourceNode?.data?.label || 'Source';
+                                            const tLabel = targetNode?.data?.label || 'Target';
+                                            contextLabel = `CONN: ${sLabel} → ${tLabel}`;
+                                        } else {
+                                            contextLabel = 'CONNECTION';
+                                        }
+                                    }
 
                                     return (
                                         <div
                                             key={idx}
-                                            className={`p-3 transition-all duration-200 ease-in-out cursor-pointer active:scale-95 hover:bg-slate-800 ${isSelected
-                                                ? 'bg-red-900/10 border-l-4 border-red-500'
-                                                : 'border-l-4 border-transparent'
+                                            className={`group relative transition-all duration-200 ease-in-out cursor-pointer hover:bg-slate-800 ${isSelected
+                                                ? 'bg-orange-900/10'
+                                                : 'bg-transparent'
                                                 }`}
                                             onClick={() => onThreatClick && onThreatClick(compositeId)}
                                         >
-                                            <div className="flex justify-between items-start mb-1">
-                                                <span className="font-semibold text-slate-300 text-xs">
-                                                    Violation #{idx + 1}
-                                                    {group.indices.length > 1 && " (Merged)"}
-                                                </span>
-                                                {isSelected && (
-                                                    <span className="text-red-400 font-bold text-[10px] bg-red-900/20 px-1.5 py-0.5 border border-red-900/50">
-                                                        Selected
-                                                    </span>
-                                                )}
-                                            </div>
+                                            {/* Selection Indicator Line */}
+                                            <div className={`absolute left-0 top-0 bottom-0 w-1 transition-colors ${isSelected ? 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-red-900/40 group-hover:bg-red-500'}`}></div>
 
-                                            {/* System or Connection Context */}
-                                            <div className="text-xs text-slate-500 mb-2 font-mono">
-                                                {item.system ? `System: ${item.system}` : `Connection: ${item.connection}`}
-                                            </div>
-
-                                            {/* Data List (Aggregated) */}
-                                            {group.allData && group.allData.length > 0 && (
-                                                <div className="mb-2">
-                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Involved Data</span>
-                                                    <div className="flex flex-wrap gap-1">
-                                                        {group.allData.map((dataId, dIdx) => (
-                                                            <span key={dIdx} className="bg-slate-800 text-slate-400 border border-slate-700 px-1.5 py-0.5 text-[10px] font-medium">
-                                                                Data {dataId}
+                                            <div className="pl-4 pr-2 py-3">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div className="flex flex-col">
+                                                        <span className={`font-bold text-sm ${isSelected ? 'text-orange-200' : 'text-slate-200'}`}>
+                                                            Violation #{idx + 1}
+                                                        </span>
+                                                        {group.indices.length > 1 && (
+                                                            <span className="text-[10px] text-slate-500 font-mono mt-0.5">
+                                                                * {group.indices.length} merged items
                                                             </span>
-                                                        ))}
+                                                        )}
                                                     </div>
-                                                </div>
-                                            )}
 
-                                            <div className="text-xs text-slate-400 mt-1 bg-slate-800 p-2 border border-slate-700 italic">
-                                                <span className="font-semibold text-slate-500 block mb-0.5 not-italic">Remediation:</span>
-                                                {item.remediation}
+                                                    {isSelected && (
+                                                        <span className="text-[10px] font-bold text-orange-100 bg-orange-600 px-1.5 py-0.5 shadow-sm">
+                                                            SELECTED
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {/* Context Badge */}
+                                                <div className="mb-3">
+                                                    <span className="inline-block bg-slate-800 border border-slate-600 text-slate-300 text-[10px] px-2 py-0.5 font-mono uppercase tracking-tight">
+                                                        {contextLabel}
+                                                    </span>
+                                                </div>
+
+                                                {/* Remediation Block */}
+                                                <div className={`bg-slate-900/50 p-2 border mb-3 transition-colors ${isSelected ? 'border-orange-500/30' : 'border-slate-700/50 hover:border-slate-600'}`}>
+                                                    <div className="flex items-center gap-1.5 mb-1">
+                                                        <div className="p-0.5 bg-emerald-500/20 rounded-full">
+                                                            <CheckCircle size={10} className="text-emerald-400" />
+                                                        </div>
+                                                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wide">Remediation</span>
+                                                    </div>
+                                                    <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                                                        {item.remediation}
+                                                    </p>
+                                                </div>
+
+                                                {/* Data List (Aggregated) */}
+                                                {group.allData && group.allData.length > 0 && (
+                                                    <div>
+                                                        <div className="flex flex-wrap gap-1.5 items-center">
+                                                            <span className="text-[10px] font-bold text-slate-500 uppercase mr-1">Assets:</span>
+                                                            {group.allData.map((dataId, dIdx) => (
+                                                                <span key={dIdx} className="bg-slate-800 text-indigo-300 border border-slate-600 px-1.5 py-0.5 text-[10px] font-mono hover:border-indigo-500 transition-colors">
+                                                                    D-{dataId}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     );

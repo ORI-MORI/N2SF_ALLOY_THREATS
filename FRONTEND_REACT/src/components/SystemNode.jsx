@@ -89,10 +89,10 @@ const SystemNode = ({ data, selected }) => {
                         <span>기밀성: {data.conf || '자동'}</span>
                         {data.grade && (
                             <span className={`px-1.5 py-0.5 border text-[9px] font-bold uppercase ${data.grade === 'Classified' ? 'border-red-800 text-red-500 bg-red-950/30' :
-                                    data.grade === 'Sensitive' ? 'border-amber-800 text-amber-500 bg-amber-950/30' :
-                                        'border-emerald-800 text-emerald-500 bg-emerald-950/30'
+                                data.grade === 'Sensitive' ? 'border-amber-800 text-amber-500 bg-amber-950/30' :
+                                    'border-emerald-800 text-emerald-500 bg-emerald-950/30'
                                 }`}>
-                                {data.grade === 'Classified' ? '기밀' : data.grade === 'Sensitive' ? '대외비' : '공개'}
+                                {data.grade === 'Classified' ? '기밀' : data.grade === 'Sensitive' ? '민감' : '공개'}
                             </span>
                         )}
                     </div>

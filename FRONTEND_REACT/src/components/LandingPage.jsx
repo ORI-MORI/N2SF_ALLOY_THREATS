@@ -38,44 +38,71 @@ export default function LandingPage({ onStartProject }) {
     };
 
     return (
-        <div className="min-h-screen bg-white flex flex-col items-center justify-center p-8">
-            <div className="max-w-4xl w-full space-y-12">
+        <div className="min-h-screen bg-slate-950 relative overflow-hidden flex flex-col items-center justify-center p-8">
+            {/* Grid Background */}
+            <div className="absolute inset-0 pointer-events-none opacity-20"
+                style={{
+                    backgroundImage: 'radial-gradient(#4f46e5 1px, transparent 1px)',
+                    backgroundSize: '30px 30px'
+                }}
+            ></div>
+
+            <div className="max-w-5xl w-full space-y-16 relative z-10">
 
                 {/* Header */}
-                <div className="text-center space-y-4 mb-8">
-                    <img src="/AMADEUS.png" alt="AMADEUS Logo" className="mx-auto w-[500px] h-auto object-contain animate-fade-in-up" />
+                <div className="text-center space-y-6 mb-12">
+                    <img src="/AMADEUS.png" alt="AMADEUS Logo" className="mx-auto w-[400px] h-auto object-contain animate-fade-in-up drop-shadow-2xl opacity-90" />
+                    <p className="text-slate-500 font-mono tracking-widest text-sm uppercase">Advanced Threat Modeling & Analysis Platform</p>
                 </div>
 
                 {/* Main Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* New Project */}
                     <button
                         onClick={handleNewProject}
-                        className="group relative overflow-hidden bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-indigo-200 transition-all duration-300 text-left"
+                        className="group relative bg-slate-900 p-10 border-2 border-slate-700 hover:border-indigo-500 transition-all duration-300 text-left hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] overflow-hidden"
                     >
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <Plus size={100} className="text-indigo-600" />
+                        {/* Corner Accents */}
+                        <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-slate-600 group-hover:border-indigo-400 transition-colors"></div>
+                        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-slate-600 group-hover:border-indigo-400 transition-colors"></div>
+
+                        <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110 duration-500">
+                            <Plus size={140} className="text-indigo-500" />
                         </div>
-                        <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-4 text-indigo-600 group-hover:scale-110 transition-transform">
-                            <Plus size={24} />
+
+                        <div className="relative z-10">
+                            <div className="w-16 h-16 bg-slate-800 border border-slate-600 flex items-center justify-center mb-6 text-indigo-400 group-hover:text-indigo-300 group-hover:border-indigo-500 transition-colors shadow-lg">
+                                <Plus size={32} />
+                            </div>
+                            <h3 className="text-2xl font-black text-slate-100 mb-3 uppercase tracking-wider group-hover:text-indigo-300 transition-colors">New Project</h3>
+                            <p className="text-sm text-slate-400 leading-relaxed font-mono">
+                                Initialize a clean workspace for new threat modeling architecture.
+                            </p>
                         </div>
-                        <h3 className="text-xl font-bold text-slate-800 mb-2">New Project</h3>
-                        <p className="text-sm text-slate-500">Start with a blank canvas and build your model from scratch.</p>
                     </button>
 
                     {/* Load File */}
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="group relative overflow-hidden bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 text-left"
+                        className="group relative bg-slate-900 p-10 border-2 border-slate-700 hover:border-emerald-500 transition-all duration-300 text-left hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] overflow-hidden"
                     >
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <FileUp size={100} className="text-emerald-600" />
+                        {/* Corner Accents */}
+                        <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-slate-600 group-hover:border-emerald-400 transition-colors"></div>
+                        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-slate-600 group-hover:border-emerald-400 transition-colors"></div>
+
+                        <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110 duration-500">
+                            <FileUp size={140} className="text-emerald-500" />
                         </div>
-                        <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-4 text-emerald-600 group-hover:scale-110 transition-transform">
-                            <FileUp size={24} />
+
+                        <div className="relative z-10">
+                            <div className="w-16 h-16 bg-slate-800 border border-slate-600 flex items-center justify-center mb-6 text-emerald-400 group-hover:text-emerald-300 group-hover:border-emerald-500 transition-colors shadow-lg">
+                                <FileUp size={32} />
+                            </div>
+                            <h3 className="text-2xl font-black text-slate-100 mb-3 uppercase tracking-wider group-hover:text-emerald-300 transition-colors">Load Project</h3>
+                            <p className="text-sm text-slate-400 leading-relaxed font-mono">
+                                Restore workspace from existing .JSON architecture file.
+                            </p>
                         </div>
-                        <h3 className="text-xl font-bold text-slate-800 mb-2">Load from File</h3>
-                        <p className="text-sm text-slate-500">Restore a previously saved .json project file.</p>
                         <input
                             type="file"
                             ref={fileInputRef}
@@ -87,33 +114,35 @@ export default function LandingPage({ onStartProject }) {
                 </div>
 
                 {/* Presets Section */}
-                <div className="space-y-6">
+                <div className="space-y-8 pt-8 border-t border-slate-800/50">
                     <div className="flex items-center gap-4">
-                        <div className="h-px flex-1 bg-slate-200"></div>
-                        <span className="text-sm font-medium text-slate-400 uppercase tracking-wider">N2SF Standard Models</span>
-                        <div className="h-px flex-1 bg-slate-200"></div>
+                        <span className="w-2 h-2 bg-slate-700 transform rotate-45"></span>
+                        <div className="h-px flex-1 bg-slate-800"></div>
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">System Templates</span>
+                        <div className="h-px flex-1 bg-slate-800"></div>
+                        <span className="w-2 h-2 bg-slate-700 transform rotate-45"></span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {PRESETS.map((preset) => (
                             <button
                                 key={preset.id}
                                 onClick={() => handlePresetLoad(preset)}
-                                className="bg-white/60 hover:bg-white p-4 rounded-xl border border-slate-200 hover:border-indigo-300 shadow-sm hover:shadow-md transition-all text-left flex items-center gap-3 group"
+                                className="group bg-slate-900/50 hover:bg-slate-900 p-5 border border-slate-800 hover:border-indigo-500/50 transition-all text-left flex items-start gap-4 relative overflow-hidden"
                             >
-                                <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-500 transition-colors">
-                                    <LayoutTemplate size={20} />
+                                <div className="w-10 h-10 bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 group-hover:text-indigo-400 group-hover:border-indigo-500/50 transition-colors shrink-0">
+                                    <LayoutTemplate size={18} />
                                 </div>
                                 <div>
-                                    <div className="font-semibold text-slate-700 group-hover:text-indigo-700">{preset.name}</div>
-                                    <div className="text-xs text-slate-400">Standard Template</div>
+                                    <div className="font-bold text-slate-300 mb-1 text-sm group-hover:text-white uppercase tracking-wide transition-colors">{preset.name}</div>
+                                    <div className="text-[10px] text-slate-600 font-mono group-hover:text-slate-500">Standard N2SF Configuration</div>
                                 </div>
                             </button>
                         ))}
 
-                        {/* Placeholder for more */}
-                        <div className="p-4 rounded-xl border border-dashed border-slate-200 flex items-center justify-center text-slate-400 text-sm">
-                            More models coming soon...
+                        {/* Placeholder */}
+                        <div className="p-5 border border-dashed border-slate-800 text-slate-600 text-xs font-mono flex items-center justify-center uppercase tracking-widest opacity-50 select-none">
+                            More modules loading...
                         </div>
                     </div>
                 </div>
