@@ -101,20 +101,24 @@ const ScoreDashboard = ({ nodes, edges, analysisResult, isAnalyzing }) => {
         <div className="absolute top-4 left-4 z-20 flex flex-col gap-3">
             {/* Security Score Card */}
             <div
-                className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 cursor-help glass-panel hover:shadow-lg ${getScoreBg(displayedSecurityScore)}`}
+                className={`relative flex items-center gap-3 px-4 py-3 border-2 transition-all duration-300 cursor-help shadow-lg rugged-box hover:translate-x-1 ${displayedSecurityScore === null ? 'bg-slate-800 border-slate-700' :
+                    displayedSecurityScore >= 80 ? 'bg-slate-900 border-emerald-900' :
+                        displayedSecurityScore >= 50 ? 'bg-slate-900 border-amber-900' :
+                            'bg-slate-900 border-red-900'
+                    }`}
                 onMouseEnter={() => setHoveredMetric('security')}
                 onMouseLeave={() => setHoveredMetric(null)}
             >
-                <div className={`p-2 rounded-full bg-white/90 shadow-sm ${getScoreColor(displayedSecurityScore)}`}>
+                <div className={`p-2 shadow-sm bg-slate-800 ${getScoreColor(displayedSecurityScore)}`}>
                     <Shield size={20} strokeWidth={2.5} className={isAnalyzing ? 'animate-pulse' : ''} />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Security Health</span>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">보안 지수 (Health)</span>
                     <span className={`text-2xl font-black leading-none ${getScoreColor(displayedSecurityScore)}`}>
                         {isAnalyzing ? (
-                            <span className="text-lg animate-pulse">Analyzing...</span>
+                            <span className="text-lg animate-pulse text-indigo-400">분석 중...</span>
                         ) : displayedSecurityScore === null ? (
-                            <span className="text-lg text-gray-400">-</span>
+                            <span className="text-lg text-slate-600">-</span>
                         ) : (
                             `${displayedSecurityScore}%`
                         )}
@@ -123,16 +127,16 @@ const ScoreDashboard = ({ nodes, edges, analysisResult, isAnalyzing }) => {
 
                 {/* Tooltip - Moved to Right */}
                 {hoveredMetric === 'security' && (
-                    <div className="absolute left-full top-0 ml-3 w-64 p-3 glass-panel bg-gray-900/95 text-white text-xs rounded-xl shadow-2xl z-50 pointer-events-none animate-in fade-in slide-in-from-left-2 backdrop-blur-xl border-gray-700/50">
-                        <div className="font-bold mb-1 text-sm flex items-center gap-2 text-indigo-300">
-                            <Shield size={14} /> Security Health
+                    <div className="absolute left-full top-0 ml-4 w-64 p-3 bg-slate-800 text-slate-200 text-xs border border-slate-600 shadow-2xl z-50 pointer-events-none animate-in fade-in slide-in-from-left-2">
+                        <div className="font-bold mb-1 text-sm flex items-center gap-2 text-indigo-400">
+                            <Shield size={14} /> 보안 지수 (Security Health)
                         </div>
-                        <p className="leading-relaxed text-gray-300">
-                            Indicates the security safety of the network configuration.
+                        <p className="leading-relaxed text-slate-400">
+                            네트워크 구성의 보안 안전성을 나타냅니다.
                             <br />
-                            • <span className="text-green-400">100%</span>: No threats found.
+                            • <span className="text-emerald-400">100%</span>: 위협이 발견되지 않음.
                             <br />
-                            • <span className="text-red-400">Lower</span>: Score decreases as threats increase.
+                            • <span className="text-red-400">낮음</span>: 위협이 증가할수록 점수가 감소합니다.
                         </p>
                     </div>
                 )}
@@ -140,15 +144,19 @@ const ScoreDashboard = ({ nodes, edges, analysisResult, isAnalyzing }) => {
 
             {/* Completeness Card */}
             <div
-                className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 cursor-help glass-panel hover:shadow-lg ${getCompletenessBg(completenessData.ratio)}`}
+                className={`relative flex items-center gap-3 px-4 py-3 border-2 transition-all duration-300 cursor-help shadow-lg rugged-box hover:translate-x-1 ${completenessData.ratio === null ? 'bg-slate-800 border-slate-700' :
+                    completenessData.ratio >= 90 ? 'bg-slate-900 border-emerald-900' :
+                        completenessData.ratio >= 60 ? 'bg-slate-900 border-amber-900' :
+                            'bg-slate-900 border-red-900'
+                    }`}
                 onMouseEnter={() => setHoveredMetric('completeness')}
                 onMouseLeave={() => setHoveredMetric(null)}
             >
-                <div className={`p-2 rounded-full bg-white/90 shadow-sm ${getCompletenessColor(completenessData.ratio)}`}>
+                <div className={`p-2 shadow-sm bg-slate-800 ${getCompletenessColor(completenessData.ratio)}`}>
                     <CheckCircle size={20} strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Modeling Completeness</span>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">모델링 완성도</span>
                     <span className={`text-2xl font-black leading-none ${getCompletenessColor(completenessData.ratio)}`}>
                         {completenessData.text}
                     </span>
@@ -156,16 +164,16 @@ const ScoreDashboard = ({ nodes, edges, analysisResult, isAnalyzing }) => {
 
                 {/* Tooltip - Moved to Right */}
                 {hoveredMetric === 'completeness' && (
-                    <div className="absolute left-full top-0 ml-3 w-64 p-3 glass-panel bg-gray-900/95 text-white text-xs rounded-xl shadow-2xl z-50 pointer-events-none animate-in fade-in slide-in-from-left-2 backdrop-blur-xl border-gray-700/50">
-                        <div className="font-bold mb-1 text-sm flex items-center gap-2 text-emerald-300">
-                            <CheckCircle size={14} /> Completeness
+                    <div className="absolute left-full top-0 ml-4 w-64 p-3 bg-slate-800 text-slate-200 text-xs border border-slate-600 shadow-2xl z-50 pointer-events-none animate-in fade-in slide-in-from-left-2">
+                        <div className="font-bold mb-1 text-sm flex items-center gap-2 text-emerald-400">
+                            <CheckCircle size={14} /> 완성도 (Completeness)
                         </div>
-                        <p className="leading-relaxed text-gray-300">
-                            Ratio of connected nodes to total nodes.
+                        <p className="leading-relaxed text-slate-400">
+                            전체 노드 대비 연결된 노드의 비율입니다.
                             <br />
-                            • <span className="text-blue-300">Goal</span>: Connect all nodes.
+                            • <span className="text-indigo-400">목표</span>: 모든 노드를 연결하세요.
                             <br />
-                            • <span className="text-yellow-400">Tip</span>: Ensure no isolated systems exist.
+                            • <span className="text-amber-400">팁</span>: 고립된 시스템이 없는지 확인하세요.
                         </p>
                     </div>
                 )}

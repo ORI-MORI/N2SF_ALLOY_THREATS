@@ -238,14 +238,14 @@ const EditorContent = ({ initialData, onExit }) => {
             console.log("Analysis Result:", result);
         } catch (error) {
             console.error("Analysis failed:", error);
-            alert("Analysis failed. See console for details.");
+            alert("분석에 실패했습니다. 콘솔을 확인해주세요.");
         } finally {
             setIsAnalyzing(false);
         }
     };
 
     const handleClearAll = () => {
-        if (window.confirm('Are you sure you want to clear the canvas?')) {
+        if (window.confirm('정말로 캔버스를 초기화하시겠습니까?')) {
             setNodes([]);
             setEdges([]);
             setAnalysisResult(null);
@@ -384,7 +384,7 @@ const EditorContent = ({ initialData, onExit }) => {
     }, [selectedThreatId, analysisResult, setNodes, setEdges, nodes.length, edges.length]);
 
     return (
-        <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
+        <div className="flex h-screen w-screen overflow-hidden bg-slate-950">
             <Sidebar />
 
             {/* Main Canvas Area */}
@@ -403,52 +403,54 @@ const EditorContent = ({ initialData, onExit }) => {
                     edgeTypes={edgeTypes}
                     fitView
                     proOptions={{ hideAttribution: true }}
+                    style={{ background: '#0f172a' }} // Dark Slate 900
                 >
                     <Controls
                         position="bottom-right"
-                        style={{ marginRight: '340px', marginBottom: '16px' }}
-                        className="bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-sm rounded-lg text-gray-600"
+                        style={{ marginRight: '340px', marginBottom: '16px', borderRadius: '0px', border: '1px solid #334155' }}
+                        className="!bg-slate-800 !border-slate-700 !fill-slate-100 !text-slate-100 shadow-md rugged-box"
                     />
-                    <Background variant="dots" gap={20} size={1} color="#cbd5e1" />
+                    <Background variant="dots" gap={20} size={1} color="#334155" />
                 </ReactFlow>
             </div>
 
             {/* Floating UI Layer */}
 
             {/* Top Center Actions */}
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex gap-2 glass-panel p-1.5 rounded-xl transition-all hover:shadow-md">
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex gap-2 bg-slate-800 border-2 border-slate-700 p-1.5 shadow-lg">
                 <button
                     onClick={onExit}
-                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors flex items-center gap-2"
-                    title="Back to Home"
+                    className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition-colors flex items-center gap-2"
+                    title="메인으로"
                 >
                     <HomeIcon size={16} />
-                    Home
+                    홈
                 </button>
-                <div className="w-px bg-gray-200/50 my-1"></div>
+                <div className="w-px bg-slate-700 my-1"></div>
                 <button
                     onClick={handleSave}
-                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors flex items-center gap-2"
-                    title="Save Project"
+                    className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400 hover:bg-slate-700 transition-colors flex items-center gap-2"
+                    title="프로젝트 저장"
                 >
                     <SaveIcon size={16} />
-                    Save
+                    저장
                 </button>
-                <div className="w-px bg-gray-200/50 my-1"></div>
+                <div className="w-px bg-slate-700 my-1"></div>
                 <button
                     onClick={handleClearAll}
-                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-red-400 hover:bg-slate-700 transition-colors flex items-center gap-2"
+                    title="캔버스 초기화"
                 >
                     <TrashIcon size={16} />
-                    Clear
+                    초기화
                 </button>
-                <div className="w-px bg-gray-200/50 my-1"></div>
+                <div className="w-px bg-slate-700 my-1"></div>
                 <button
                     onClick={handleAnalyze}
                     disabled={isAnalyzing}
-                    className={`px-6 py-2 rounded-lg text-sm font-bold shadow-sm flex items-center gap-2 transition-all ${isAnalyzing
-                        ? 'bg-indigo-100 text-indigo-400 cursor-not-allowed'
-                        : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200'
+                    className={`px-6 py-2 text-sm font-bold shadow-sm flex items-center gap-2 transition-all ${isAnalyzing
+                        ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                        : 'bg-indigo-700 text-white hover:bg-indigo-600 border border-indigo-500 hover:shadow-[0_0_10px_rgba(99,102,241,0.5)]'
                         }`}
                 >
                     {isAnalyzing ? (
@@ -457,11 +459,11 @@ const EditorContent = ({ initialData, onExit }) => {
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            Analyzing...
+                            분석 중...
                         </>
                     ) : (
                         <>
-                            <Play size={16} fill="currentColor" /> Analyze
+                            <Play size={16} fill="currentColor" /> 위협 분석
                         </>
                     )}
                 </button>

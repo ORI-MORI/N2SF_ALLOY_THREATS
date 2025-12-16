@@ -19,79 +19,98 @@ const SystemNode = ({ data, selected }) => {
     const connectionNodeId = useStore(connectionNodeIdSelector);
     const isConnecting = !!connectionNodeId;
 
-    // Dynamic z-index: Source on top normally, Target on top when connecting
-    const sourceStyle = { zIndex: isConnecting ? 0 : 1, width: 8, height: 8, background: '#9ca3af' }; // Visible gray
-    const targetStyle = { zIndex: isConnecting ? 1 : 0, width: 8, height: 8, background: 'transparent' }; // Invisible
+    // Handles: Square and Industrial
+    const handleStyle = { width: 10, height: 10, background: '#475569', border: '1px solid #94a3b8', borderRadius: 0 };
+    const sourceStyle = { ...handleStyle, zIndex: isConnecting ? 0 : 1 };
+    const targetStyle = { ...handleStyle, zIndex: isConnecting ? 1 : 0, opacity: isConnecting ? 1 : 0 };
 
-    // Helper for gradient backgrounds based on type
-    const getIconBackground = (type) => {
+    // Header Colors based on Type
+    const getHeaderColor = (type) => {
         switch (type) {
-            case 'Server': return 'bg-gradient-to-br from-indigo-400 to-indigo-600';
-            case 'Terminal': return 'bg-gradient-to-br from-emerald-400 to-emerald-600';
-            case 'NetworkDevice': return 'bg-gradient-to-br from-orange-400 to-orange-600';
-            case 'SecurityDevice': return 'bg-gradient-to-br from-red-400 to-red-600';
-            case 'Mobile': return 'bg-gradient-to-br from-pink-400 to-pink-600';
-            case 'WirelessAP': return 'bg-gradient-to-br from-cyan-400 to-cyan-600';
-            case 'SaaS': return 'bg-gradient-to-br from-sky-400 to-sky-600';
-            default: return 'bg-gradient-to-br from-slate-400 to-slate-600';
+            case 'Server': return 'bg-indigo-900 border-indigo-700 text-indigo-100';
+            case 'Terminal': return 'bg-emerald-900 border-emerald-700 text-emerald-100';
+            case 'NetworkDevice': return 'bg-orange-900 border-orange-700 text-orange-100';
+            case 'SecurityDevice': return 'bg-red-900 border-red-700 text-red-100';
+            case 'Mobile': return 'bg-pink-900 border-pink-700 text-pink-100';
+            case 'WirelessAP': return 'bg-cyan-900 border-cyan-700 text-cyan-100';
+            case 'SaaS': return 'bg-sky-900 border-sky-700 text-sky-100';
+            default: return 'bg-slate-800 border-slate-600 text-slate-100';
         }
     };
 
+    // Type Display Mapping
+    const typeLabels = {
+        Server: '서버',
+        Terminal: '단말(PC)',
+        NetworkDevice: '네트워크',
+        SecurityDevice: '보안장비',
+        Mobile: '모바일',
+        WirelessAP: '무선AP',
+        SaaS: 'SaaS',
+        Zone: '구역'
+    };
+
+    const headerClass = getHeaderColor(data.type);
+
     return (
-        <div className={`relative group transition-all duration-300 ${selected ? 'scale-105' : 'hover:scale-105'}`}>
-            {/* Glow Effect on Selection */}
-            {selected && (
-                <div className="absolute -inset-1 bg-indigo-500/30 rounded-xl blur-md animate-pulse"></div>
-            )}
-
-            {/* Main Card */}
-            <div className={`relative min-w-[120px] p-3 rounded-xl glass-panel flex flex-col items-center gap-2 transition-all duration-300 
+        <div className="relative group">
+            {/* Main Rugged Card */}
+            <div className={`
+                relative w-[180px] flex flex-col
+                bg-slate-900 
+                border-2 
+                transition-all duration-200
                 ${data.isSelectedThreat
-                    ? 'border-2 !border-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.9)] z-50 ring-2 ring-amber-300 ring-offset-2 animate-pulse'
+                    ? 'border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)] z-50'
                     : data.isThreat
-                        ? 'border-2 !border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.8)] z-40'
+                        ? 'border-red-600 shadow-[0_0_10px_rgba(220,38,38,0.5)] z-40'
                         : selected
-                            ? 'border-indigo-500/50 shadow-indigo-500/20'
-                            : 'border-white/40 hover:border-white/60'}`}>
-
-                {/* Icon Circle */}
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${getIconBackground(data.type)} text-white`}>
-                    <Icon size={20} strokeWidth={2.5} />
+                            ? 'border-indigo-500 shadow-[0_0_0_1px_rgba(99,102,241,1)]'
+                            : 'border-slate-700 hover:border-slate-500'
+                }
+            `}>
+                {/* Header Section */}
+                <div className={`
+                    flex items-center gap-2 px-3 py-2 border-b-2 border-inherit
+                    ${headerClass}
+                `}>
+                    <Icon size={16} strokeWidth={2.5} />
+                    <span className="text-xs font-bold uppercase tracking-wider truncate flex-1 leading-none">
+                        {typeLabels[data.type] || data.type}
+                    </span>
                 </div>
 
-                {/* Label & Type */}
-                <div className="text-center">
-                    <div className="text-xs font-bold text-slate-700 leading-tight">{data.label}</div>
-                    <div className="text-[9px] font-medium text-slate-400 uppercase tracking-wider mt-0.5">{data.type}</div>
-                </div>
+                {/* Body Section */}
+                <div className="p-3 bg-slate-900 text-slate-100">
+                    <div className="text-sm font-bold truncate mb-2">{data.label}</div>
 
-                {/* Grade Badge */}
-                {data.grade && (
-                    <div className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wide shadow-sm ${data.grade === 'Classified' ? 'bg-red-100 text-red-700 border border-red-200' :
-                        data.grade === 'Sensitive' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                            'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                        }`}>
-                        {data.grade}
+                    {/* Compact Properties */}
+                    <div className="flex items-center justify-between text-[10px] text-slate-300 font-mono">
+                        <span>기밀성: {data.conf || '자동'}</span>
+                        {data.grade && (
+                            <span className={`px-1.5 py-0.5 border text-[9px] font-bold uppercase ${data.grade === 'Classified' ? 'border-red-800 text-red-500 bg-red-950/30' :
+                                    data.grade === 'Sensitive' ? 'border-amber-800 text-amber-500 bg-amber-950/30' :
+                                        'border-emerald-800 text-emerald-500 bg-emerald-950/30'
+                                }`}>
+                                {data.grade === 'Classified' ? '기밀' : data.grade === 'Sensitive' ? '대외비' : '공개'}
+                            </span>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
 
-            {/* Connection Handles - Custom Style */}
-            {/* TOP */}
-            <Handle type="source" position={Position.Top} id="top-source" className="w-2 h-2 !bg-indigo-400 border-2 border-white" style={sourceStyle} />
-            <Handle type="target" position={Position.Top} id="top-target" className="w-2 h-2 !bg-indigo-400 border-2 border-white opacity-0 hover:opacity-100" style={targetStyle} />
+            {/* Connection Handles - Industrial Square Style */}
+            <Handle type="source" position={Position.Top} id="top-source" style={sourceStyle} />
+            <Handle type="target" position={Position.Top} id="top-target" style={targetStyle} />
 
-            {/* LEFT */}
-            <Handle type="source" position={Position.Left} id="left-source" className="w-2 h-2 !bg-indigo-400 border-2 border-white" style={sourceStyle} />
-            <Handle type="target" position={Position.Left} id="left-target" className="w-2 h-2 !bg-indigo-400 border-2 border-white opacity-0 hover:opacity-100" style={targetStyle} />
+            <Handle type="source" position={Position.Left} id="left-source" style={sourceStyle} />
+            <Handle type="target" position={Position.Left} id="left-target" style={targetStyle} />
 
-            {/* RIGHT */}
-            <Handle type="source" position={Position.Right} id="right-source" className="w-2 h-2 !bg-indigo-400 border-2 border-white" style={sourceStyle} />
-            <Handle type="target" position={Position.Right} id="right-target" className="w-2 h-2 !bg-indigo-400 border-2 border-white opacity-0 hover:opacity-100" style={targetStyle} />
+            <Handle type="source" position={Position.Right} id="right-source" style={sourceStyle} />
+            <Handle type="target" position={Position.Right} id="right-target" style={targetStyle} />
 
-            {/* BOTTOM */}
-            <Handle type="source" position={Position.Bottom} id="bottom-source" className="w-2 h-2 !bg-indigo-400 border-2 border-white" style={sourceStyle} />
-            <Handle type="target" position={Position.Bottom} id="bottom-target" className="w-2 h-2 !bg-indigo-400 border-2 border-white opacity-0 hover:opacity-100" style={targetStyle} />
+            <Handle type="source" position={Position.Bottom} id="bottom-source" style={sourceStyle} />
+            <Handle type="target" position={Position.Bottom} id="bottom-target" style={targetStyle} />
         </div>
     );
 };
