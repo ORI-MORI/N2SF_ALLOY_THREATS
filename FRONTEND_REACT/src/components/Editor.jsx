@@ -4,7 +4,6 @@ import ReactFlow, {
     addEdge,
     useNodesState,
     useEdgesState,
-    Controls,
     Background,
     useReactFlow,
     useOnSelectionChange,
@@ -18,10 +17,11 @@ import ZoneNode from './ZoneNode';
 import SystemNode from './SystemNode';
 import PropertyPanel from './PropertyPanel';
 import DataFlowEdge from './DataFlowEdge';
-import ScoreDashboard from './ScoreDashboard';
+
 import useStore from '../store';
 import { convertGraphToJSON } from '../utils/graphConverter';
 import { analyzeGraph } from '../api/analyze';
+import ConfirmModal from './ConfirmModal';
 
 const nodeTypes = {
     zone: ZoneNode,
@@ -44,6 +44,7 @@ const EditorContent = ({ initialData, onExit }) => {
     const [analysisResult, setAnalysisResult] = useState(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [selectedThreatId, setSelectedThreatId] = useState(null);
+    const [isClearModalOpen, setIsClearModalOpen] = useState(false);
 
     // Initialization & ID Sync
     useEffect(() => {
@@ -238,76 +239,72 @@ const EditorContent = ({ initialData, onExit }) => {
             console.log("Analysis Result:", result);
         } catch (error) {
             console.error("Analysis failed:", error);
-            alert("Analysis failed. See console for details.");
+            alert("분석에 실패했습니다. 콘솔을 확인해주세요.");
         } finally {
             setIsAnalyzing(false);
         }
     };
 
-    const handleClearAll = () => {
-        if (window.confirm('Are you sure you want to clear the canvas?')) {
-            setNodes([]);
-            setEdges([]);
-            setAnalysisResult(null);
-            id = 0; // Reset ID counter
-        }
+    const handleClearClick = () => {
+        setIsClearModalOpen(true);
+    };
+
+    const confirmClear = () => {
+        setNodes([]);
+        setEdges([]);
+        setAnalysisResult(null);
+        id = 0; // Reset ID counter
     };
 
     const handleThreatClick = (threatId) => {
         setSelectedThreatId(prev => prev === threatId ? null : threatId);
     };
 
-    // Effect to highlight nodes/edges when a threat is selected
+    // Effect to highlight nodes/edges: Red for ANY threat, distinct for SELECTED threat
     useEffect(() => {
-        // Helper update function to avoid infinite loops
-        const updateElements = (elements, shouldBeThreatFn) => {
+        // Helper update function
+        const updateElements = (elements, allThreatSet, selectedThreatSet) => {
             let hasChanges = false;
             const newElements = elements.map(el => {
-                const isThreat = shouldBeThreatFn(el);
-                if (!!el.data.isThreat !== isThreat) {
+                // Check Global Threat Status
+                const isGlobalThreat = (
+                    allThreatSet.has(el.id) ||
+                    (el.data.label && allThreatSet.has(el.data.label))
+                );
+
+                // Check Selected Threat Status
+                const isSelectedThreat = (
+                    selectedThreatSet.has(el.id) ||
+                    (el.data.label && selectedThreatSet.has(el.data.label))
+                );
+
+                // Update if changed
+                if (!!el.data.isThreat !== isGlobalThreat || !!el.data.isSelectedThreat !== isSelectedThreat) {
                     hasChanges = true;
-                    return { ...el, data: { ...el.data, isThreat } };
+                    return { ...el, data: { ...el.data, isThreat: isGlobalThreat, isSelectedThreat: isSelectedThreat } };
                 }
                 return el;
             });
             return hasChanges ? newElements : elements;
         };
 
-        if (!analysisResult || !selectedThreatId) {
-            // Clear highlights safely
-            setNodes(nds => updateElements(nds, () => false));
-            setEdges(eds => updateElements(eds, () => false));
-            return;
-        }
-
         // Helper to sanitize ID consistent with graphConverter
         const sanitizeId = (id) => id.toString().replace(/[^a-zA-Z0-9]/g, '_');
 
+        // Helper to match ID against a Set using heuristics (exact, sanitized, reverse lookup)
         const isMatch = (elementId, involveSet) => {
             if (!elementId) return false;
-
-            // 0. Absolute Exact Match (Fast path)
             if (involveSet.has(elementId)) return true;
-
             const cleanId = sanitizeId(elementId);
-
-            // 1. Exact match of sanitized ID
             if (involveSet.has(cleanId)) return true;
-
-            // 2. Match with _return suffix
             if (involveSet.has(cleanId + '_return')) return true;
 
-            // 3. Reverse lookup and Prefix/Suffix matching
             for (const rawThreatId of involveSet) {
-                // Strip Alloy Skolem suffixes (e.g., $0)
                 let threatId = rawThreatId.split('$')[0].trim();
-
                 if (threatId === elementId) return true;
                 if (threatId === cleanId) return true;
                 if (threatId.endsWith('_' + cleanId)) return true;
                 if (cleanId.endsWith('_' + threatId)) return true;
-
-                // Handle potential path prefixes like "System/dndnode_1"
                 if (threatId.includes('/')) {
                     const pathPart = threatId.split('/').pop();
                     if (pathPart === cleanId) return true;
@@ -316,45 +313,81 @@ const EditorContent = ({ initialData, onExit }) => {
             return false;
         };
 
-        // Parse threatId safely handling hyphens in the key
-        const lastDashIndex = selectedThreatId.lastIndexOf('-');
-        const threatType = selectedThreatId.substring(0, lastDashIndex);
-        const indicesStr = selectedThreatId.substring(lastDashIndex + 1);
+        // --- 1. Calculate All Threats Set ---
+        const allThreatIds = new Set();
+        if (analysisResult && analysisResult.threats) {
+            Object.values(analysisResult.threats).forEach(threatList => {
+                threatList.forEach(t => {
+                    if (t.system) allThreatIds.add(t.system);
+                    if (t.connection) allThreatIds.add(t.connection);
+                });
+            });
+        }
 
-        const indices = indicesStr.split(',').map(idx => parseInt(idx, 10));
-
-        const involvedIds = new Set();
-        indices.forEach(index => {
-            if (!analysisResult.threats || !analysisResult.threats[threatType]) return;
-            const threat = analysisResult.threats[threatType][index];
-            if (!threat) return;
-
-            if (threat.system) involvedIds.add(threat.system);
-            if (threat.connection) involvedIds.add(threat.connection);
-        });
-
-        // INFERENCE STEP
+        // Inference for Edges (All Threats)
         edges.forEach(e => {
-            if (isMatch(e.id, involvedIds)) {
-                involvedIds.add(e.source);
-                involvedIds.add(e.target);
+            if (isMatch(e.id, allThreatIds)) {
+                allThreatIds.add(e.source);
+                allThreatIds.add(e.target);
             }
         });
 
-        // Update Nodes
-        setNodes((nds) => updateElements(nds, (n) => {
-            return isMatch(n.id, involvedIds) || (n.data.label && isMatch(n.data.label, involvedIds));
-        }));
+        // --- 2. Calculate Selected Threat Set ---
+        const selectedThreatIds = new Set();
+        if (selectedThreatId && analysisResult && analysisResult.threats) {
+            const lastDashIndex = selectedThreatId.lastIndexOf('-');
+            const threatType = selectedThreatId.substring(0, lastDashIndex);
+            const indicesStr = selectedThreatId.substring(lastDashIndex + 1);
+            const indices = indicesStr.split(',').map(idx => parseInt(idx, 10));
 
-        // Update Edges
-        setEdges((eds) => updateElements(eds, (e) => {
-            return isMatch(e.id, involvedIds);
-        }));
+            indices.forEach(index => {
+                if (analysisResult.threats[threatType]) {
+                    const threat = analysisResult.threats[threatType][index];
+                    if (threat) {
+                        if (threat.system) selectedThreatIds.add(threat.system);
+                        if (threat.connection) selectedThreatIds.add(threat.connection);
+                    }
+                }
+            });
 
-    }, [selectedThreatId, analysisResult, setNodes, setEdges, edges]);
+            // Inference for Edges (Selected Threat)
+            edges.forEach(e => {
+                if (isMatch(e.id, selectedThreatIds)) {
+                    selectedThreatIds.add(e.source);
+                    selectedThreatIds.add(e.target);
+                }
+            });
+        }
+
+        // Apply Updates
+        // Note: We need extended sets that include matches (because our sets currently contain raw ID strings from Alloy)
+
+        const realAllThreatIds = new Set();
+        const realSelectedThreatIds = new Set();
+
+        const resolveToRealIds = (sourceSet, targetSet) => {
+            nodes.forEach(n => {
+                if (isMatch(n.id, sourceSet) || (n.data.label && isMatch(n.data.label, sourceSet))) {
+                    targetSet.add(n.id);
+                }
+            });
+            edges.forEach(e => {
+                if (isMatch(e.id, sourceSet)) {
+                    targetSet.add(e.id);
+                }
+            });
+        };
+
+        resolveToRealIds(allThreatIds, realAllThreatIds);
+        resolveToRealIds(selectedThreatIds, realSelectedThreatIds);
+
+        setNodes(nds => updateElements(nds, realAllThreatIds, realSelectedThreatIds));
+        setEdges(eds => updateElements(eds, realAllThreatIds, realSelectedThreatIds));
+
+    }, [selectedThreatId, analysisResult, setNodes, setEdges, nodes.length, edges.length]);
 
     return (
-        <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
+        <div className="flex h-screen w-screen overflow-hidden bg-slate-950">
             <Sidebar />
 
             {/* Main Canvas Area */}
@@ -373,52 +406,50 @@ const EditorContent = ({ initialData, onExit }) => {
                     edgeTypes={edgeTypes}
                     fitView
                     proOptions={{ hideAttribution: true }}
+                    style={{ background: '#0f172a' }} // Dark Slate 900
                 >
-                    <Controls
-                        position="bottom-right"
-                        style={{ marginRight: '340px', marginBottom: '16px' }}
-                        className="bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-sm rounded-lg text-gray-600"
-                    />
-                    <Background variant="dots" gap={20} size={1} color="#cbd5e1" />
+
+                    <Background variant="dots" gap={20} size={1} color="#334155" />
                 </ReactFlow>
             </div>
 
             {/* Floating UI Layer */}
 
             {/* Top Center Actions */}
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex gap-2 glass-panel p-1.5 rounded-xl transition-all hover:shadow-md">
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex gap-2 bg-slate-800 border-2 border-slate-700 p-1.5 shadow-lg">
                 <button
                     onClick={onExit}
-                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors flex items-center gap-2"
-                    title="Back to Home"
+                    className="px-4 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-700 transition-colors flex items-center gap-2"
+                    title="메인으로"
                 >
                     <HomeIcon size={16} />
-                    Home
+                    홈
                 </button>
-                <div className="w-px bg-gray-200/50 my-1"></div>
+                <div className="w-px bg-slate-700 my-1"></div>
                 <button
                     onClick={handleSave}
-                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors flex items-center gap-2"
-                    title="Save Project"
+                    className="px-4 py-2 text-sm font-medium text-slate-200 hover:text-emerald-400 hover:bg-slate-700 transition-colors flex items-center gap-2"
+                    title="프로젝트 저장"
                 >
                     <SaveIcon size={16} />
-                    Save
+                    저장
                 </button>
-                <div className="w-px bg-gray-200/50 my-1"></div>
+                <div className="w-px bg-slate-700 my-1"></div>
                 <button
-                    onClick={handleClearAll}
-                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                    onClick={handleClearClick}
+                    className="px-4 py-2 text-sm font-medium text-slate-200 hover:text-red-400 hover:bg-slate-700 transition-colors flex items-center gap-2"
+                    title="캔버스 초기화"
                 >
                     <TrashIcon size={16} />
-                    Clear
+                    초기화
                 </button>
-                <div className="w-px bg-gray-200/50 my-1"></div>
+                <div className="w-px bg-slate-700 my-1"></div>
                 <button
                     onClick={handleAnalyze}
                     disabled={isAnalyzing}
-                    className={`px-6 py-2 rounded-lg text-sm font-bold shadow-sm flex items-center gap-2 transition-all ${isAnalyzing
-                        ? 'bg-indigo-100 text-indigo-400 cursor-not-allowed'
-                        : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200'
+                    className={`px-6 py-2 text-sm font-bold shadow-sm flex items-center gap-2 transition-all ${isAnalyzing
+                        ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                        : 'bg-indigo-700 text-white hover:bg-indigo-600 border border-indigo-500 hover:shadow-[0_0_10px_rgba(99,102,241,0.5)]'
                         }`}
                 >
                     {isAnalyzing ? (
@@ -427,27 +458,30 @@ const EditorContent = ({ initialData, onExit }) => {
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            Analyzing...
+                            분석 중...
                         </>
                     ) : (
                         <>
-                            <Play size={16} fill="currentColor" /> Analyze
+                            <Play size={16} fill="currentColor" /> 위협 분석
                         </>
                     )}
                 </button>
             </div>
 
-            <ScoreDashboard
-                nodes={nodes}
-                edges={edges}
-                analysisResult={analysisResult}
-                isAnalyzing={isAnalyzing}
-            />
+
 
             <PropertyPanel
                 analysisResult={analysisResult}
                 onThreatClick={handleThreatClick}
                 selectedThreatId={selectedThreatId}
+            />
+
+            <ConfirmModal
+                isOpen={isClearModalOpen}
+                onClose={() => setIsClearModalOpen(false)}
+                onConfirm={confirmClear}
+                title="캔버스 초기화 확인"
+                message={`모든 노드와 연결이 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.`}
             />
         </div>
     );

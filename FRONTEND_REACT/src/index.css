@@ -1,19 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand Colors */
-  --color-brand-primary: #6366f1;
-  /* Indigo 500 */
-  --color-brand-secondary: #4f46e5;
-  /* Indigo 600 */
-  --color-brand-accent: #818cf8;
-  /* Indigo 400 */
+  /* Brand Colors - Dark Theme */
+  --color-brand-primary: #6366f1; /* Indigo 500 */
+  --color-brand-secondary: #4f46e5; /* Indigo 600 */
+  --color-brand-accent: #818cf8; /* Indigo 400 */
 
-  /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-  --glass-blur: blur(12px);
+  /* Dark Theme Palette */
+  --color-bg-dark: #0f172a; /* Slate 900 */
+  --color-bg-card: #1e293b; /* Slate 800 */
+  --color-border-rugged: #334155; /* Slate 700 */
+  --color-text-primary: #f8fafc; /* Slate 50 */
+  --color-text-secondary: #94a3b8; /* Slate 400 */
 }
 
 html,
@@ -21,20 +19,28 @@ body,
 #root {
   height: 100%;
   margin: 0;
-  background-color: #f8fafc;
-  /* Slate 50 */
-  color: #1e293b;
-  /* Slate 800 */
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Utility Class for Glass Effect */
-.glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a; 
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155; 
+    border-radius: 0px; /* Rectangular */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569; 
 }
 
 /* Force Static Icons */
@@ -43,4 +49,11 @@ body,
   stroke-dasharray: none !important;
   animation: none !important;
   transition: none !important;
+}
+
+/* Rugged Box Utility */
+.rugged-box {
+    background: var(--color-bg-card);
+    border: 2px solid var(--color-border-rugged);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
 }

@@ -35,7 +35,7 @@ const ZoneNode = ({ data, selected }) => {
             <div className={`h-full w-full min-w-[100px] min-h-[100px] border-2 border-dashed rounded-2xl transition-all duration-300 group ${getZoneStyle(data.grade)}`}>
 
                 {/* Floating Label Pill */}
-                <div className={`absolute -top-3 left-4 px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5 transition-all ${selected ? 'bg-indigo-100 text-indigo-700' : 'bg-white text-slate-500 border border-slate-200'}`}>
+                <div className={`absolute -top-3 left-4 px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5 transition-all ${selected ? 'bg-indigo-100 text-indigo-700' : 'bg-white text-slate-800 border border-slate-200'}`}>
                     {data.type === 'Internet' && <Globe size={12} />}
                     {data.type === 'Cloud' && <Cloud size={12} />}
                     {data.type === 'PPP' && <Building size={12} />}
@@ -44,7 +44,7 @@ const ZoneNode = ({ data, selected }) => {
 
                 {/* Content Area */}
                 <div className="p-4 h-full flex flex-col justify-end items-end opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="text-[10px] font-medium text-slate-400 bg-white/50 px-2 py-1 rounded-md backdrop-blur-sm">
+                    <div className="text-[10px] font-bold text-slate-600 bg-white/50 px-2 py-1 rounded-md backdrop-blur-sm">
                         {data.grade || 'Open'}
                     </div>
                 </div>

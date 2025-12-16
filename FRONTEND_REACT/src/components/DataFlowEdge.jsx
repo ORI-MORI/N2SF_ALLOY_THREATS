@@ -93,12 +93,20 @@ export default function DataFlowEdge({
     // Ensure style includes animation if animated prop is true
     const edgeStyle = {
         ...style,
-        strokeWidth: (selected || data?.isThreat) ? 3 : 2,
-        stroke: data?.isThreat ? '#ef4444' : (selected ? '#6366f1' : '#94a3b8'), // Red if threat, Indigo if selected
+        strokeWidth: (data?.isSelectedThreat) ? 4 : (selected || data?.isThreat) ? 3 : 2,
+        stroke: data?.isSelectedThreat
+            ? '#f59e0b' // Amber for selected threat
+            : data?.isThreat
+                ? '#ef4444' // Red for general threat
+                : (selected ? '#6366f1' : '#94a3b8'),
         strokeDasharray: (animated && !isBidirectional) ? 5 : 'none',
         animation: (animated && !isBidirectional) ? 'dashdraw 0.5s linear infinite' : 'none',
-        filter: data?.isThreat ? 'drop-shadow(0 0 3px rgba(239, 68, 68, 0.6))' : (selected ? 'drop-shadow(0 0 3px rgba(99, 102, 241, 0.5))' : undefined),
-        zIndex: (selected || data?.isThreat) ? 100 : 0, // Bring to front
+        filter: data?.isSelectedThreat
+            ? 'drop-shadow(0 0 5px rgba(245, 158, 11, 0.8))'
+            : data?.isThreat
+                ? 'drop-shadow(0 0 3px rgba(239, 68, 68, 0.6))'
+                : (selected ? 'drop-shadow(0 0 3px rgba(99, 102, 241, 0.5))' : undefined),
+        zIndex: (data?.isSelectedThreat) ? 110 : (selected || data?.isThreat) ? 100 : 0, // Highest priority for selected threat
     };
 
     // Calculate arrow rotation based on target position
@@ -149,9 +157,9 @@ export default function DataFlowEdge({
                     y={labelY - 17}
                     className="overflow-visible pointer-events-none"
                 >
-                    <div className="flex items-center justify-center gap-1 px-1.5 py-1.5 bg-white rounded-full border border-gray-200 w-full h-full">
+                    <div className="flex items-center justify-center gap-1 px-1.5 py-1.5 bg-slate-900 rounded-full border border-slate-700 w-full h-full shadow-md">
                         {carriedData.map((item) => (
-                            <div key={item.id} className="flex items-center justify-center w-6 h-6 bg-gray-50 rounded-full border border-gray-100 animate-none" title={item.label}>
+                            <div key={item.id} className="flex items-center justify-center w-6 h-6 bg-slate-800 rounded-full border border-slate-600 animate-none" title={item.label}>
                                 {getIcon(item.fileType)}
                             </div>
                         ))}
