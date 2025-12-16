@@ -4,7 +4,6 @@ import ReactFlow, {
     addEdge,
     useNodesState,
     useEdgesState,
-    Controls,
     Background,
     useReactFlow,
     useOnSelectionChange,
@@ -409,11 +408,7 @@ const EditorContent = ({ initialData, onExit }) => {
                     proOptions={{ hideAttribution: true }}
                     style={{ background: '#0f172a' }} // Dark Slate 900
                 >
-                    <Controls
-                        position="bottom-right"
-                        style={{ marginRight: '340px', marginBottom: '16px', borderRadius: '0px', border: '1px solid #334155' }}
-                        className="!bg-slate-800 !border-slate-700 !fill-slate-100 !text-slate-100 shadow-md rugged-box"
-                    />
+
                     <Background variant="dots" gap={20} size={1} color="#334155" />
                 </ReactFlow>
             </div>
