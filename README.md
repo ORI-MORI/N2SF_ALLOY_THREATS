@@ -31,14 +31,15 @@
 ## 2. 주요 기능 (Key Features)
 
 *   **9대 핵심 위협 자동 탐지**: 정보 유출(Leakage), 저장 데이터 암호화 미비, 관리자 접속 경로 위반 등 N2SF의 핵심 보안 위협을 자동으로 식별합니다.
-*   **Smart Modeling System**: Drag & Drop 인터페이스를 통해 노드를 배치하면, 좌표를 기반으로 **망(Zone) 소속을 자동으로 인식**하여 모델링 편의성을 극대화했습니다.
-*   **Formal Verification Engine**: 단순한 규칙 매칭이 아닌, Alloy의 SAT Solver를 활용하여 **다단계 연결(Multi-hop) 경로** 추적 및 논리적 모순을 검증합니다.
-*   **Auto Remediation Guide**: 위협이 탐지되면 단순한 경고에 그치지 않고, "어떤 설정을 변경해야 하는지"에 대한 **구체적인 해결 가이드**를 제공합니다.
-*   **Real-time Security Dashboard**: **보안 건전성**과 **모델링 완성도**를 실시간으로 수치화하여 보여줌으로써, 사용자가 현재 보안 수준을 직관적으로 파악할 수 있습니다.
+*   **Smart Modeling System**: Drag & Drop 인터페이스로 노드를 배치하면, **망(Zone) 소속을 자동으로 인식**하고 **산업 표준 아이콘**으로 시각화합니다.
+*   **One-Click Security Profile**: '기밀 서버', '일반 PC' 등 **사전 정의된 프리셋(Preset)**을 통해 복잡한 보안 속성을 한 번에 적용할 수 있습니다.
+*   **Real-time Score Dashboard**: **보안 건전성(Health)**과 **모델링 완성도(Completeness)**를 실시간 HUD로 제공하여 현재 보안 수준을 즉관적으로 파악할 수 있습니다.
+*   **Formal Verification Engine**: Alloy 정형 기법 엔진(SAT Solver)을 활용하여 단순 규칙 매칭으로는 찾기 힘든 **우회 경로(Bypass)** 및 **논리적 모순**을 검증합니다.
+*   **Auto Remediation Guide**: 위협 탐지 시, 단순 경고에 그치지 않고 "망 분리 적용", "암호화 모듈 탑재" 등 **구체적인 조치 방안(Remediation)**을 자동으로 제안합니다.
 
 ## 3. 데모 (Demo)
 
-<!-- GIF Placeholder -->
+*(데모 홍보 영상 링크 예정)*
 
 ## 4. 기술 아키텍처 (Technical Architecture)
 
