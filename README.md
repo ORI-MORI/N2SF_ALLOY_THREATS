@@ -21,7 +21,7 @@
 ## 1. 배경 및 문제 정의 (Why this project?)
 
 ### Problem: 새로운 보안 패러다임과 검증의 복잡성
-대한민국의 공공 보안 정책이 기존의 획일적인 '망 분리'에서 데이터 중요도에 따라 보안 대책을 차등 적용하는 국가 망 보안체계(National Network Security Framework)로 대전환하고자 하는 움직임이 보이고 있습니다. 새로운 체계는 업무 데이터를 **기밀(Classified)**, **민감(Sensitive)**, **공개(Open)**의 3등급으로 분류하고, 위치-주체-객체(Location-Subject-Object) 모델링을 통해 위협을 식별할 것을 요구합니다.
+대한민국의 공공 보안 정책이 기존의 획일적인 '망 분리'에서 데이터 중요도에 따라 보안 대책을 차등 적용하는 국가 망 보안체계(National Network Security Framework)로 대전환하고자 하는 움직임이 보이고 있습니다. 새로운 체계는 업무 데이터를 **기밀**, **민감**, **공개**의 3등급으로 분류하고, 위치-주체-객체(Location-Subject-Object) 모델링을 통해 위협을 식별할 것을 요구합니다.
 
 하지만 기존의 글로벌 모델링 도구(예: OWASP Threat Dragon)는 이러한 한국 고유의 다층 보안 등급 체계와 망 연계(CDS) 규칙을 검증할 수 없습니다. 또한, 복잡하게 얽힌 망 구성도에서 관리자가 수동으로 '정보 이동 원칙'이나 '정보 생산·저장 원칙' 위반을 찾아내는 것은 막대한 시간 소요와 인적 오류(Human Error)의 위험을 안고 있습니다.
 
@@ -32,14 +32,12 @@
 
 *   **9대 핵심 위협 자동 탐지**: 정보 유출(Leakage), 저장 데이터 암호화 미비, 관리자 접속 경로 위반 등 N2SF의 핵심 보안 위협을 자동으로 식별합니다.
 *   **Smart Modeling System**: Drag & Drop 인터페이스로 노드를 배치하면, **망(Zone) 소속을 자동으로 인식**하고 **산업 표준 아이콘**으로 시각화합니다.
-*   **One-Click Security Profile**: '기밀 서버', '일반 PC' 등 **사전 정의된 프리셋(Preset)**을 통해 복잡한 보안 속성을 한 번에 적용할 수 있습니다.
-*   **Real-time Score Dashboard**: **보안 건전성(Health)**과 **모델링 완성도(Completeness)**를 실시간 HUD로 제공하여 현재 보안 수준을 즉관적으로 파악할 수 있습니다.
+*   **One-Click Security Profile**: '기밀 서버', '일반 PC' 등 **사전 정의된 프리셋**을 통해 복잡한 보안 속성을 한 번에 적용할 수 있습니다.
 *   **Formal Verification Engine**: Alloy 정형 기법 엔진(SAT Solver)을 활용하여 단순 규칙 매칭으로는 찾기 힘든 **우회 경로(Bypass)** 및 **논리적 모순**을 검증합니다.
-*   **Auto Remediation Guide**: 위협 탐지 시, 단순 경고에 그치지 않고 "망 분리 적용", "암호화 모듈 탑재" 등 **구체적인 조치 방안(Remediation)**을 자동으로 제안합니다.
+*   **Auto Remediation Guide**: 위협 탐지 시, 단순 경고에 그치지 않고 "망 분리 적용", "암호화 모듈 탑재" 등 **구체적인 조치 방안**을 자동으로 제안합니다.
 
-## 3. 데모 (Demo)
-
-*(데모 홍보 영상 링크 예정)*
+## 3. 실행 화면 (Screenshots)
+<img width="1608" height="988" alt="image" src="https://github.com/user-attachments/assets/ab699621-c626-4b65-9fa4-c3e7bfed8521" />
 
 ## 4. 기술 아키텍처 (Technical Architecture)
 
