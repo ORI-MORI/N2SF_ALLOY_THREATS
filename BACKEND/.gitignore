@@ -11,6 +11,7 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # Runtime data
 pids
@@ -18,18 +19,22 @@ pids
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Coverage
 coverage/
 *.lcov
 
-# Alloy Generated Files
+# Alloy Generated Files (Instances & Debug)
 alloy/user_instance_real.als
 alloy/user_instance_real.xml
-alloy/*.xml
-last_error.txt
-*.tmp
 
-# Debug Artifacts
+alloy/server_debug.als
+alloy/test_min.als
+alloy/*.xml
+alloy/*.cnf
+alloy/*.tmp
+alloy/tmp*
+
+# Root Debug Artifacts
 debug_*.xml
 debug_*.json
 server_debug.txt
@@ -38,13 +43,23 @@ debug_result.json
 debug_last_run.xml
 last_request_payload.json
 debug_response.json
-server_debug.als
+debug_response_hybrid.json
 crash_output.txt
-alloy/server_debug.als
+last_error.txt
+*.tmp
 
-# Backend Alloy Artifacts
-BACKEND/alloy/user_instance_real.als
-BACKEND/alloy/user_instance_real.xml
-BACKEND/alloy/*.cnf
-BACKEND/alloy/*.tmp
-BACKEND/alloy/tmp*
+# System Files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+.Spotlight-V100
+.Trashes
+
+# IDE Configs
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo

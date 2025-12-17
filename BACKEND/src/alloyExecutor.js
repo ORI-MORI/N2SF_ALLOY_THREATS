@@ -9,7 +9,7 @@ function executeAlloy(filePath) {
         const normalizePath = (p) => p.replace(/\\/g, '/');
 
         const jarPath = normalizePath(path.join(cwd, 'alloy/alloy4.2_2015-02-22.jar'));
-        const classpath = `.;${jarPath}`;
+        const classpath = `.${path.delimiter}${jarPath}`;
         const runnerPath = normalizePath(path.join(cwd, 'src/AlloyRunner.java'));
         const normalizedFilePath = normalizePath(filePath);
         const xmlPath = filePath.replace('.als', '.xml');
@@ -37,7 +37,7 @@ function executeAlloy(filePath) {
             }
 
             // 2. Execute
-            const runCmd = `java -cp "src;${classpath}" AlloyRunner "${normalizedFilePath}"`;
+            const runCmd = `java -cp "src${path.delimiter}${classpath}" AlloyRunner "${normalizedFilePath}"`;
 
             console.log(`Executing: ${runCmd}`);
             exec(runCmd, { cwd: cwd, maxBuffer: 1024 * 1024 * 10 }, (runError, runStdout, runStderr) => {
